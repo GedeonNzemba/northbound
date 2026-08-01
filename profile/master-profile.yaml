@@ -1,0 +1,528 @@
+# NORTHBOUND — MASTER PROFILE
+#
+# This file is the SINGLE SOURCE OF TRUTH for every generated CV and cover letter.
+#
+# HARD RULE FOR THE CV ENGINE:
+#   The generator may SELECT, REORDER, RE-WORD and RE-FRAME anything in this file.
+#   It may NEVER introduce a fact that is not in this file.
+#   Every bullet it emits must be traceable to an `id` below.
+#   If a job asks for something not here, the correct output is the honest
+#   transferable-skills framing (see docs/04-cv-engine.md), never an invention.
+#
+# Provenance codes:
+#   CV2026  = profile/source-documents/CV-current-2026.pdf
+#   CVOLD   = profile/source-documents/CV-early-talentmarket.pdf
+#   CERTS   = profile/source-documents/Certificates.pdf (page N)
+#   ICAS    = profile/source-documents/ICAS-ECA-Assessment.pdf
+#   SCREEN  = profile/source-documents/vacation-employment-painter-record.png
+#   USER    = stated directly by Gedeon in conversation (needs documentary backup)
+#
+# Anything marked `verify: true` is NOT yet safe to put in front of an employer.
+# See profile/PROFILE-GAPS.md.
+
+schema_version: 1
+last_reviewed: 2026-08-01
+
+identity:
+  legal_name: Gedeon Christ Nzemba          # ICAS — use this on anything official
+  preferred_name: Gedeon Christ             # CV2026 header
+  also_appears_as: [Gedeon Gedi Nzemba, Gedeon Nzemba]  # CVOLD, CERTS
+  date_of_birth: 1998-09-24                 # ICAS
+  nationality: Congolese                    # CVOLD
+  residence:
+    city: Cape Town
+    province: Western Cape
+    country: South Africa
+  # NOTE: RSA ID number, passport number and street address are deliberately NOT
+  # stored here. They are PII, they must never reach a git repo, and no Canadian
+  # CV should contain them. Keep them in `secrets/identity.local.yaml` (gitignored)
+  # and only inject at the point a form legitimately requires them.
+  work_authorisation_status: >-
+    Requires Canadian work authorisation. Seeking a position supported by a
+    positive LMIA / employer sponsorship.
+
+contact:
+  email: gedeon@gedeonchrist.com            # CV2026 — primary, own domain
+  email_alt: nzemba48@gmail.com             # CVOLD
+  phone_e164: "+27832532615"                # CV2026
+  phone_alt_e164: "+27631748193"            # CVOLD — verify which is current
+  linkedin: https://za.linkedin.com/in/nzemba
+  portfolio: https://gedeonchrist.com
+  verify: true                              # confirm which phone number is live
+
+languages:
+  - { id: lang.fr, language: French,    speak: native,    read: excellent, write: excellent, source: CVOLD }
+  - { id: lang.en, language: English,   speak: excellent, read: excellent, write: excellent, source: CVOLD }
+  - { id: lang.kg, language: Kituba,    speak: excellent, read: excellent, write: good,      source: CVOLD }
+  - { id: lang.ln, language: Lingala,   speak: excellent, read: excellent, write: average,   source: CVOLD }
+  - { id: lang.af, language: Afrikaans, speak: good,      read: excellent, write: average,   source: CVOLD }
+  # French is a native language, not a school subject. See docs/01-immigration-strategy.md
+  # — this is the single highest-value asset in the whole profile.
+
+# ---------------------------------------------------------------------------
+# PROFESSIONAL EXPERIENCE  (the core, ~7 years spanning 2019-present)
+# ---------------------------------------------------------------------------
+experience_professional:
+
+  - id: exp.databalk
+    employer: DataBalk
+    title_as_held: Front End Developer
+    noc_2021: "21234"                       # Web developers and programmers, TEER 1
+    canadian_title_equivalent: Front-End Developer
+    location: { city: Cape Town, country: South Africa }
+    start: 2026-03
+    end: null                               # current
+    source: CV2026
+    highlights:
+      - id: exp.databalk.h1
+        text: >-
+          Develops and maintains responsive front-end interfaces for DataBalk
+          platforms and internal systems.
+      - id: exp.databalk.h2
+        text: >-
+          Builds reusable components and UI elements in modern JavaScript /
+          TypeScript frameworks (React).
+      - id: exp.databalk.h3
+        text: >-
+          Integrates front-end solutions with Microsoft 365 services including
+          SharePoint, Teams, Viva Connections and their APIs.
+      - id: exp.databalk.h4
+        text: >-
+          Supports dashboards and visual components for employee, HR and
+          certification reporting.
+      - id: exp.databalk.h5
+        text: >-
+          Collaborates with back-end developers, HR and business stakeholders to
+          deliver functional, user-friendly solutions.
+      - id: exp.databalk.h6
+        text: >-
+          Ensures front-end performance, accessibility and cross-device
+          compatibility; participates in code reviews and documentation.
+
+  - id: exp.kurtosys
+    employer: Kurtosys Systems
+    title_as_held: Front-End Engineer
+    noc_2021: "21234"
+    canadian_title_equivalent: Front-End Developer
+    industry: FinTech / asset management technology
+    location: { city: Cape Town, country: South Africa }
+    start: 2022-09
+    end: 2025-12
+    source: CV2026
+    highlights:
+      - id: exp.kurtosys.h1
+        text: >-
+          Built and maintained responsive WordPress-based financial websites and
+          web applications using HTML5, CSS3, JavaScript and React.
+      - id: exp.kurtosys.h2
+        text: >-
+          Implemented and enhanced front-end functionality on client sites built
+          with WordPress and Elementor; diagnosed and resolved UI and layout
+          defects across multiple production client platforms.
+      - id: exp.kurtosys.h3
+        text: >-
+          Worked directly with international clients across the US, Canada, the
+          UK, the Netherlands and Europe — gathering requirements and translating
+          complex technical concepts into clear, client-friendly explanations.
+        tags: [north-american-clients, client-facing, communication]
+      - id: exp.kurtosys.h4
+        text: >-
+          Resolved second-line support cases raised through Salesforce,
+          converting them into Jira tickets, implementing fixes and validating
+          them in staging before release.
+      - id: exp.kurtosys.h5
+        text: >-
+          Worked in Agile / Kanban teams — stand-ups, sprint planning,
+          retrospectives and continuous delivery.
+      - id: exp.kurtosys.h6
+        text: >-
+          Partnered with QA engineers on automated testing by writing logic and
+          selectors that reliably target critical page elements.
+
+  - id: exp.ucook
+    employer: UCOOK
+    title_as_held: Junior Fullstack Developer
+    noc_2021: "21234"
+    canadian_title_equivalent: Junior Full-Stack Developer
+    industry: Food technology / e-commerce
+    location: { city: Cape Town, country: South Africa }
+    start: 2022-01
+    end: 2022-05
+    source: CV2026
+    highlights:
+      - id: exp.ucook.h1
+        text: >-
+          Built responsive user interfaces for a food-tech platform using
+          React.js, JavaScript, HTML5 and CSS3.
+      - id: exp.ucook.h2
+        text: >-
+          Integrated front-end components with RESTful APIs; assisted with
+          Node.js and MongoDB back-end tasks.
+      - id: exp.ucook.h3
+        text: >-
+          Wrote unit and integration tests and debugged application issues to
+          improve reliability; worked directly with the CTO.
+
+  - id: exp.eatcreative
+    employer: Eat Creative Africa
+    title_as_held: Web Developer
+    noc_2021: "21234"
+    canadian_title_equivalent: Web Developer
+    location: { city: Cape Town, country: South Africa }
+    start: 2021-01
+    end: 2022-10
+    source: CV2026
+    verify: true    # overlaps exp.ucook (Jan–May 2022). Was one of these part-time
+                    # or contract? A Canadian recruiter WILL ask. Must be resolved.
+    highlights:
+      - id: exp.eatcreative.h1
+        text: >-
+          Primary front-end developer for multiple WordPress / WooCommerce
+          e-commerce websites.
+      - id: exp.eatcreative.h2
+        text: >-
+          Translated UI/UX design mockups into responsive, interactive interfaces
+          using HTML5, CSS3, JavaScript, React.js and CSS modules.
+      - id: exp.eatcreative.h3
+        text: >-
+          Worked directly with clients and stakeholders to gather requirements
+          and refine project scope.
+
+  - id: exp.nextsteps
+    employer: Next Steps Digital
+    title_as_held: Frontend Web Developer
+    noc_2021: "21234"
+    canadian_title_equivalent: Front-End Web Developer
+    location: { city: Cape Town, country: South Africa }
+    start: 2019-06
+    end: 2019-09
+    source: CV2026
+    highlights:
+      - id: exp.nextsteps.h1
+        text: >-
+          Built responsive, mobile-first websites with HTML5, CSS3 and
+          JavaScript, turning design concepts into production interfaces.
+      - id: exp.nextsteps.h2
+        text: >-
+          Collaborated with back-end developers to integrate CMS-driven content;
+          handled maintenance, bug fixes and UI enhancements.
+
+# ---------------------------------------------------------------------------
+# NON-PROFESSIONAL / MANUAL & SERVICE WORK
+# This is what makes non-IT applications HONEST rather than aspirational.
+# It is real, documented, physical, customer-facing work.
+# ---------------------------------------------------------------------------
+experience_general:
+
+  - id: gen.painter
+    employer: Private company (name not on record)
+    title_as_held: Painter (Vacation Employment)
+    noc_2021: "73112"                       # Painters and decorators (except interior decorators), TEER 3
+    canadian_title_equivalent: Painter
+    location: { country: South Africa }
+    start: 2016-11-23
+    end: 2017-01-05
+    performance_rating: Well Balanced
+    source: SCREEN
+    conflict:
+      note: >-
+        CVOLD records this placement as 4 Nov 2016 – 9 Jan 2017 with rating
+        "Excellent"; SCREEN records 23 Nov 2016 – 5 Jan 2017 with rating
+        "Well Balanced". Dates and rating must be confirmed before use.
+      verify: true
+    highlights:
+      - id: gen.painter.h1
+        text: Roof painting on school buildings and high-rise structures.
+        tags: [working-at-height, physical]
+      - id: gen.painter.h2
+        text: >-
+          Worked at height in full body protection / fall-arrest harness on
+          multi-storey buildings.
+        tags: [working-at-height, ppe, safety]
+      - id: gen.painter.h3
+        text: >-
+          Worked as part of a small crew; cited teamwork as the strongest
+          take-away from the placement.
+        tags: [teamwork]
+
+  - id: gen.packer
+    employer: Polarama
+    title_as_held: Packer (Vacation Employment)
+    noc_2021: "75101"                       # Material handlers, TEER 4
+    canadian_title_equivalent: Warehouse Worker / Order Packer
+    start: 2015-11-02
+    end: 2016-01-07
+    performance_rating: Truly Exceptional
+    source: CVOLD
+    highlights:
+      - id: gen.packer.h1
+        text: >-
+          Packed customer orders in a high-volume wholesale environment.
+      - id: gen.packer.h2
+        text: >-
+          Performed a second count on every order as a verification check against
+          the supervisor's count — accuracy under time pressure.
+        tags: [accuracy, stock-control]
+      - id: gen.packer.h3
+        text: Promoted to a higher duty during the placement.
+        tags: [promotion, reliability]
+
+  - id: gen.security
+    employer: SpeedTrainer (sports retail)
+    title_as_held: Security Guard (Vacation Employment)
+    noc_2021: "64410"                       # Security guards and related security service occupations, TEER 4
+    canadian_title_equivalent: Security Guard
+    start: 2013-11-05
+    end: 2014-01-05
+    performance_rating: Well Balanced
+    source: CVOLD
+    highlights:
+      - id: gen.security.h1
+        text: >-
+          Controlled the store entrance and monitored the sales floor for
+          suspicious activity throughout full standing shifts.
+        tags: [vigilance, standing-shifts, loss-prevention]
+      - id: gen.security.h2
+        text: >-
+          Held sole accountability for stock loss on shift — sustained
+          concentration across the whole floor for the full day.
+        tags: [accountability, loss-prevention]
+
+  - id: gen.footgear
+    employer: FootGear
+    title_as_held: Sales Assistant
+    noc_2021: "64100"                       # Retail salespersons and visual merchandisers, TEER 4
+    canadian_title_equivalent: Retail Sales Associate
+    source: USER
+    verify: true      # NOT in either CV. Dates, location and store branch required.
+    highlights:
+      - id: gen.footgear.h1
+        text: >-
+          Sold footwear on the shop floor; consulted customers on fit, use case
+          and product range.
+        tags: [customer-service, sales]
+      - id: gen.footgear.h2
+        text: >-
+          Upsold a customer from an entry-level product to the highest-value shoe
+          in the store by matching the product to their actual need.
+        tags: [upselling, persuasion, sales]
+
+  - id: gen.cumpsty
+    employer: Cumpsty Electric
+    title_as_held: General Electrical Assistant
+    noc_2021: "75110"                       # Construction trades helpers and labourers, TEER 5
+    canadian_title_equivalent: Electrician's Helper / Construction Labourer
+    source: USER
+    verify: true      # NOT in either CV. Dates and a contactable referee required.
+    highlights:
+      - id: gen.cumpsty.h1
+        text: >-
+          Assisted qualified electricians on site with general electrical work.
+        tags: [trades, site-work]
+      - id: gen.cumpsty.h2
+        text: >-
+          Carried out chasing and breaking of walls, trenching and excavation for
+          cable and conduit runs, and general site preparation.
+        tags: [manual-labour, hand-tools, excavation, site-work]
+
+# ---------------------------------------------------------------------------
+# EDUCATION
+# ---------------------------------------------------------------------------
+education:
+
+  - id: edu.matric
+    credential: National Senior Certificate (Matric)
+    institution: Noorder Paarl High School
+    location: { city: Paarl, country: South Africa }
+    completed: 2016
+    subjects: [English Home Language, Afrikaans FAL, Mathematics, Life Sciences, Geography, History, Life Orientation]
+    source: CV2026, CVOLD
+    eca:
+      body: ICAS — International Credential Assessment Service of Canada
+      file_no: 24080341 IMM
+      issued: 2025-03-21
+      canadian_equivalency: Secondary School Graduation
+      source: ICAS
+      # This is the ONLY credential currently assessed for Canada.
+
+  - id: edu.itacademy
+    credential: Certificate of IEP completion (Software Development programme)
+    institution: IT Academy (a division of IT SA Computer Services & Solutions (Pty) Ltd)
+    location: { city: Cape Town, country: South Africa }
+    start: 2020
+    end: 2021
+    source: CV2026, CERTS
+    eca: null           # NOT assessed by ICAS. See docs/01-immigration-strategy.md
+
+  - id: edu.shaw
+    credential: Professional Diploma in Web Development (EQF Level 5, Distinction)
+    institution: Shaw Academy
+    completed: 2019-03-20
+    source: CERTS p8
+    eca: null
+
+  - id: edu.northlink
+    credential: N1 / N2 / N4 Mechanical Engineering
+    institution: Northlink College — Kingsway Campus
+    subjects: [Engineering Drawing, Engineering Science, Fitting and Machining Theory, Mathematics, Mechano Draughting]
+    source: CVOLD
+    verify: true        # completion dates and whether all three N-levels were passed
+    note: >-
+      Directly relevant to trades and manufacturing applications. Do not omit it
+      when applying outside IT — it is the strongest formal technical grounding
+      Gedeon has for a non-software role.
+
+  - id: edu.salesian.pc
+    credential: PC Repairs and Mobile App Development
+    institution: Salesian Institute Youth Projects
+    completed: 2018-06-29
+    certificate_no: PC3/2018/16
+    source: CERTS p9
+
+  - id: edu.salesian.cl
+    credential: Computer Literacy and Office Administration
+    institution: Salesian Institute Youth Projects
+    completed: 2018-08-24
+    certificate_no: CL4/2
+    detail: MS Word, MS Excel, MS Access, internet and email; letters, memos, petty cash vouchers, invoices, receipts, meeting notifications and minutes
+    source: CERTS p10
+    note: Office-administration content is directly citable for admin/clerical roles.
+
+  - id: edu.salesian.life
+    credential: Life Skills short course
+    institution: Salesian Institute
+    start: 2018-05-28
+    end: 2018-06-08
+    source: CVOLD
+
+  - id: edu.adonis
+    credential: Mentoring and Youth Empowerment
+    institution: Adonis Musati Project
+    start: 2018-05-10
+    end: 2018-06-27
+    source: CVOLD
+
+# ---------------------------------------------------------------------------
+# CERTIFICATIONS
+#
+# ⚠ INTEGRITY RULE — READ BEFORE GENERATING ANY CV.
+# Every IT Academy item below is worded on the certificate as
+# "has successfully completed the course in <X>".
+# That is COURSE COMPLETION, not the vendor certification.
+# Gedeon has NOT (on the evidence supplied) sat and passed the AWS, Microsoft,
+# Oracle or ISTQB proctored exams.
+# The CV engine MUST render these as training, e.g.
+#   "AWS Certified Developer – Associate (DVA-C01) — coursework completed, IT Academy, 2021"
+# and MUST NEVER render them as
+#   "AWS Certified Developer – Associate"
+# A Canadian employer that verifies a claimed AWS certification and finds no
+# credential ID will discard the application and may report it.
+# ---------------------------------------------------------------------------
+certifications:
+  verified_credentials:
+    - { id: cert.fcc, name: "freeCodeCamp — Responsive Web Design Developer Certification (~300 hours)", issued: 2019-06-04, verify_url: "https://www.freecodecamp.org/certification/gedeon/responsive-web-design", source: CERTS p5 }
+
+  coursework_completed:
+    issuer: IT Academy (IT SA Computer Services & Solutions (Pty) Ltd)
+    render_as: coursework
+    items:
+      - { id: cert.dva,    name: "AWS Certified Developer – Associate (DVA-C01)", completed: 2021-01-25, source: CERTS p17-18 }
+      - { id: cert.az900,  name: "AZ-900 Microsoft Azure Fundamentals",           completed: 2020-11-21, source: CERTS p21 }
+      - { id: cert.az203,  name: "AZ-203 Developing Solutions for Microsoft Azure", completed: 2021-01-25, source: CERTS p19 }
+      - { id: cert.az204,  name: "AZ-204 Developing Solutions for Microsoft Azure", completed: 2021, source: CERTS p22 }
+      - { id: cert.az400,  name: "AZ-400 Microsoft Azure DevOps Solutions",       completed: 2021-01-25, source: CERTS p20 }
+      - { id: cert.70480,  name: "70-480 Programming in HTML5 with JavaScript and CSS3", completed: 2020-12-31, source: CERTS p12 }
+      - { id: cert.70483,  name: "70-483 Programming in C#",                      completed: 2021-01-03, source: CERTS p13 }
+      - { id: cert.70486,  name: "70-486 Developing ASP.NET MVC Web Applications", completed: 2021-01-24, source: CERTS p14 }
+      - { id: cert.70487,  name: "70-487 Developing Windows Azure and Web Services", completed: 2021-01-01, source: CERTS p15 }
+      - { id: cert.70357,  name: "70-357 Developing Mobile Apps (UWP)",           completed: 2021-01-13, source: CERTS p11 }
+      - { id: cert.70761,  name: "70-761 Querying Data with Transact-SQL",        completed: 2021-01-04, source: CERTS p16 }
+      - { id: cert.istqb,  name: "ISTQB-BCS Certified Tester Foundation Level (BH0-010)", completed: 2021-01, source: CERTS p24 }
+      - { id: cert.java1,  name: "Oracle Certified Associate, Java SE 8 Programmer I (1Z0-808)", completed: 2021-01-26, source: CERTS p25 }
+      - { id: cert.java2,  name: "Oracle Certified Associate, Java SE 8 Programmer II (1Z0-809)", completed: 2021-01-26, source: CERTS p26 }
+      - { id: cert.mta361, name: "MTA 98-361 Software Development Fundamentals",  completed: 2020-03-25, source: CERTS p27 }
+      - { id: cert.mta364, name: "MTA 98-364 Database Fundamentals",              completed: 2020-12-31, source: CERTS p28 }
+      - { id: cert.python, name: "Python (data types, control flow, functions)",  completed: 2021, source: CERTS p29 }
+      - { id: cert.html5,  name: "HTML5 (layout, forms, APIs, CSS3, canvas)",     completed: 2021-01-03, source: CERTS p23 }
+      - { id: cert.spf,    name: "Software Programming Fundamentals",             completed: 2020-01-26, source: CERTS p30 }
+
+  linkedin_learning:
+    render_as: coursework
+    items:
+      - { id: cert.li1, name: "Advanced WordPress Development", source: CV2026 }
+      - { id: cert.li2, name: "Career Essentials in Software Development (Microsoft + LinkedIn)", source: CV2026 }
+      - { id: cert.li3, name: "JavaScript Debugging", source: CV2026 }
+      - { id: cert.li4, name: "WordPress: REST API / Action and Filter Hooks / Advanced Custom Fields", source: CV2026 }
+      - { id: cert.li5, name: "Driving Change through Impactful Communication", source: CV2026 }
+      - { id: cert.li6, name: "Learning PC Maintenance and Performance", source: CV2026 }
+
+# ---------------------------------------------------------------------------
+# AWARDS
+# ---------------------------------------------------------------------------
+awards:
+  - id: award.hacketc
+    name: HackETC Innovation Hackathon — 1st Place
+    issued: 2018-10-28
+    issuer: SANRAL, Electronic Toll Collection and WhereIsMyTransport, Cape Town
+    source: CERTS p4, CV2026
+    detail: >-
+      Team of three (project "On The Road Again" / UDrive) built an SMS and
+      WhatsApp chatbot that helps commuters without smartphones plan transport,
+      combining live toll, traffic and public-transport API data to recommend
+      routes by speed or cost. Awarded R20,000 and 12 months of free API access,
+      and cited for exceptional competence integrating the WhereIsMyTransport API.
+
+  - id: award.kurtosys.sprint23a
+    name: "Star of the Sprint — Digital Agile Mavericks"
+    issued: 2023-11-08
+    issuer: Kurtosys Systems
+    source: CERTS p3
+  - id: award.kurtosys.sprint23b
+    name: "Star of Sprint 21 — Digital Agile Mavericks"
+    issued: 2023-12-12
+    issuer: Kurtosys Systems
+    source: CERTS p1
+  - id: award.kurtosys.service24
+    name: "Service Star Award — Digital Agile Mavericks"
+    issued: 2024-10
+    issuer: Kurtosys Systems
+    source: CERTS p2
+
+# ---------------------------------------------------------------------------
+# SKILLS  (grouped so the CV engine can pull only what a posting asks for)
+# ---------------------------------------------------------------------------
+skills:
+  frontend: [JavaScript (ES6+), TypeScript, HTML5, CSS3, React.js, React Native, Sass, Styled Components, responsive design, component-based architecture, accessibility, cross-browser compatibility, mobile-first development]
+  cms: [WordPress, Elementor, WooCommerce, custom theme and plugin front-end work, WordPress REST API, Advanced Custom Fields]
+  backend_exposure: [Node.js, Express.js, GraphQL, MongoDB, REST API integration, Python, C#, Java, ASP.NET MVC, T-SQL]
+  mobile: [React Native, Expo, cross-platform mobile development, UWP]
+  cloud_devops: [AWS (coursework), Microsoft Azure (coursework), CI/CD concepts, serverless concepts, Git, GitHub, Bitbucket]
+  testing: [unit testing, integration testing, browser debugging, ISTQB foundation coursework, writing stable selectors for automated tests]
+  tooling: [Git, VS Code, Postman, Jira, Salesforce (case handling), Agile, Kanban]
+  design: [Figma, Adobe XD, Tailwind CSS, Bootstrap, Material UI]
+  office_admin: [MS Word, MS Excel, MS Access, email and internet, invoicing, receipts, minute-taking, meeting notifications]
+  transferable_physical: [working at height with fall-arrest PPE, hand tools, wall chasing and breaking, trenching and excavation, order packing and stock counting, standing shift work, entrance control and floor monitoring]
+  transferable_people: [customer service, retail sales and upselling, direct client communication with US/Canada/UK/EU stakeholders, translating technical detail for non-technical audiences, teamwork in small crews and Agile teams]
+
+portfolio_links:
+  - { id: pf.proper,  label: Proper Living, url: "https://properliving.co.za/" }
+  - { id: pf.bmo,     label: "BMO — country/language selector", url: "https://www.bmo.com/country-language-selector/", tags: [canadian-client] }
+  - { id: pf.cti,     label: Columbia Threadneedle, url: "https://www.columbiathreadneedle.com/en/gb/intermediary/" }
+  - { id: pf.sands,   label: Sands Capital, url: "https://www.sandscapital.com/" }
+  - { id: pf.callan,  label: "Callan — research library", url: "https://www.callan.com/research-library/" }
+  - { id: pf.nordea,  label: Nordea Asset Management, url: "https://www.nordeaassetmanagement.com/" }
+  - { id: pf.redwheel, label: Redwheel, url: "https://www.redwheel.com/uk/en/institutional/sustainability/" }
+  - { id: pf.osmosis, label: Osmosis Investment Management, url: "https://www.osmosisim.com/uk/os-funds/" }
+  - { id: pf.mobius,  label: Mobius Life, url: "https://mobiuslife.co.uk/insights/" }
+  - { id: pf.ucook,   label: "UCOOK — meal kit", url: "https://www.ucook.co.za/meal-kit" }
+  - { id: pf.weather, label: Warp Weather App, url: "https://warp-weather-app-lemon.vercel.app/" }
+  - { id: pf.tesla,   label: Tesla clone, url: "https://tesla-clone-mocha.vercel.app/" }
+  # BMO is a Canadian bank. Lead with pf.bmo on any Canadian application.
+
+referees:
+  - { id: ref.milton, name: Mr Milton Saaiman, relationship: PC Repair & Mobile App facilitator, org: Salesian Institute, phone: "+27828581836", email: milton.saaiman@salesianyouth.org.za, source: CVOLD, verify: true }
+  - { id: ref.rene,   name: Ms Rene Darling,   relationship: Job placement coach, org: Salesian Institute, phone: "+27214251431", email: rene.darling@salesianyouth.org.za, source: CVOLD, verify: true }
+  # Both referees are from 2018 and relate to youth programmes, not to any
+  # professional role. Canadian employers expect recent, work-related referees.
+  # Securing two current professional referees is a blocking gap — see
+  # profile/PROFILE-GAPS.md.

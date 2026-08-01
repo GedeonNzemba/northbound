@@ -1,0 +1,41 @@
+# Secrets and PII — NEVER commit
+.env
+.env.*
+!.env.example
+secrets/
+*.local.yaml
+*.local.yml
+note.txt
+
+# Generated documents (contain personal data; regenerate from the profile)
+output/
+generated/
+*.generated.pdf
+*.generated.docx
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Data
+*.db
+*.sqlite3
+data/
+.cache/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
