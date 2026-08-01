@@ -45,12 +45,15 @@ Start at `docs/05-roadmap.md` Phase 1.
    fraud investigators attached to it — the programme was reformed in 2025
    *because* of misrepresentation. See `docs/04-cv-engine.md`.
 
-2. **No logged-in Job Bank automation, ever.** Job Bank's Terms of Use prohibit
-   automated access. Discovery runs on sanctioned sources (open.canada.ca CSV,
-   the Job Bank XML partner feed, the TFWP positive-LMIA list). Per-posting
-   apply-detail retrieval is an opt-in, off-by-default, logged-out, rate-limited,
-   robots-respecting mode with a manual alternative. No Job Bank account, no
-   Direct Apply automation, no stored credentials. See `docs/02-legal-compliance.md`.
+2. **No logged-in Job Bank automation, ever.** No Job Bank account, no Direct
+   Apply automation, no stored credentials — hard constraint in code.
+   *Discovery* runs on sanctioned sources (open.canada.ca CSV, the Job Bank XML
+   partner feed, the TFWP positive-LMIA list) — nothing crawls Job Bank to find
+   jobs. *Apply-detail retrieval* — loading a queued posting and clicking "Show
+   how to apply" to read the employer's email — **runs by default** (decision D5,
+   made by Gedeon with the ToU trade-off on the table; don't re-litigate it).
+   Logged out, one at a time, human-paced, circuit-broken on 403/429/CAPTCHA.
+   See `docs/02-legal-compliance.md` and `docs/06-decisions.md`.
 
 3. **Never send from `nzemba48@gmail.com`.** Own domain (`gedeonchrist.com`) with
    SPF/DKIM/DMARC, hard-capped at 30–40 sends/day after a warm-up ramp. Losing

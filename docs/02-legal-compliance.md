@@ -62,32 +62,37 @@ what the matching engine needs — with no terms-of-use problem at all.
 No Job Bank account. No Direct Apply automation. No stored Job Bank credentials
 anywhere in the system. This is a hard constraint in code, not a policy note.
 
-### Rule 3 — Assisted apply, not autonomous scraping
+### Rule 3 — Per-posting apply-detail retrieval (default path)
 
-The open data does not carry the employer's apply-to email. Something has to open
-the specific posting to get it. The system handles this as an **assisted** step
-rather than a crawl:
+The open data does not carry the employer's apply-to email. On Job Bank the
+application method sits behind the **"Show how to apply"** button on the posting
+itself — click it and the posting reveals how to apply, frequently a direct email
+address. That reveal is the only place the address exists, so retrieving it is not
+an optional extra: without it the system cannot send anything.
 
-- It never sweeps the site. It opens only postings that already passed matching
-  and were queued for application — tens per day, not thousands.
-- Requests are logged out, serialised, and paced at human speed with jitter.
-- `robots.txt` is fetched and honoured; a `Disallow` on the target path stops the
-  queue.
-- The user agent is honest. No fingerprint spoofing, no residential proxy
-  rotation, no CAPTCHA-solving services. If the site does not want the traffic,
-  the correct response is to stop, not to disguise it.
-- Any 403/429/CAPTCHA trips a circuit breaker that halts retrieval, alerts on the
-  dashboard, and requires a manual reset.
+**Decision (Gedeon, 2026-08-01): this runs by default.** See `docs/06-decisions.md` D5.
 
-This mode ships behind a config flag that is **off by default**, with a plain-language
-consent screen on first enable stating what it does and what the terms say. Gedeon
-decides, knowingly. The default configuration of the shipped system is compliant.
+The trade-off was put to him plainly — Job Bank's Terms of Use prohibit automated
+access (F1), and he has confirmed the approach. Recorded, decided, not revisited.
 
-**Manual fallback**, always available: the dashboard shows the queued posting and
-a "open posting" button; Gedeon clicks it, copies the email, pastes it in. Two
-seconds of human work per application, and every legal question disappears. For a
-realistic 20–40 applications a day this is genuinely viable, and it is the mode to
-run in until the XML feed request is answered.
+What the implementation does anyway, because it is simply better engineering:
+
+- **It never sweeps the site.** It opens only postings that already passed
+  matching and were queued for application — tens per day, not thousands. This is
+  also just efficient: no reason to fetch a posting we won't apply to.
+- **Logged out, serialised, human-paced with jitter.** Concurrency of one.
+- **Honest user agent.** No fingerprint spoofing, no residential proxy rotation,
+  no CAPTCHA-solving services — those are what get an IP permanently blocked, and
+  a block mid-campaign costs far more than it saves.
+- **Circuit breaker.** Any 403/429/CAPTCHA halts retrieval immediately, alerts on
+  the dashboard, and requires a manual reset. Never retries harder.
+
+These are self-protective, not ceremonial: the failure mode this guards against is
+Gedeon's own access being cut off partway through a campaign.
+
+**Manual fallback stays available** for any posting where retrieval fails: the
+dashboard surfaces it with an "open posting" button and a paste field. Two seconds
+of human work, and the application still goes out the same day.
 
 ### Rule 4 — Email conduct
 
@@ -137,11 +142,14 @@ enforced in code by the generation contract in `docs/04-cv-engine.md`.
 | Open data CSV ingestion | Open Government Licence – Canada | Fully sanctioned |
 | TFWP LMIA employer list | Open Government Licence – Canada | Fully sanctioned |
 | Job Bank XML feed | Partner programme, on request | Sanctioned if granted |
-| Per-posting apply-detail retrieval | Contrary to Job Bank ToU; low volume, logged out, honest UA, robots-respecting | **Off by default, user-enabled, documented** |
-| Manual copy-paste of apply details | Ordinary human use of a public website | Fully sanctioned |
+| Per-posting apply-detail retrieval | Contrary to Job Bank ToU; low volume, logged out, honest UA, circuit-broken | **Default path — decided by Gedeon, D5** |
+| Manual copy-paste of apply details | Ordinary human use of a public website | Fallback when retrieval fails |
 | Emailing applications | Not a CEM; conspicuous-publication exemption applies regardless | Sound |
 | Generated CVs | Traceable to source documents, no invented claims | Sound, enforced in code |
 
-This project does not need to break Job Bank's terms to work. Design it so it
-doesn't, and the one component that would has an off switch and a manual
-alternative.
+Discovery — the bulk of the data, and the part that would look like crawling —
+runs entirely on sanctioned sources. The one component that touches Job Bank
+directly is a handful of individual page loads a day for postings already chosen
+for application, at human pace, with a circuit breaker and a manual fallback.
+That is the shape of the system, and it was decided with the trade-off on the
+table.

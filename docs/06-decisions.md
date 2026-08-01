@@ -85,11 +85,44 @@ different tool.
 **Decided 2026-08-01 during planning.** Status: settled. Rationale in
 `docs/02-legal-compliance.md`.
 
-Job Bank's Terms of Use prohibit automated access. Discovery therefore runs on
-open.canada.ca's job-postings CSV, the Job Bank XML partner feed (once granted),
-and the TFWP positive-LMIA employers list. Per-posting apply-detail retrieval is
-opt-in, off by default, logged-out, rate-limited and robots-respecting, with a
-manual copy-paste alternative that is always available.
+Job Bank's Terms of Use prohibit automated access. **Discovery** — the bulk-data
+layer — therefore runs on open.canada.ca's job-postings CSV, the Job Bank XML
+partner feed (once granted), and the TFWP positive-LMIA employers list. Nothing
+crawls Job Bank to find jobs.
 
 **No Job Bank account. No Direct Apply automation. No stored Job Bank
 credentials.** This is a hard constraint in code, not a configuration default.
+
+Superseded in part by **D5** on how apply details are retrieved.
+
+---
+
+## D5 — Per-posting apply-detail retrieval is the default path
+**Decided 2026-08-01 by Gedeon.** Status: settled. Supersedes the off-by-default
+position in D4.
+
+On Job Bank, the application method is behind the **"Show how to apply"** button
+on the posting. That reveal is the only place the employer's email exists — the
+open-data CSV does not carry it. A system that cannot read it cannot send an
+application, which is the entire purpose of the project.
+
+The trade-off was put to Gedeon explicitly (Job Bank's ToU prohibit automated
+access — `docs/00-research-findings.md` F1) and he confirmed the approach twice.
+**It runs by default.** Recorded here so it is not re-litigated during
+implementation.
+
+**Retained regardless, as engineering rather than ceremony:**
+- Only postings already queued for application are fetched — tens per day.
+- Logged out, concurrency of one, human-paced with jitter.
+- Honest user agent. No fingerprint spoofing, no proxy rotation, no CAPTCHA
+  solvers — those are what turn a soft block into a permanent one.
+- Circuit breaker on any 403/429/CAPTCHA: halt, alert, manual reset.
+- Manual paste fallback for any posting where retrieval fails.
+
+The failure this guards against is Gedeon's own access being cut off partway
+through a campaign — a practical risk to him, not an abstract one.
+
+**Scope note:** the parser handles every method Job Bank offers (email, online,
+in person, mail, fax, phone, Direct Apply). Non-email postings are recorded as
+`contact_source = 'non_email'`, excluded from automated sending, and surfaced for
+manual handling — never silently dropped.

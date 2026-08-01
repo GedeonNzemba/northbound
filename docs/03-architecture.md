@@ -132,8 +132,10 @@ class Score(BaseModel):
 Three sources, in order, per `docs/02-legal-compliance.md`:
 
 1. **Structured data** — whatever the feed/CSV carries.
-2. **Assisted fetch** (opt-in, off by default) — one logged-out, human-paced, robots-respecting request for a posting already queued for application. Circuit-breaks on any 403/429/CAPTCHA.
-3. **Manual** — the dashboard surfaces the posting with an "open posting" button and a paste field. Two seconds of Gedeon's time, zero ambiguity.
+2. **Posting fetch (default path)** — load the posting, click **"Show how to apply"**, parse the revealed application method. This is where the employer's email actually lives, so it is the primary source, not a fallback. One logged-out, human-paced request per queued posting; circuit-breaks on any 403/429/CAPTCHA.
+3. **Manual** — if retrieval fails, the dashboard surfaces the posting with an "open posting" button and a paste field.
+
+The parser must handle **every** method Job Bank supports — email, online, in person, by mail, by fax, by phone, and Direct Apply — not just email. A posting that is online-apply-only or phone-only is **not a failure**: it is recorded with `contact_source = 'non_email'`, excluded from automated sending, and surfaced in a separate dashboard list Gedeon can work through by hand when the fit score justifies it. Silently dropping those would quietly discard a large part of the market.
 
 Resolved addresses are validated (MX lookup, syntax, role-account detection) before anything is generated — no point spending a generation on an address that will bounce.
 
