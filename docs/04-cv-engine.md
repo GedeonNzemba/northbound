@@ -35,18 +35,55 @@ class GeneratedCV(BaseModel):
 
 **Rule 3 — Post-generation audit, and it can block.** Before a document is rendered:
 
+*Structural checks (deterministic, cheap):*
+
 1. Every `evidence_id` resolves to a real profile entry. Unknown id → **reject**.
 2. No entry flagged `verify: true` was used. → **reject**.
 3. Numbers, dates, employer names and job titles are checked verbatim against the
    profile. Any mismatch → **reject**.
 4. Certification items are checked against `certifications.coursework_completed`.
    If a coursework item is rendered as a held credential → **reject**. (See
-   `profile/PROFILE-GAPS.md` item 1 — this is the live risk today.)
+   `profile/PROFILE-GAPS.md` item 1.)
 5. Banned-phrase scan for fabricated-competence language.
 
-A rejected generation retries once with the audit failures fed back. A second
-failure parks the application in `DOCS_GENERATED` for human review and it is
-**never auto-sent**. Truth is a hard gate, not a quality score.
+*Semantic check (the one that actually prevents lying):*
+
+6. **Entailment pass.** Every generated bullet goes to a second, independent
+   model call that sees **only** the source entry text and the generated line —
+   no job posting, no CV, no context that could pull it toward being agreeable —
+   and answers one question:
+
+   > Does the source statement support the generated statement? `supported` /
+   > `overstated` / `unsupported`, plus the specific words that go beyond the
+   > source.
+
+   Anything not `supported` → **reject**.
+
+**Why 6 exists, and why 1–5 are not enough.** Checks 1–5 verify that a bullet
+*cites* something. They do not verify that the citation *supports* it. Those are
+different properties, and the gap between them is exactly where a CV becomes a
+misrepresentation.
+
+Concretely: the generator cites `gen.painter.h2` — *"Worked at height in full
+body protection / fall-arrest harness on multi-storey buildings"* — and writes
+**"Certified in fall-arrest systems."** Real id. Real underlying experience. Every
+structural check passes. And it is false, in a way an employer can verify and a
+work-permit officer can treat as misrepresentation.
+
+The banned-phrase list in check 5 cannot catch this. It is a keyword filter, and
+the failure mode is semantic drift, which has unlimited surface area. Only an
+entailment check closes it.
+
+**Cost.** One extra call per bullet, ~20 bullets per CV, on a short prompt with no
+cached prefix to preserve. At `claude-opus-5` rates this is cents per application
+— trivially worth it. If it ever isn't, this is the one place `claude-sonnet-5`
+would be a defensible downgrade, since the task is narrow and well-specified.
+
+**Failure handling.** A rejected generation retries once with the specific audit
+failures fed back. A second failure parks the application in `DOCS_GENERATED` for
+human review and it is **never auto-sent**. Truth is a hard gate, not a quality
+score — and per `docs/06-decisions.md` D2, an audit failure also resets that
+category's trust-ramp counter and re-locks auto-send.
 
 ---
 

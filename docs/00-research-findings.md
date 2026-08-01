@@ -1,16 +1,31 @@
 # 00 — Research findings
 
-Everything in this file was verified on **1 August 2026** against live sources, not
-recalled from model training data. Where sources disagree, that is stated rather
-than resolved silently. Where a fact could not be verified directly, the
-verification method is named.
+Researched on **1 August 2026** against live sources rather than recalled from
+training data. Where sources disagree, that is stated rather than resolved
+silently.
 
-> **Verification note.** This session's container blocks outbound HTTPS to
-> `canada.ca`, `jobbank.gc.ca` and `open.canada.ca` at the network-policy layer
-> (`CONNECT` → 403), so government pages could not be fetched and parsed directly.
-> Findings below marked *(via search)* come from search-engine extracts of those
-> pages. Every one of them should be re-read directly from the source URL on a
-> normal connection before it is relied on in production. The URLs are given.
+> ## ⚠ Read this before trusting anything below
+>
+> **No primary source in this document was fetched directly.** The container this
+> research ran in blocks outbound HTTPS to `canada.ca`, `jobbank.gc.ca`,
+> `open.canada.ca` and `noc.esdc.gc.ca` at the network-policy layer (`CONNECT` →
+> 403). Everything here came through a search engine's extracts of those pages.
+>
+> An earlier version of this file was headed "verified live, not recalled" and
+> written in flat declarative prose. That oversold it. Search extracts of a page
+> are better than memory and worse than the page.
+>
+> Every finding is now graded:
+>
+> | Grade | Meaning |
+> |---|---|
+> | **A** | Multiple independent sources with reputational stakes (law firms, established immigration press) agreeing |
+> | **B** | Single credible secondary source, or an official page seen only through search extract |
+> | **C** | Commercial content with an interest in the claim — **treat as a lead, not a fact** |
+>
+> Anything driving an architectural decision should be re-read from the primary
+> URL on a normal connection before code depends on it. `spikes/` exists to do
+> exactly this for the two findings that matter most.
 
 ---
 
@@ -198,24 +213,61 @@ mass-produced application harms Gedeon far more than any regulator would. Design
 accordingly: one-to-one messages, real reply-to, no tracking pixels, no
 unsubscribe footer (which would itself signal bulk mail).
 
-## F11 — Canadian CV conventions (2026)
+## F11 — Canadian CV conventions (2026) — **grade C, and that matters**
+
+Every source found for this finding is a **résumé-builder or CV-writing service** —
+companies whose product is sold by convincing you your CV will fail without them.
+That is the weakest evidence class in this document, and it is currently
+load-bearing for the entire template design in `docs/04-cv-engine.md`.
+
+**Struck from the plan:** an earlier version of this file stated *"~75%+ of
+Canadian employers screen through an ATS"* and used it to justify format
+decisions. The only sources for that figure are résumé-tool marketing pages with a
+direct commercial interest in it being alarming. **It has been removed.** No
+architectural claim should rest on it.
+
+The conventions themselves are almost certainly right — they are consistent across
+sources, they match Canadian human-rights law, and they cost nothing to follow:
 
 - 1–2 pages, reverse-chronological.
 - **No photo, no date of birth, no age, no marital status, no nationality, no ID
-  number, no gender.** Canadian human-rights law makes these actively unwelcome —
-  including them puts the employer in an awkward position and gets applications
-  discarded.
-- Canadian English spelling: *colour, behaviour, centre, organisation*.
-- Reported ~75%+ of Canadian employers screen through an ATS. Practical
-  consequences: standard section headings ("Work Experience", not "My Career
-  History"), no tables/text boxes/columns/images, and **mirror the posting's exact
-  vocabulary** — if it says "WHMIS 2015", write "WHMIS 2015".
-- For newcomers specifically: map foreign job titles to the nearest **NOC 2021**
-  equivalent, and cite credential evaluations (WES / ICAS / IQAS / ICES) explicitly.
+  number, no gender.** This one is *not* grade C — it follows directly from
+  Canadian human-rights legislation on prohibited grounds of discrimination, and
+  including such details puts the employer in an awkward position.
+- Canadian English spelling: *colour, behaviour, centre, organisation, licence*.
+- Standard section headings; no tables, text boxes, columns or images.
+- **Mirror the posting's exact vocabulary** — if it says "WHMIS 2015", write
+  "WHMIS 2015".
+- Newcomers: map job titles to the nearest **NOC 2021** equivalent and cite the
+  credential evaluation (WES / ICAS / IQAS / ICES) explicitly.
 
-Sources: <https://resumefy.ca/blog/how-to-write-canadian-resume>,
+**The honest position:** ATS parsing behaviour is not verified, and the specific
+prevalence is unknown. But single-column plain formatting is free, costs nothing
+if no ATS is involved, and is strictly safer if one is — so the design stands on
+*asymmetric downside*, not on a statistic. That is a legitimate reason to keep it
+and an illegitimate reason to claim it is evidence-based.
+
+Sources (all grade C): <https://resumefy.ca/blog/how-to-write-canadian-resume>,
 <https://www.resumemate.io/blog/canada-resume-format-differences-from-us-templates/>,
 <https://tailormycv.app/canada/resume-format>
+
+---
+
+## Grade summary
+
+| Finding | Grade | Note |
+|---|---|---|
+| F1 Job Bank ToU prohibits automated access | **B** | Never read on the page itself. Drives `docs/02` — worth reading directly. |
+| F2 Open data + XML feed + LMIA employer list exist | **B** | Existence is solid; **contents are unverified** — `spikes/02` checks this. |
+| F3 Job Bank application methods / "Show how to apply" | **B→A** | Corroborated directly by Gedeon, who uses the site. `spikes/01` settles the mechanics. |
+| F4 Arranged-employment CRS points removed 25 Mar 2025 | **A** | Multiple law firms and immigration press. One residual disagreement noted in-line. |
+| F5 TFWP 2026 conditions | **A** | Law-firm and trade-press coverage agreeing on dates and thresholds. |
+| F6 French-language draw cut-offs | **A** | Multiple sources, specific draw dates and numbers. |
+| F7 NOC 21234 / TEER 1 | **B** | Structural fact, low risk of being wrong. |
+| F8 Email sending limits | **B** | Google's own docs plus practitioner consensus; the ~25/day figure is folklore-grade but conservative in the safe direction. |
+| F9 Scraping case law | **B** | US law, **persuasive only in Canada**. Not a licence. |
+| F10 CASL | **B** | CRTC guidance via extract. Reasoning is sound; not legal advice. |
+| F11 Canadian CV conventions | **C** | See above. Kept on asymmetric-downside grounds, not evidence. |
 
 ---
 

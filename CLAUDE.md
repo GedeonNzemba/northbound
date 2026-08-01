@@ -18,10 +18,26 @@ work history (painting, warehouse, security, retail, electrical assistance) — 
 non-software applications are honest transferable-skills applications, never
 inflated claims.
 
-## Status: PLANNING COMPLETE, NO CODE YET
+## Status: PLANNED, NOT YET VALIDATED. NO APPLICATION CODE.
 
-`docs/` is the plan. `profile/` is the factual foundation. Nothing has been built.
-Start at `docs/05-roadmap.md` Phase 1.
+`docs/` is the plan. `profile/` is the factual foundation. `spikes/` contains two
+runnable scripts that check the assumptions the plan rests on.
+
+**Run the spikes before writing application code.** The planning container could
+not reach `gc.ca` (network policy refuses `CONNECT`), so two load-bearing claims
+were never checked against reality:
+
+1. What clicking **"Show how to apply"** actually does. The whole contact-resolution
+   design is built on a step nobody has observed.
+2. Whether the open-data CSV is fresh enough to support "monitor for new jobs".
+   **Probably not** — it appears to be monthly, against a near-real-time
+   requirement. If that holds, live discovery moves to the filtered search pages
+   and `docs/03` changes.
+
+Then start at `docs/05-roadmap.md` Phase 1.
+
+**Research confidence is graded** in `docs/00`. Anything grade C is a lead, not a
+fact. Nothing in this repo was read from a primary government page.
 
 ## Read these in order
 

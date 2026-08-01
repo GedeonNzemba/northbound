@@ -4,8 +4,57 @@ Sequenced so that **something useful exists after phase 1** and every phase afte
 that is an increment on a working system. Nothing here requires the whole thing to
 be finished before the first application goes out.
 
-Phases are ordered by dependency, not by calendar. Actual pace depends on how much
-time Gedeon has.
+## How long this actually takes
+
+This should have been in the first version of this document and wasn't. Estimates
+assume Gedeon working evenings and weekends around a full-time job, with me doing
+the bulk of the implementation.
+
+| Phase | What it delivers | Estimate |
+|---|---|---|
+| **Spikes** | The two unvalidated assumptions checked | **1 evening** — and they may invalidate parts of phases 2–3 |
+| **0** | Tests booked, feed requested, profile gaps closed, VPS + DNS | **1 week**, mostly waiting |
+| **1** | CV engine + claim audit + entailment pass — **sendable applications** | **1.5–2.5 weeks** |
+| **2** | Ingest, NOC mapping, two-stage matching | **2–3 weeks** |
+| **3** | Dashboard | **2–4 weeks** — the widest range here; UI always is |
+| **4** | Sending, throttle, IMAP replies, contact resolution | **2–3 weeks** |
+| **5** | Trust ramp, monitoring, analytics | **1–2 weeks** |
+| | **Total to fully autonomous** | **≈ 2.5–4 months** |
+
+**The number that actually matters is different.** After **phase 1 — roughly two
+weeks — Gedeon can send real, individually tailored applications by hand.** That
+is the point where this project starts affecting the outcome. Everything after it
+raises throughput; nothing after it is required to start.
+
+So the honest framing is: *two weeks to start applying, a few months to stop doing
+it manually.* If the timeline feels long, the correct response is not to cut
+phase 1 — it is to run phase 1 and start sending while the rest gets built.
+
+**Phase 3 is the most cuttable thing here.** The dashboard is 2–4 weeks for
+visibility into a system whose value lives in phases 1 and 4. It was asked for
+explicitly and it is genuinely useful for trusting the automation — but if time
+gets short, a CLI plus a daily email digest buys most of the benefit for a couple
+of days' work, and the dashboard can come later.
+
+Phases are ordered by dependency, not calendar.
+
+---
+
+## Spikes — before anything else
+
+`spikes/` contains two runnable scripts that check the assumptions the
+architecture rests on. Both need a machine that can reach `gc.ca`; the planning
+container could not.
+
+- `01_fetch_posting.py` — what "Show how to apply" actually does. Decides whether
+  the production path needs a browser at all.
+- `02_inspect_opendata.py` — whether the open-data CSV is fresh enough to support
+  monitoring, and whether it carries an LMIA signal.
+
+**Expected to invalidate something.** The prediction on record is that spike 2
+fails its freshness check, which would move live discovery from open data to the
+filtered search pages and change `docs/03`. Better to find that in an evening than
+in week six.
 
 ---
 
@@ -19,7 +68,7 @@ blocked by it.
 | 0.1 | **Book TEF Canada / TCF Canada.** | `docs/01-immigration-strategy.md`. French draws in 2026 have cut off at CRS 379–446 vs ~514–525 general. Native French speaker. Nothing else in this project comes close to that leverage. |
 | 0.2 | **Book IELTS General or CELPIP.** | Required for Express Entry regardless of route, and required to claim the French + English combination bonus. |
 | 0.3 | **Request Job Bank XML feed access.** | Converts the riskiest component of the system into a sanctioned integration. One email. Do it in week 1 so the answer arrives before the ingest layer is finished. |
-| 0.4 | **Close the blocking profile gaps.** | `profile/PROFILE-GAPS.md` items 1–4: certification wording, two current referees, the Eat Creative / UCOOK overlap, and dates for FootGear and Cumpsty Electric. The generator excludes anything still flagged, so these directly limit output quality. |
+| 0.4 | **Close the blocking profile gaps.** | `profile/PROFILE-GAPS.md` items 2–4: two current referees, the Eat Creative / UCOOK overlap, and dates for FootGear and Cumpsty Electric. **Not cosmetic:** the generator excludes every entry still flagged `verify: true`, and FootGear + Cumpsty are two of the five general-work entries — including the only trades experience. Until those dates arrive, a Track B CV is painter, packer and security guard only, which is materially weaker than the profile suggests. |
 | 0.5 | **Buy the VPS, set up DNS.** | SPF, DKIM and DMARC on `gedeonchrist.com` need time to propagate and the sending reputation needs time to warm. Starting this early costs nothing. |
 
 ---

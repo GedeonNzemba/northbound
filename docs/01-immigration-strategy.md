@@ -66,16 +66,45 @@ are aimed at the part of the programme that Canada spent 2024–2026 deliberatel
 shrinking, in the cities where most jobs are. The web-developer applications are
 aimed at the part that was left largely intact.
 
-**This does not mean stop applying broadly.** Volume across many occupations is a
-legitimate way to raise the chance of *any* offer, and the general work is honest
-and documented. It means the portfolio should be **weighted**, and the system
-should track outcome rates per occupation family so the weighting becomes
-evidence-based within a few months rather than a guess.
+### The recommended split, and a correction
 
-Working assumption to start (revisit with real data after ~200 applications):
+An earlier draft of this document recommended 60/40 between tech and general
+work. **That was wrong** — it was a compromise with the stated preference to
+"apply to everything", not a conclusion from the evidence above. Corrected:
 
-- ~60% of send capacity → NOC 21234 / 21233 / 22222 and adjacent tech roles
-- ~40% → everything else that genuinely matches the documented general experience
+- **~85% of send capacity → NOC 21234 / 21233 / 22222 and adjacent tech roles**
+- **~15% → documented general work**, as a hedge, not a second strategy
+
+The reasoning is arithmetic, not caution. Daily send capacity is capped at 30–40
+for deliverability reasons (F8) and that cap — not the supply of jobs — is the
+binding constraint on this entire system. Every general-work application spends a
+slot that a tech application could have used. So the question is never "should I
+also apply to general work?" but "**is this slot better spent here or on a
+front-end role?**"
+
+For most slots the answer is clearly the front-end role:
+
+- The low-wage stream is the part of the programme Canada spent 2024–2026
+  deliberately shrinking; the high-wage stream where TEER 1 sits is largely intact.
+- In tech, Gedeon is a *strong* candidate — seven years, production work, North
+  American clients including a Canadian bank. In general work he is an honest
+  applicant with vacation placements from a decade ago, competing against local
+  candidates the employer must demonstrably fail to find before an LMIA is even
+  possible.
+- An employer must justify hiring a foreign worker over a Canadian. That
+  justification is far easier to write for a specialised developer than for a
+  painter.
+
+**Why keep 15% rather than zero.** Rural and remote employers face genuinely
+different labour markets, rural low-wage caps were *loosened* in April 2026, and
+the general experience is real and documented. It is a live lottery ticket, just
+a much cheaper one than the main strategy — and worth buying a few of.
+
+**This is a starting weight, not a belief.** The system tracks reply rate per
+occupation family from the first application. If general-work applications come
+back at three times the tech reply rate, the split should move, and the data will
+say so within a few hundred applications. What it must not do is stay at a number
+that was chosen to feel balanced.
 
 ## The finding that outranks this entire project
 
@@ -116,6 +145,7 @@ The strategy above translates into concrete system requirements:
 | Strategic fact | System requirement |
 |---|---|
 | Job offer = entry ticket, not points | Optimise for **reply rate and offer rate**, not applications sent. Sent-count is a vanity metric. |
+| **Send capacity (30–40/day) is the binding constraint, not job supply** | **Ranking quality matters far more than ingest coverage.** With thousands of eligible postings and ~35 slots a day, the only question that matters is *which 35*. Invest in the scorer before broadening the funnel. |
 | PNP nomination = +600 CRS | Track and surface **province** on every posting; allow per-province weighting; flag provinces with active PNP streams matching NOC 21234. |
 | Low-wage stream is constrained by regional unemployment | Ingest the quarterly ESDC refusal-to-process region list and **de-prioritise low-wage postings in blocked CMAs** — those employers cannot get an LMIA there right now, so applying is wasted capacity. |
 | High-wage / TEER 1 is the softer target | Weight send capacity toward NOC 21234 and adjacent codes. |
