@@ -409,8 +409,9 @@ education:
 # Every IT Academy item below is worded on the certificate as
 # "has successfully completed the course in <X>".
 # That is COURSE COMPLETION, not the vendor certification.
-# Gedeon has NOT (on the evidence supplied) sat and passed the AWS, Microsoft,
-# Oracle or ISTQB proctored exams.
+# CONFIRMED BY GEDEON 2026-08-01: he did NOT sit the AWS, Microsoft, Oracle or
+# ISTQB proctored exams. These are coursework. This is settled, not an open
+# question — see docs/06-decisions.md D1.
 # The CV engine MUST render these as training, e.g.
 #   "AWS Certified Developer – Associate (DVA-C01) — coursework completed, IT Academy, 2021"
 # and MUST NEVER render them as

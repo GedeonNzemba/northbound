@@ -33,6 +33,7 @@ Start at `docs/05-roadmap.md` Phase 1.
 | `docs/03-architecture.md` | Stack, components, data model, dashboard |
 | `docs/04-cv-engine.md` | Generation contract, Canadian format rules, the two tracks |
 | `docs/05-roadmap.md` | Phased delivery |
+| `docs/06-decisions.md` | **Settled decisions — don't re-litigate these** |
 | `profile/master-profile.yaml` | **Single source of truth for every generated document** |
 | `profile/PROFILE-GAPS.md` | What must be confirmed before mass sending |
 
