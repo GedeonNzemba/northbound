@@ -209,10 +209,131 @@ experience_professional:
 
 # ---------------------------------------------------------------------------
 # NON-PROFESSIONAL / MANUAL & SERVICE WORK
-# This is what makes non-IT applications HONEST rather than aspirational.
-# It is real, documented, physical, customer-facing work.
+#
+# Following D6, the LMIA queue is applied to WITHOUT a role filter and is ~70%
+# agriculture, food and manual work. That makes this section the PRIMARY source
+# material for the majority of applications — not a hedge. Treat it accordingly.
+#
+# Dates and the McDonald's entry supplied by Gedeon 2026-08-02.
 # ---------------------------------------------------------------------------
+
+general_work_context:
+  # Not a CV section. Context for the cover-letter generator, which should be
+  # able to explain WHY a developer has this history without it reading as drift.
+  summary: >-
+    Gedeon arrived in South Africa from the DRC at around ten years old and
+    completed primary school, high school and further study there. From high
+    school onward he worked through the short and long school holidays — first
+    to contribute to the household, then to fund his own studies. The manual and
+    service jobs below are that period: consecutive, purposeful, and worked
+    around school and later online study, ending when he moved into professional
+    software work.
+  use_guidance: >-
+    This explains the pattern honestly and turns what could look like an
+    unfocused history into evidence of exactly the traits these employers hire
+    for — showing up, working through holidays, doing physical work while
+    studying. Use it in cover letters for general-work applications where it
+    fits naturally. Never use it to solicit sympathy, and never invent hardship
+    detail beyond what is stated here.
+  source: USER 2026-08-02
+
 experience_general:
+
+  - id: gen.mcdonalds
+    employer: McDonald's
+    title_as_held: Kitchen / Food Production Crew
+    noc_2021: "65201"                       # Food counter attendants, kitchen helpers, TEER 5
+    canadian_title_equivalent: Food Service / Kitchen Helper
+    location: { country: South Africa }
+    start: 2019
+    end: 2020
+    source: USER 2026-08-02
+    note: >-
+      NOT present in any CV on file — supplied verbally 2026-08-02. Highly
+      relevant: the LMIA queue is dominated by agriculture and food work
+      (butchers appear in it directly), so commercial food-production experience
+      is among the strongest transferable assets in this profile.
+    verify: false
+    highlights:
+      - id: gen.mcdonalds.h1
+        text: >-
+          Worked in kitchen and food production in a high-volume quick-service
+          restaurant, preparing food to standardised procedures under time
+          pressure.
+        tags: [food-production, food-safety, high-volume, procedure-following]
+      - id: gen.mcdonalds.h2
+        text: >-
+          Held to strict hygiene, food-handling and consistency standards on
+          every shift.
+        tags: [food-safety, hygiene, standards]
+      - id: gen.mcdonalds.h3
+        text: >-
+          Worked shift patterns as part of a production line team, moving
+          between stations as service volume demanded.
+        tags: [shift-work, teamwork, flexibility]
+
+  - id: gen.footgear
+    employer: FootGear
+    title_as_held: Sales Assistant (contract)
+    noc_2021: "64100"                       # Retail salespersons and visual merchandisers, TEER 4
+    canadian_title_equivalent: Retail Sales Associate
+    location: { country: South Africa }
+    start: 2019-01
+    end: 2019-06
+    employment_type: fixed-term contract
+    source: USER 2026-08-02
+    verify: false                            # dates supplied — gap 4 closed
+    highlights:
+      - id: gen.footgear.h1
+        text: >-
+          Sold footwear on the shop floor, advising customers on fit, use and
+          product range.
+        tags: [customer-service, sales]
+      - id: gen.footgear.h2
+        text: >-
+          Moved a customer from an entry-level product to the highest-value shoe
+          in the store by matching the product to their actual need.
+        tags: [upselling, persuasion, sales]
+
+  - id: gen.cumpsty
+    employer: Cumpsty Electrical
+    title_as_held: General Electrical Assistant
+    noc_2021: "75110"                       # Construction trades helpers and labourers, TEER 5
+    noc_2021_alt: "72200"                   # Electricians — as ASSISTANT only, never claim the trade
+    canadian_title_equivalent: Electrician's Helper / Construction Labourer
+    location: { city: Paarl, region: Western Cape, country: South Africa }
+    sites: [Val de Vie Estate, other nearby residential estates in the Paarl area]
+    start: 2017-10                           # "late 2017" — month approximate
+    end: 2019
+    date_confidence: approximate             # Gedeon: "I think"
+    source: USER 2026-08-02
+    verify: false                            # dates supplied — gap 4 closed
+    note: >-
+      The longest general placement (~1.5 years) and the strongest trades
+      evidence in the profile. Worked under a supervising electrician throughout
+      — the CV must always say assistant/helper, never electrician.
+      Ran alongside online study.
+    highlights:
+      - id: gen.cumpsty.h1
+        text: >-
+          Assisted qualified electricians on residential estate construction
+          sites, including Val de Vie Estate, under direct supervision.
+        tags: [trades, site-work, supervised, construction]
+      - id: gen.cumpsty.h2
+        text: >-
+          Carried out chasing and breaking of walls, trenching and excavation for
+          cable and conduit runs, and general site preparation.
+        tags: [manual-labour, hand-tools, excavation, site-work]
+      - id: gen.cumpsty.h3
+        text: >-
+          Worked on active construction sites over roughly eighteen months,
+          returning across multiple projects.
+        tags: [reliability, site-safety, sustained-placement]
+      - id: gen.cumpsty.h4
+        text: >-
+          Held the placement while studying online, balancing full site days
+          against coursework.
+        tags: [work-ethic, time-management]
 
   - id: gen.painter
     employer: Private company (name not on record)
@@ -224,12 +345,20 @@ experience_general:
     end: 2017-01-05
     performance_rating: Well Balanced
     source: SCREEN
+    cv_render_dates: "Nov 2016 – Jan 2017"
     conflict:
       note: >-
-        CVOLD records this placement as 4 Nov 2016 – 9 Jan 2017 with rating
-        "Excellent"; SCREEN records 23 Nov 2016 – 5 Jan 2017 with rating
-        "Well Balanced". Dates and rating must be confirmed before use.
-      verify: true
+        CVOLD records 4 Nov 2016 – 9 Jan 2017, rating "Excellent"; SCREEN records
+        23 Nov 2016 – 5 Jan 2017, rating "Well Balanced".
+      resolution: >-
+        RESOLVED by granularity, 2026-08-02. Both sources agree at month level,
+        and Canadian CV convention is "Mon YYYY" anyway (docs/04) — so rendering
+        "Nov 2016 – Jan 2017" is true under either record and the conflict never
+        reaches the page. Day-level dates must NOT be emitted for this entry.
+        The performance rating is not rendered at all: ratings are a South
+        African placement-report convention, they are not a Canadian CV element,
+        and the two sources disagree.
+      verify: false
     highlights:
       - id: gen.painter.h1
         text: Roof painting on school buildings and high-rise structures.
@@ -246,14 +375,26 @@ experience_general:
         tags: [teamwork]
 
   - id: gen.packer
-    employer: Polarama
-    title_as_held: Packer (Vacation Employment)
+    employer: Polarama (wholesaler)
+    title_as_held: Packer (Vacation Employment, recurring)
     noc_2021: "75101"                       # Material handlers, TEER 4
     canadian_title_equivalent: Warehouse Worker / Order Packer
     start: 2015-11-02
     end: 2016-01-07
     performance_rating: Truly Exceptional
-    source: CVOLD
+    source: CVOLD + USER 2026-08-02
+    cv_render_dates: "Nov 2015 – Jan 2016"
+    conflict:
+      note: >-
+        CVOLD records a single placement, 2 Nov 2015 – 7 Jan 2016. Gedeon recalls
+        "nearly 1 year, every school holidays", starting "mid 2016 I think".
+      resolution: >-
+        RESOLVED by scope, 2026-08-02. The entry renders the DOCUMENTED window at
+        month granularity — "Nov 2015 – Jan 2016" — which is supported by the
+        contemporaneous record. The recurring-placements claim is isolated in the
+        separately-flagged highlight below and is excluded until confirmed, so it
+        does not block the entry itself.
+      verify: false
     highlights:
       - id: gen.packer.h1
         text: >-
@@ -266,16 +407,33 @@ experience_general:
       - id: gen.packer.h3
         text: Promoted to a higher duty during the placement.
         tags: [promotion, reliability]
+      - id: gen.packer.h4
+        verify: true      # excluded until the recurrence is confirmed
+        text: >-
+          Invited back across successive school holidays, working with the
+          employer over roughly a year in total.
+        tags: [reliability, repeat-engagement]
+        needed: >-
+          Confirm the placement genuinely recurred beyond Jan 2016, and roughly
+          when the last one ended. This is a strong reliability signal for
+          agricultural and warehouse employers — being asked back is exactly what
+          they want to see — so it is worth pinning down.
 
   - id: gen.security
-    employer: SpeedTrainer (sports retail)
+    employer: SpeedTrainer (sports retail, Paarl)
     title_as_held: Security Guard (Vacation Employment)
     noc_2021: "64410"                       # Security guards and related security service occupations, TEER 4
     canadian_title_equivalent: Security Guard
+    location: { city: Paarl, region: Western Cape, country: South Africa }
     start: 2013-11-05
     end: 2014-01-05
+    duration: ~2 months
     performance_rating: Well Balanced
-    source: CVOLD
+    source: CVOLD + USER 2026-08-02
+    note: >-
+      Gedeon confirms: sports shop in Paarl, hired for the December Christmas
+      trading season specifically for loss prevention. He recalls 2-3 months;
+      CVOLD's dates give two, and are the ones to state. This was his FIRST job.
     highlights:
       - id: gen.security.h1
         text: >-
@@ -288,42 +446,15 @@ experience_general:
           concentration across the whole floor for the full day.
         tags: [accountability, loss-prevention]
 
-  - id: gen.footgear
-    employer: FootGear
-    title_as_held: Sales Assistant
-    noc_2021: "64100"                       # Retail salespersons and visual merchandisers, TEER 4
-    canadian_title_equivalent: Retail Sales Associate
-    source: USER
-    verify: true      # NOT in either CV. Dates, location and store branch required.
-    highlights:
-      - id: gen.footgear.h1
-        text: >-
-          Sold footwear on the shop floor; consulted customers on fit, use case
-          and product range.
-        tags: [customer-service, sales]
-      - id: gen.footgear.h2
-        text: >-
-          Upsold a customer from an entry-level product to the highest-value shoe
-          in the store by matching the product to their actual need.
-        tags: [upselling, persuasion, sales]
-
-  - id: gen.cumpsty
-    employer: Cumpsty Electric
-    title_as_held: General Electrical Assistant
-    noc_2021: "75110"                       # Construction trades helpers and labourers, TEER 5
-    canadian_title_equivalent: Electrician's Helper / Construction Labourer
-    source: USER
-    verify: true      # NOT in either CV. Dates and a contactable referee required.
-    highlights:
-      - id: gen.cumpsty.h1
-        text: >-
-          Assisted qualified electricians on site with general electrical work.
-        tags: [trades, site-work]
-      - id: gen.cumpsty.h2
-        text: >-
-          Carried out chasing and breaking of walls, trenching and excavation for
-          cable and conduit runs, and general site preparation.
-        tags: [manual-labour, hand-tools, excavation, site-work]
+# Chronology of the general-work period, for the CV generator's ordering:
+#   2013-11 → 2014-01   security guard, SpeedTrainer (first job)
+#   2015-11 → 2016-01   packer, Polarama (recurring across school holidays)
+#   2016-11 → 2017-01   painter (roofs, multi-storey)
+#   2017-10 → 2019      general electrical assistant, Cumpsty Electrical
+#   2019-01 → 2019-06   sales assistant, FootGear (contract)
+#   2019    → 2020      kitchen / food production, McDonald's
+#   2022-01 →           professional software career begins (UCOOK)
+# Continuous purposeful work from age ~15 through to the software career.
 
 # ---------------------------------------------------------------------------
 # EDUCATION
