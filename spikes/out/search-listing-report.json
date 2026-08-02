@@ -1,6 +1,6 @@
 {
   "spike": "03_search_listing",
-  "run_at": "2026-08-02T11:01:18.258635+00:00",
+  "run_at": "2026-08-02T11:10:35.121304+00:00",
   "results": [
     {
       "name": "international_candidates",
@@ -13,43 +13,43 @@
         "first_10": [
           {
             "id": "49994523",
-            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49994523;jsessionid=1D041DAF679F40A0F99370FBCCFE7072.jobsearch75?source=searchresults"
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49994523;jsessionid=9E1C43BCA0099FB2709F3E399DD6997F.jobsearch75?source=searchresults"
           },
           {
             "id": "49994152",
-            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49994152;jsessionid=1D041DAF679F40A0F99370FBCCFE7072.jobsearch75?source=searchresults"
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49994152;jsessionid=9E1C43BCA0099FB2709F3E399DD6997F.jobsearch75?source=searchresults"
           },
           {
             "id": "49993983",
-            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49993983;jsessionid=1D041DAF679F40A0F99370FBCCFE7072.jobsearch75?source=searchresults"
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49993983;jsessionid=9E1C43BCA0099FB2709F3E399DD6997F.jobsearch75?source=searchresults"
           },
           {
             "id": "49993695",
-            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49993695;jsessionid=1D041DAF679F40A0F99370FBCCFE7072.jobsearch75?source=searchresults"
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49993695;jsessionid=9E1C43BCA0099FB2709F3E399DD6997F.jobsearch75?source=searchresults"
           },
           {
             "id": "49993577",
-            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49993577;jsessionid=1D041DAF679F40A0F99370FBCCFE7072.jobsearch75?source=searchresults"
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49993577;jsessionid=9E1C43BCA0099FB2709F3E399DD6997F.jobsearch75?source=searchresults"
           },
           {
             "id": "49993525",
-            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49993525;jsessionid=1D041DAF679F40A0F99370FBCCFE7072.jobsearch75?source=searchresults"
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49993525;jsessionid=9E1C43BCA0099FB2709F3E399DD6997F.jobsearch75?source=searchresults"
           },
           {
             "id": "49993336",
-            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49993336;jsessionid=1D041DAF679F40A0F99370FBCCFE7072.jobsearch75?source=searchresults"
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49993336;jsessionid=9E1C43BCA0099FB2709F3E399DD6997F.jobsearch75?source=searchresults"
           },
           {
             "id": "49993163",
-            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49993163;jsessionid=1D041DAF679F40A0F99370FBCCFE7072.jobsearch75?source=searchresults"
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49993163;jsessionid=9E1C43BCA0099FB2709F3E399DD6997F.jobsearch75?source=searchresults"
           },
           {
             "id": "49992959",
-            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49992959;jsessionid=1D041DAF679F40A0F99370FBCCFE7072.jobsearch75?source=searchresults"
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49992959;jsessionid=9E1C43BCA0099FB2709F3E399DD6997F.jobsearch75?source=searchresults"
           },
           {
             "id": "49992808",
-            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49992808;jsessionid=1D041DAF679F40A0F99370FBCCFE7072.jobsearch75?source=searchresults"
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49992808;jsessionid=9E1C43BCA0099FB2709F3E399DD6997F.jobsearch75?source=searchresults"
           }
         ],
         "dedup_key_note": "posting id from the URL path is the natural dedup key"
@@ -112,7 +112,7 @@
         "mechanism": "query param ?page=N"
       },
       "Q5_result_card": {
-        "html_excerpt": "<div class=\"results-list-wrapper col-md-9\" id=\"results-list-wrapper\">\n<h1 id=\"wb-cont\" property=\"name\">\n\t\t\t\t\t\t\tAvailable jobs - Search\n\t\t\t\t\t\t\n\t\t\t\t\t</h1>\n<div class=\"results-list-content\" id=\"results-list-content\">\n<span class=\"skip-to-filters wb-init wb-disable-inited visible-md visible-lg\"><span class=\"wb-slc\"><a class=\"wb-sl\" href=\"#locationstring-radiusmap\" tabindex=\"0\">Skip to filters</a></span></span>\n<span class=\"skip-to-filters wb-init wb-disable-inited visible-md visible-lg\"><span class=\"wb-slc\"><a class=\"wb-sl\" href=\"#map-help\" tabindex=\"0\">Skip to map</a></span></span>\n<div class=\"results-nav\">\n<div class=\"results-filter-button-overlay\">\n<button class=\"btn btn-default btn-sm command-result-filter-overlay\" type=\"button\"><span aria-hidden=\"true\" class=\"fal fa-sliders-h\"></span> Filters</button>\n<button class=\"btn btn-default btn-sm command-result-sortby-overlay\" type=\"button\"><span aria-hidden=\"true\" class=\"fas fa-sort\"></span> Sort by</button>\n<button class=\"btn btn-primary btn-sm command-search-overlay\" type=\"button\"><span aria-hidden=\"true\" class=\"far fa-search\"></span> <span class=\"text\">Search</span></button>\n</div>\n<div class=\"dropdown-btn-group\">\n<button class=\"btn btn-default btn-sm btn-mobile btn-dropdown-toggle\" type=\"button\">Recent searches <span aria-hidden=\"true\" class=\"fa-icon far fa-chevron-down\"></span></button>\n<ul class=\"dropdown-actions\">\n<li><a href=\"/jobsearch/jobsearch?fglo=1&amp;page=1&amp;sort=M\">Available jobs</a></li>\n</ul>\n</div>\n<div class=\"jobalert-group\">\n<div class=\"ja-buttons\"><a class=\"btn btn-default btn-sm btn-mobile command-create-alert\" href=\"/jobsearch/jobalert/indregister/fglo=1&amp;page=1&amp;sort=M;jsessionid=1D041DAF679F40A0F99370FBCCFE7072.jobsearch75\" id=\"ajaxupdateform:j_id_35_3_19\">\n<span aria-hidden=\"true\" class=\"far fa-bell\"></span> Create alert \n\t\t\t\t\t\t\t\t\t\t  \t</a>\n</div>\n<div class=\"clearfix\"></div>\n</div>\n<div class=\"clearfix\"></div>\n<div class=\"clearfix\"></div>\n<div class=\"query-terms-group row col-md-12\">\n<ul class=\"list-unstyled\">\n<li class=\"pull-left\"><a class=\"btn btn-link btn-xs btn-keyword\" href=\"?sort=M\" role=\"button\"><span class=\"wb-inv\">Remove keyword</span> Canadians and international candidates<span aria-hidden=\"true\" class=\"fa fa-times\"></span></a></li>\n</ul>\n</div>\n<div class=\"clearfix\"></div>\n<div class=\"jobalert-results-group row\">\n<div class=\"results-summary\">\n<h2><span class=\"found\" id=\"results-count\">7,884</span> results\n\t\t\t\t\t\t\t\t\t</h2>\n</div>\n<div class=\"results-sortby-group btn-gr",
+        "html_excerpt": "<div class=\"results-list-wrapper col-md-9\" id=\"results-list-wrapper\">\n<h1 id=\"wb-cont\" property=\"name\">\n\t\t\t\t\t\t\tAvailable jobs - Search\n\t\t\t\t\t\t\n\t\t\t\t\t</h1>\n<div class=\"results-list-content\" id=\"results-list-content\">\n<span class=\"skip-to-filters wb-init wb-disable-inited visible-md visible-lg\"><span class=\"wb-slc\"><a class=\"wb-sl\" href=\"#locationstring-radiusmap\" tabindex=\"0\">Skip to filters</a></span></span>\n<span class=\"skip-to-filters wb-init wb-disable-inited visible-md visible-lg\"><span class=\"wb-slc\"><a class=\"wb-sl\" href=\"#map-help\" tabindex=\"0\">Skip to map</a></span></span>\n<div class=\"results-nav\">\n<div class=\"results-filter-button-overlay\">\n<button class=\"btn btn-default btn-sm command-result-filter-overlay\" type=\"button\"><span aria-hidden=\"true\" class=\"fal fa-sliders-h\"></span> Filters</button>\n<button class=\"btn btn-default btn-sm command-result-sortby-overlay\" type=\"button\"><span aria-hidden=\"true\" class=\"fas fa-sort\"></span> Sort by</button>\n<button class=\"btn btn-primary btn-sm command-search-overlay\" type=\"button\"><span aria-hidden=\"true\" class=\"far fa-search\"></span> <span class=\"text\">Search</span></button>\n</div>\n<div class=\"dropdown-btn-group\">\n<button class=\"btn btn-default btn-sm btn-mobile btn-dropdown-toggle\" type=\"button\">Recent searches <span aria-hidden=\"true\" class=\"fa-icon far fa-chevron-down\"></span></button>\n<ul class=\"dropdown-actions\">\n<li><a href=\"/jobsearch/jobsearch?fglo=1&amp;page=1&amp;sort=M\">Available jobs</a></li>\n</ul>\n</div>\n<div class=\"jobalert-group\">\n<div class=\"ja-buttons\"><a class=\"btn btn-default btn-sm btn-mobile command-create-alert\" href=\"/jobsearch/jobalert/indregister/fglo=1&amp;page=1&amp;sort=M;jsessionid=9E1C43BCA0099FB2709F3E399DD6997F.jobsearch75\" id=\"ajaxupdateform:j_id_35_3_19\">\n<span aria-hidden=\"true\" class=\"far fa-bell\"></span> Create alert \n\t\t\t\t\t\t\t\t\t\t  \t</a>\n</div>\n<div class=\"clearfix\"></div>\n</div>\n<div class=\"clearfix\"></div>\n<div class=\"clearfix\"></div>\n<div class=\"query-terms-group row col-md-12\">\n<ul class=\"list-unstyled\">\n<li class=\"pull-left\"><a class=\"btn btn-link btn-xs btn-keyword\" href=\"?sort=M\" role=\"button\"><span class=\"wb-inv\">Remove keyword</span> Canadians and international candidates<span aria-hidden=\"true\" class=\"fa fa-times\"></span></a></li>\n</ul>\n</div>\n<div class=\"clearfix\"></div>\n<div class=\"jobalert-results-group row\">\n<div class=\"results-summary\">\n<h2><span class=\"found\" id=\"results-count\">7,884</span> results\n\t\t\t\t\t\t\t\t\t</h2>\n</div>\n<div class=\"results-sortby-group btn-gr",
         "text": "Available jobs - Search Skip to filters Skip to map Filters Sort by Search Recent searches Available jobs Create alert Remove keyword Canadians and international candidates 7,884 results Sort by: Best match Selected Best match Date posted Results sorted by \n\t\t\t\t\t\t\tBest match New On site Direct Apply Posted on Job Bank This job was posted directly by the employer on Job Bank. Job Bank restaurant manager August 02, 2026 Nubo Kitchen + Bar Location Victoria (BC) Salary\n\t\t\t\t\t\t$37.00 to $39.00 hourly (to be negotiated) Job Bank Job number: 3636440 restaurant manager - Save to favourites Your favour",
         "classes_seen": [
           [

@@ -1,0 +1,450 @@
+{
+  "spike": "05_market_probe",
+  "run_at": "2026-08-02T11:11:45.829599+00:00",
+  "matrix": {
+    "international (fglo=1)": {
+      "tech: web developer": {
+        "http": 200,
+        "count": 5,
+        "on_page": 5,
+        "sample_titles": [
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "Hybrid Direct Apply Posted on Job Bank This job was posted directly by",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=web+developer&sort=M&fglo=1"
+      },
+      "tech: front end developer": {
+        "http": 200,
+        "count": 0,
+        "on_page": 0,
+        "sample_titles": [],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=front+end+developer&sort=M&fglo=1"
+      },
+      "tech: software developer": {
+        "http": 200,
+        "count": 11,
+        "on_page": 11,
+        "sample_titles": [
+          "New Remote Direct Apply Posted on Job Bank This job was posted directl",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=software+developer&sort=M&fglo=1"
+      },
+      "tech: programmer": {
+        "http": 200,
+        "count": 19,
+        "on_page": 19,
+        "sample_titles": [
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "Hybrid Posted on Job Bank This job was posted directly by the employer",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=programmer&sort=M&fglo=1"
+      },
+      "tech: javascript": {
+        "http": 200,
+        "count": 0,
+        "on_page": 0,
+        "sample_titles": [],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=javascript&sort=M&fglo=1"
+      },
+      "gen: general labourer": {
+        "http": 200,
+        "count": 39,
+        "on_page": 25,
+        "sample_titles": [
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=general+labourer&sort=M&fglo=1"
+      },
+      "gen: painter": {
+        "http": 200,
+        "count": 286,
+        "on_page": 25,
+        "sample_titles": [
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "New On site Direct Apply Posted on Job Bank This job was posted direct"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=painter&sort=M&fglo=1"
+      },
+      "gen: security guard": {
+        "http": 200,
+        "count": 15,
+        "on_page": 15,
+        "sample_titles": [
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=security+guard&sort=M&fglo=1"
+      },
+      "gen: retail sales": {
+        "http": 200,
+        "count": 3,
+        "on_page": 3,
+        "sample_titles": [
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=retail+sales+associate&sort=M&fglo=1"
+      },
+      "gen: warehouse": {
+        "http": 200,
+        "count": 18,
+        "on_page": 18,
+        "sample_titles": [
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=warehouse&sort=M&fglo=1"
+      },
+      "gen: construction labourer": {
+        "http": 200,
+        "count": 198,
+        "on_page": 25,
+        "sample_titles": [
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "On the road Direct Apply Posted on Job Bank This job was posted direct",
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=construction+labourer&sort=M&fglo=1"
+      },
+      "gen: farm worker": {
+        "http": 200,
+        "count": 106,
+        "on_page": 25,
+        "sample_titles": [
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=farm+worker&sort=M&fglo=1"
+      },
+      "(all jobs)": {
+        "http": 200,
+        "count": 7884,
+        "on_page": 25,
+        "sample_titles": [
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "New On site Direct Apply Posted on Job Bank This job was posted direct"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=&sort=M&fglo=1"
+      }
+    },
+    "lmia_approved (fskl=101020)": {
+      "tech: web developer": {
+        "http": 200,
+        "count": 0,
+        "on_page": 0,
+        "sample_titles": [],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=web+developer&sort=M&fskl=101020"
+      },
+      "tech: front end developer": {
+        "http": 200,
+        "count": 0,
+        "on_page": 0,
+        "sample_titles": [],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=front+end+developer&sort=M&fskl=101020"
+      },
+      "tech: software developer": {
+        "http": 200,
+        "count": 1,
+        "on_page": 1,
+        "sample_titles": [
+          "On site Direct Apply Posted on Job Bank This job was posted directly b"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=software+developer&sort=M&fskl=101020"
+      },
+      "tech: programmer": {
+        "http": 200,
+        "count": 1,
+        "on_page": 1,
+        "sample_titles": [
+          "On site Direct Apply Posted on Job Bank This job was posted directly b"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=programmer&sort=M&fskl=101020"
+      },
+      "tech: javascript": {
+        "http": 200,
+        "count": 0,
+        "on_page": 0,
+        "sample_titles": [],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=javascript&sort=M&fskl=101020"
+      },
+      "gen: general labourer": {
+        "http": 200,
+        "count": 7,
+        "on_page": 7,
+        "sample_titles": [
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=general+labourer&sort=M&fskl=101020"
+      },
+      "gen: painter": {
+        "http": 200,
+        "count": 0,
+        "on_page": 0,
+        "sample_titles": [],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=painter&sort=M&fskl=101020"
+      },
+      "gen: security guard": {
+        "http": 200,
+        "count": 0,
+        "on_page": 0,
+        "sample_titles": [],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=security+guard&sort=M&fskl=101020"
+      },
+      "gen: retail sales": {
+        "http": 200,
+        "count": 0,
+        "on_page": 0,
+        "sample_titles": [],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=retail+sales+associate&sort=M&fskl=101020"
+      },
+      "gen: warehouse": {
+        "http": 200,
+        "count": 0,
+        "on_page": 0,
+        "sample_titles": [],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=warehouse&sort=M&fskl=101020"
+      },
+      "gen: construction labourer": {
+        "http": 200,
+        "count": 0,
+        "on_page": 0,
+        "sample_titles": [],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=construction+labourer&sort=M&fskl=101020"
+      },
+      "gen: farm worker": {
+        "http": 200,
+        "count": 34,
+        "on_page": 25,
+        "sample_titles": [
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=farm+worker&sort=M&fskl=101020"
+      },
+      "(all jobs)": {
+        "http": 200,
+        "count": 112,
+        "on_page": 25,
+        "sample_titles": [
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=&sort=M&fskl=101020"
+      }
+    },
+    "no_facet (whole board)": {
+      "tech: web developer": {
+        "http": 200,
+        "count": 57,
+        "on_page": 25,
+        "sample_titles": [
+          "New CivicJobs.ca Web developer July 30, 2026 Thompson-Nicola Regional ",
+          "indeed.com Web developer July 10, 2026 Altitude technology Solutions I",
+          "Talent.com Web developer July 09, 2026 Yorkville University Location T",
+          "New Hybrid indeed.com full stack Web developer July 27, 2026 Payment i",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=web+developer&sort=M"
+      },
+      "tech: front end developer": {
+        "http": 200,
+        "count": 5,
+        "on_page": 5,
+        "sample_titles": [
+          "Talent.com front-end developer July 17, 2026 Source Code Location Toro",
+          "New Talent.com front-end developer July 30, 2026 Source Code Location ",
+          "CareerBeacon front-end developer July 06, 2026 Financial Modeling Prep",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=front+end+developer&sort=M"
+      },
+      "tech: software developer": {
+        "http": 200,
+        "count": 167,
+        "on_page": 25,
+        "sample_titles": [
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "New Remote Direct Apply Posted on Job Bank This job was posted directl",
+          "Talent.com software developer July 24, 2026 NearSource Location Montr\u00e9",
+          "Talent.com software developer July 23, 2026 Parent Organization Locati",
+          "Talent.com software developer July 23, 2026 Parent Organization Locati"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=software+developer&sort=M"
+      },
+      "tech: programmer": {
+        "http": 200,
+        "count": 234,
+        "on_page": 25,
+        "sample_titles": [
+          "Talent.com programmer analyst July 19, 2026 Regional District of Frase",
+          "Talent.com systems programmer July 11, 2026 BOS Innovations Location L",
+          "indeed.com Web programmer July 21, 2026 Forward Insurance Managers Ltd",
+          "Hybrid Direct Apply Posted on Job Bank This job was posted directly by",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=programmer&sort=M"
+      },
+      "tech: javascript": {
+        "http": 200,
+        "count": 0,
+        "on_page": 0,
+        "sample_titles": [],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=javascript&sort=M"
+      },
+      "gen: general labourer": {
+        "http": 200,
+        "count": 273,
+        "on_page": 25,
+        "sample_titles": [
+          "New indeed.com general construction labourer July 29, 2026 North Prair",
+          "ZipRecruiter general construction labourer July 24, 2026 Phillips Stru",
+          "New ZipRecruiter general construction labourer July 28, 2026 JOB SOURC",
+          "New ZipRecruiter general construction labourer July 28, 2026 JOB SOURC",
+          "ZipRecruiter general construction labourer July 21, 2026 Magnum opus C"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=general+labourer&sort=M"
+      },
+      "gen: painter": {
+        "http": 200,
+        "count": 1644,
+        "on_page": 25,
+        "sample_titles": [
+          "New indeed.com spray painter July 29, 2026 The Door Painters Location ",
+          "New indeed.com painter July 28, 2026 Unideco Commercial and Residentia",
+          "ZipRecruiter painter July 21, 2026 LT Woodworks Location Fordwich (ON)",
+          "indeed.com painter July 23, 2026 ProCity Painting Location Fredericton",
+          "New indeed.com painter July 28, 2026 Property Partners Contracting Loc"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=painter&sort=M"
+      },
+      "gen: security guard": {
+        "http": 200,
+        "count": 108,
+        "on_page": 25,
+        "sample_titles": [
+          "indeed.com guard, security July 20, 2026 Boss Security Ltd. Location W",
+          "indeed.com guard, security July 20, 2026 Boss Security Ltd. Location V",
+          "New indeed.com guard, security July 30, 2026 Phylax Security Location ",
+          "New indeed.com guard, security July 30, 2026 Phylax Security Location ",
+          "New indeed.com guard, security July 28, 2026 Third Eye Security Servic"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=security+guard&sort=M"
+      },
+      "gen: retail sales": {
+        "http": 200,
+        "count": 235,
+        "on_page": 25,
+        "sample_titles": [
+          "indeed.com retail sales associate July 21, 2026 Alt. Vape Location Cal",
+          "New indeed.com retail sales associate July 27, 2026 Ilahui Canada, Bon",
+          "New indeed.com retail sales associate July 29, 2026 TWISTED SISTER BOU",
+          "ZipRecruiter retail sales associate July 23, 2026 Hamsart Market Inc. ",
+          "CareerBeacon retail sales associate July 24, 2026 Best Buy Canada Loca"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=retail+sales+associate&sort=M"
+      },
+      "gen: warehouse": {
+        "http": 200,
+        "count": 197,
+        "on_page": 25,
+        "sample_titles": [
+          "indeed.com warehouse associate July 15, 2026 Canadian Water Warehouse ",
+          "New indeed.com warehouse associate July 28, 2026 Honey Location Toront",
+          "New indeed.com manager, warehouse July 31, 2026 Les Hall Filter Locati",
+          "New indeed.com warehouse receiver July 27, 2026 Trend Marketing Locati",
+          "indeed.com manager, warehouse July 24, 2026 MCL Sustainable Cleaning S"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=warehouse&sort=M"
+      },
+      "gen: construction labourer": {
+        "http": 200,
+        "count": 1128,
+        "on_page": 25,
+        "sample_titles": [
+          "New ZipRecruiter construction labourer August 01, 2026 Heykoop Constru",
+          "Talent.com construction labourer July 17, 2026 Infracon Construction I",
+          "New ZipRecruiter construction labourer July 30, 2026 Concrete Repair /",
+          "New indeed.com construction labourer July 30, 2026 T.J. Clarke Utiliti",
+          "New indeed.com construction labourer July 30, 2026 Premier Building So"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=construction+labourer&sort=M"
+      },
+      "gen: farm worker": {
+        "http": 200,
+        "count": 1993,
+        "on_page": 25,
+        "sample_titles": [
+          "New indeed.com worker, farm July 29, 2026 Boeder Farms Location Brocke",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b",
+          "On site Direct Apply Posted on Job Bank This job was posted directly b"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=farm+worker&sort=M"
+      },
+      "(all jobs)": {
+        "http": 200,
+        "count": 63113,
+        "on_page": 25,
+        "sample_titles": [
+          "New On site Direct Apply Green job Posted on Job Bank This job was pos",
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "New On site Direct Apply Posted on Job Bank This job was posted direct",
+          "New On site Direct Apply Posted on Job Bank This job was posted direct"
+        ],
+        "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=&sort=M"
+      }
+    }
+  },
+  "headline": {
+    "tech_open_to_international": 35,
+    "tech_in_lmia_facet": 2,
+    "general_open_to_international": 665,
+    "general_in_lmia_facet": 41,
+    "reading": "If tech_in_lmia_facet is ~0 while tech_open_to_international is meaningful, then the LMIA facet is the wrong queue for Gedeon's profession and the international facet is the real target \u2014 with the caveat that those employers have not necessarily obtained an LMIA. If BOTH tech numbers are near zero, the honest conclusion is that Job Bank is not where Canadian front-end roles are advertised, and the sourcing strategy needs to change, not the scraper."
+  }
+}

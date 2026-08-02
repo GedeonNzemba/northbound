@@ -1,0 +1,64 @@
+{
+  "spike": "01_fetch_posting",
+  "run_at": "20260802T111036Z",
+  "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49917442?source=searchresults",
+  "questions": {
+    "Q4_email_present_before_click": {
+      "regex_hits": [
+        "test@test.com"
+      ],
+      "mailto_links": 2,
+      "note": "If the real address is here already, no click is needed and a plain HTTP GET is sufficient \u2014 no browser required."
+    },
+    "Q2_button": {
+      "found": true,
+      "located_via": "role=button",
+      "text": "Show how to apply",
+      "tag": "BUTTON",
+      "id": "applynowbutton",
+      "class": "btn btn-primary",
+      "href": null,
+      "aria_controls": null,
+      "aria_expanded": null
+    },
+    "Q1_mechanism": {
+      "verdict": "ajax",
+      "url_before": "https://www.jobbank.gc.ca/jobsearch/jobposting/49917442?source=searchresults",
+      "url_after": "https://www.jobbank.gc.ca/jobsearch/jobposting/49917442?source=searchresults",
+      "network_requests_after_click": [
+        {
+          "method": "POST",
+          "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49917442?source=searchresults",
+          "type": "xhr"
+        },
+        {
+          "method": "POST",
+          "url": "https://analytics.google.com/g/collect?v=2&tid=G-JRXJ08B5TZ&gtm=45je67t1v886643653z8857654736za20gzb857654736zd857654736&_p=1785669038109&gcd=13l3l3l3l1l1&npa=0&dma=0&_eu=AAAAAGQ&are=1&cid=1117172932.1785669039&frm=0&pscdl=noapi&rcb=10&sr=1440x900&uaa=x86&uab=64&uafvl=Not%253DA%253FBrand%3B99.0.0.0%7CHeadlessChrome%3B151.0.7922.34%7CChromium%3B151.0.7922.34&uam=&uamb=0&uap=macOS&uapv=10_15_7&uaw=0&ul=en-ca&gaf=2&tag_exp=115938465~115938469~118897920~118897930~119896802~120222307&sid=1785669038&sct=1&seg=0&dl=https%3A%2F%2Fwww.jobbank.gc.ca%2Fjobsearch%2Fjobposting%2F49917442%3Fsource%3Dsearchresults&dt=general%20labourer%20-%20farm%20-%20Job%20posting%20-%20Job%20Bank&_s=2&tfd=1800",
+          "type": "fetch"
+        }
+      ],
+      "html_growth_bytes": 29076,
+      "implication": "call the JSON/HTML endpoint directly \u2014 no browser needed in prod"
+    },
+    "Q3_methods_visible": [
+      "direct apply"
+    ],
+    "Q4_email_after_click": {
+      "new_emails": [],
+      "all_emails": [
+        "test@test.com"
+      ],
+      "mailto_hrefs": [
+        "mailto:?Subject=general%20labourer%20-%20farm%20%2349917442&Body=%0D%0AJob%20posting%20from%20Job%20Bank.%0D%0A%0D%0Ahttp://www.jobbank.gc.ca/jobsearch/jobposting/49917442",
+        "mailto:?subject=general%20labourer%20-%20farm%20-%20Job%20posting%20-%20Job%20Bank&body=https%3A%2F%2Fwww.jobbank.gc.ca%2Fjobsearch%2Fjobposting%2F49917442%3Fsource%3Dsearchresults%0A"
+      ],
+      "obfuscated_suspected": false
+    },
+    "Q5_bot_signals": [],
+    "Q6_page_metadata": {
+      "canonical": null,
+      "title": "general labourer - farm - Job posting - Job Bank"
+    }
+  },
+  "http_status": 200
+}
