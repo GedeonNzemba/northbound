@@ -297,33 +297,93 @@ experience_professional:
     employer: Salesian Institute Youth Projects
     title_as_held: IT Support Technician
     employment_type: Full-time
-    noc_2021: "22221"                       # User support technicians, TEER 2
-    canadian_title_equivalent: IT Support Technician
+    noc_2021: "22220"                       # Computer network and web technicians, TEER 2
+    noc_2021_alt: "22221"                   # User support technicians, TEER 2
+    canadian_title_equivalent: IT Support Technician / Network Technician
     location: { city: Cape Town, country: South Africa }
-    start: 2017-01
-    end: 2019-03
-    duration: 2 yr 3 mo
-    source: LINKEDIN 2026-08-02
+    start: 2018-01                          # CONFIRMED by Gedeon 2026-08-02
+    end: 2018-11
+    duration: 11 mo
+    cv_render_dates: "Jan 2018 – Nov 2018"
+    date_resolution:
+      chosen: Jan 2018 – Nov 2018 (Gedeon's decision, 2026-08-02)
+      linkedin_currently_says: Jan 2017 – Mar 2019 (2 yr 3 mo)
+      matches: >-
+        Gedeon's own account — "not 2 years, only nearly a full year". Eleven
+        months fits that precisely. It also sits alongside the Salesian course
+        certificates of mid-2018 (PC Repairs 29 Jun 2018, Computer Literacy
+        24 Aug 2018), consistent with staff doing in-house training.
+      ⚠_action_required: >-
+        LINKEDIN MUST BE UPDATED TO MATCH. A CV saying Jan 2018 – Nov 2018 while
+        a public LinkedIn profile says Jan 2017 – Mar 2019 is a discrepancy any
+        recruiter can find in ten seconds, and it looks far worse than either
+        date alone. This is the single highest-priority correction outstanding —
+        higher than referees. Same applies to the AWS/Azure certification wording
+        (D1). See profile/PROFILE-GAPS.md.
+    source: USER 2026-08-02 (dates + responsibilities); LinkedIn for the role itself
     note: >-
-      In no CV on file. Two years of full-time IT work, and it reframes the two
-      referees already on record — Milton Saaiman and Rene Darling are Salesian
-      colleagues from a period when Gedeon was STAFF there, not merely a course
-      participant. That makes them far stronger referees than previously assessed
-      (see `referees` below).
+      Substantially undersold as "IT support". The responsibilities describe
+      infrastructure administration — Active Directory, Exchange and SharePoint,
+      firewall and switch deployment, vendor management across a 150-user
+      network. It also reframes the referees: Milton Saaiman and Rene Darling are
+      colleagues from a real employment relationship here, not youth-programme
+      facilitators.
+    verify: false                           # dates confirmed — entry is usable
     highlights:
       - id: exp.salesian.it.h1
-        text: Set up and installed workstations.
-        tags: [hardware, deployment]
+        text: >-
+          Provided on-site Level 2 support for a 150-user network built on
+          Microsoft services.
+        tags: [level-2, scale, microsoft, infrastructure]
       - id: exp.salesian.it.h2
         text: >-
-          Provided day-to-day technical support to staff and youth-programme
-          users across a two-year full-time placement.
-        tags: [user-support, service-desk, reliability]
-    verify: true
-    needed: >-
-      LinkedIn shows the responsibilities list truncated ("Set-up and install
-      workstations…"). Send the full bullet list so the entry can be rendered
-      properly. Until then only the two highlights above are usable.
+          Administered Microsoft File and Print Services, Active Directory,
+          Exchange and SharePoint — creating users, assigning security
+          permissions and applying policy.
+        tags: [active-directory, exchange, sharepoint, identity, security]
+      - id: exp.salesian.it.h3
+        text: >-
+          Set up and deployed networking equipment including switches, wireless
+          access points, firewalls, telephones and printers.
+        tags: [networking, firewalls, deployment, hardware]
+      - id: exp.salesian.it.h4
+        text: >-
+          Ran IT helpdesk and incident management, handling technical issues
+          escalated from Level 1 support.
+        tags: [incident-management, helpdesk, escalation]
+      - id: exp.salesian.it.h5
+        text: >-
+          Diagnosed and resolved hardware and software faults, and troubleshot
+          issues affecting core IT services.
+        tags: [troubleshooting, diagnostics, hardware, software]
+      - id: exp.salesian.it.h6
+        text: >-
+          Set up and installed workstations, including related hardware and
+          software.
+        tags: [hardware, deployment, workstations]
+      - id: exp.salesian.it.h7
+        text: >-
+          Managed third-party service providers for cabling and equipment
+          installation against IT standards.
+        tags: [vendor-management, standards, coordination]
+      - id: exp.salesian.it.h8
+        text: >-
+          Maintained IT asset management, and documented deployments and
+          changes.
+        tags: [asset-management, documentation, process]
+      - id: exp.salesian.it.h9
+        text: >-
+          Administered IT support tooling for software deployment, fault
+          finding and proactive support.
+        tags: [tooling, automation, proactive-support]
+      - id: exp.salesian.it.h10
+        text: >-
+          Trained users and staff to improve productivity, process efficiency
+          and security awareness.
+        tags: [training, security-awareness, communication]
+      - id: exp.salesian.it.h11
+        text: Completed administrative records as required.
+        tags: [administration, record-keeping]
 
 # ---------------------------------------------------------------------------
 # NON-PROFESSIONAL / MANUAL & SERVICE WORK
@@ -439,12 +499,15 @@ experience_general:
     source: USER 2026-08-02
     verify: false                            # dates supplied — gap 4 closed
     employment_type_query: >-
-      This is the one overlap that still needs a word of explanation. It runs
-      Oct 2017 – 2019, squarely inside the FULL-TIME Salesian Institute IT role
-      (Jan 2017 – Mar 2019). Two full-time jobs at once is the one combination a
-      recruiter will query. Almost certainly it was weekends, evenings or
-      school-holiday site work — confirm which, and the CV states it plainly and
-      the question disappears.
+      Asked 2026-08-02; Gedeon chose to proceed without specifying. Handling:
+      render NO employment-type label for this entry rather than guess one.
+      An unlabelled role is unremarkable on a CV; a wrong label is a false
+      statement, and inventing one is exactly what the claim audit exists to
+      prevent. The dates here are Gedeon's own recollection ("late 2017 I
+      think"), not documentary — they remain the softest dates in the profile.
+      It still overlaps the Salesian role (Jan–Nov 2018) and Footgear
+      (Jul 2018 – Jan 2019); he should simply be ready to say "I was working
+      several jobs at once then", which is true and unremarkable.
     note: >-
       The longest general placement (~1.5 years) and the strongest trades
       evidence in the profile. Worked under a supervising electrician throughout
@@ -770,6 +833,24 @@ skills:
   tooling: [Git, VS Code, Postman, Jira, Salesforce (case handling), Agile, Kanban]
   design: [Figma, Adobe XD, Tailwind CSS, Bootstrap, Material UI]
   office_admin: [MS Word, MS Excel, MS Access, email and internet, invoicing, receipts, minute-taking, meeting notifications]
+  it_infrastructure:
+    # From exp.salesian.it. A genuinely distinct skill area that appears
+    # NOWHERE in the 2026 CV, and one that matters: many Canadian employers
+    # hiring general or technical staff value in-house IT capability, and it
+    # widens the range of postings worth applying to beyond pure front-end.
+    [Level 2 support, Microsoft Active Directory, Microsoft Exchange, SharePoint administration,
+     File and Print Services, user and permission administration, Group Policy,
+     network switches, wireless access points, firewalls, VoIP telephones, printers,
+     workstation setup and deployment, IT helpdesk and incident management,
+     IT asset management, third-party vendor management, IT documentation,
+     end-user training and security awareness]
+  media:
+    # Listed by Gedeon 2026-08-02, alongside the LinkedIn extract.
+    verify: true
+    needed: >-
+      Is this a role, a freelance service, or a personal skill? And roughly when?
+      Recorded but NOT rendered until that is clear.
+    items: [filming, video editing, photography]
   transferable_physical: [working at height with fall-arrest PPE, hand tools, wall chasing and breaking, trenching and excavation, order packing and stock counting, standing shift work, entrance control and floor monitoring]
   transferable_people: [customer service, retail sales and upselling, direct client communication with US/Canada/UK/EU stakeholders, translating technical detail for non-technical audiences, teamwork in small crews and Agile teams]
 
