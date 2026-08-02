@@ -18,6 +18,56 @@ work history (painting, warehouse, security, retail, electrical assistance) — 
 non-software applications are honest transferable-skills applications, never
 inflated claims.
 
+## ▶ RESUME HERE — state as of 2026-08-02
+
+**Where things stand:** planning complete, decisions recorded, three spikes
+written, zero application code. Four commits, all pushed, `main` = working branch.
+
+**Two ways forward. They are independent — neither blocks the other.**
+
+### Path A — validate (needs Gedeon's machine, ~10 min)
+
+The planning container cannot reach `gc.ca` (egress policy: `CONNECT` → 403 at
+the proxy, confirmed repeatedly across client stacks; `api.github.com` returns 200
+through the same proxy, so it is a policy denial, not a client fault). The spikes
+must therefore run on a machine with normal network.
+
+```bash
+pip install requests beautifulsoup4 lxml playwright && playwright install chromium
+python spikes/03_search_listing.py      # start here — no browser, prints spike 1's command
+python spikes/01_fetch_posting.py --url "<url spike 3 prints>" --headed
+python spikes/02_inspect_opendata.py
+```
+
+Send back `spikes/out/`. That unblocks ingest, matching and contact resolution
+(`docs/03`), all of which currently rest on inferences marked `inferred: true` in
+`config/sources.yaml`.
+
+### Path B — build the CV engine (blocked on nothing)
+
+**Phase 1 in `docs/05-roadmap.md` does not touch Job Bank at all.** It needs only
+`profile/master-profile.yaml` and the Claude API, both available. It is also the
+highest-value component — roughly two weeks of the estimate, and the piece whose
+output quality decides whether any of the rest matters.
+
+Deliverables: generation contract, claim audit **including the entailment pass**
+(`docs/04` — the structural checks alone are not sufficient), both CV tracks,
+HTML→PDF render, and a CLI that takes a posting and emits CV + cover letter +
+audit report.
+
+Exit test: **10 applications across both tracks that Gedeon would send unedited.**
+
+### Open items on Gedeon
+
+| | |
+|---|---|
+| Referees | Two current professional referees (Kurtosys / DataBalk). The two on file are 2018 youth-programme contacts. |
+| Dates | FootGear and Cumpsty Electric — both `verify: true`, so both currently **excluded** from generated CVs. That leaves Track B with three of five general-work entries and no trades experience. |
+| Corrections | AWS/Azure wording on LinkedIn (`https://www.linkedin.com/in/nzemba`) and the portfolio site — they are coursework, not certifications (D1). |
+| Optional | TEF Canada booking; Job Bank XML feed request; VPS + SPF/DKIM/DMARC on `gedeonchrist.com`. |
+
+---
+
 ## Status: PLANNED, NOT YET VALIDATED. NO APPLICATION CODE.
 
 `docs/` is the plan. `profile/` is the factual foundation. `spikes/` contains two
