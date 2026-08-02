@@ -1,0 +1,851 @@
+{
+  "spike": "04_method_census",
+  "run_at": "2026-08-02T11:07:57.503941+00:00",
+  "queue": "lmia_approved (fskl=101020)",
+  "ids_available": 112,
+  "inspected": 40,
+  "usable": 40,
+  "method_distribution": {
+    "direct_apply": 40,
+    "fax": 2,
+    "in_person": 8,
+    "email": 30,
+    "mail": 15,
+    "phone": 4,
+    "online": 1
+  },
+  "email_capable": 30,
+  "email_capable_pct": 75.0,
+  "expanded_additional_ok": 40,
+  "with_screening_questions": 12,
+  "verdict": "email path viable for this queue",
+  "records": [
+    {
+      "id": "49917442",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49917442",
+      "title": "general labourer - farm - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "direct_apply",
+        "fax",
+        "in_person"
+      ],
+      "emails": []
+    },
+    {
+      "id": "49868805",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49868805",
+      "title": "dairy farm worker - La Broquerie, MB - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply"
+      ],
+      "emails": [
+        "jp@dejongdairy.com"
+      ],
+      "application_requirements_raw": "Answers to the following screening questions:\nAre you available to start on the date listed in the job posting?",
+      "screening_questions": [
+        "Are you available to start on the date listed in the job posting?"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:jp@dejongdairy.com\">jp@dejongdairy.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:jp@dejongdairy.com\">jp@dejongdairy.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49864338",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49864338",
+      "title": "dairy farm worker - Palmerston, ON - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply",
+        "mail"
+      ],
+      "emails": [
+        "djcmartin@rogers.com"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:djcmartin@rogers.com\">djcmartin@rogers.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:djcmartin@rogers.com\">djcmartin@rogers.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49851619",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49851619",
+      "title": "child caregiver - private home - Etobicoke, ON - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "direct_apply",
+        "mail"
+      ],
+      "emails": []
+    },
+    {
+      "id": "49837841",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49837841",
+      "title": "cowhand - Lyn, ON - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply"
+      ],
+      "emails": [
+        "hillsidefarmjobs@gmail.com"
+      ],
+      "application_requirements_raw": "Job reference number L105",
+      "screening_questions": [],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:hillsidefarmjobs@gmail.com\">hillsidefarmjobs@gmail.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:hillsidefarmjobs@gmail.com\">hillsidefarmjobs@gmail.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49820302",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49820302",
+      "title": "livestock labourer - Elstow, SK - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "direct_apply",
+        "mail"
+      ],
+      "emails": []
+    },
+    {
+      "id": "49816925",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49816925",
+      "title": "farm supervisor - Burstall, SK - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply",
+        "mail"
+      ],
+      "emails": [
+        "jenna_helman@hotmail.com"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:jenna_helman@hotmail.com\">jenna_helman@hotmail.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:jenna_helman@hotmail.com\">jenna_helman@hotmail.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49816590",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49816590",
+      "title": "general labourer - farm - Leamington, ON - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply"
+      ],
+      "emails": [
+        "sam.hickey@ridgefarms.ca"
+      ],
+      "application_requirements_raw": "Answers to the following screening questions:\nDo you have experience working in this field?",
+      "screening_questions": [
+        "Do you have experience working in this field?"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:sam.hickey@ridgefarms.ca\">sam.hickey@ridgefarms.ca</a>",
+        "parent_html": "<p>\n<a href=\"mailto:sam.hickey@ridgefarms.ca\">sam.hickey@ridgefarms.ca</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49811841",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49811841",
+      "title": "farm supervisor - Nanaimo, BC - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply"
+      ],
+      "emails": [
+        "holdenlakeahm@gmail.com"
+      ],
+      "application_requirements_raw": "Cover letter\nAnswers to the following screening questions:\nAre you available to start on the date listed in the job posting?\nDo you have the required certifications listed in the job posting?\nDo you meet the language requirements listed in the job posting for the position (English or French)?\nWhat might be required by the employer later in the hiring process:\nLetter of recommendation\nProof of the requested certifications\nCopy of latest school transcript",
+      "screening_questions": [
+        "Are you available to start on the date listed in the job posting?",
+        "Do you have the required certifications listed in the job posting?",
+        "Do you meet the language requirements listed in the job posting for the position (English or French)?"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:holdenlakeahm@gmail.com\">holdenlakeahm@gmail.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:holdenlakeahm@gmail.com\">holdenlakeahm@gmail.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49782423",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49782423",
+      "title": "greenhouse worker - Niagara-on-the-Lake, ON - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply",
+        "in_person"
+      ],
+      "emails": [
+        "sales@willysgreenhouse.com"
+      ],
+      "application_requirements_raw": "Cover letter\nAnswers to the following screening questions:\nAre you available for shift or on-call work?\nAre you available to start on the date listed in the job posting?\nWhat might be required by the employer later in the hiring process:\nReferences attesting experience\nLetter of recommendation",
+      "screening_questions": [
+        "Are you available for shift or on-call work?",
+        "Are you available to start on the date listed in the job posting?"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:sales@willysgreenhouse.com\">sales@willysgreenhouse.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:sales@willysgreenhouse.com\">sales@willysgreenhouse.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49768683",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49768683",
+      "title": "live-in caregiver - Victoria, BC - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply"
+      ],
+      "emails": [
+        "almondt@novicesjobs.com"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:almondt@novicesjobs.com\">almondt@novicesjobs.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:almondt@novicesjobs.com\">almondt@novicesjobs.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49754455",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49754455",
+      "title": "farm supervisor - Richmond, BC - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "direct_apply",
+        "mail"
+      ],
+      "emails": []
+    },
+    {
+      "id": "49750962",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49750962",
+      "title": "greenhouse worker - Wyoming, ON - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply",
+        "in_person"
+      ],
+      "emails": [
+        "mail@sipkensnurseries.com"
+      ],
+      "application_requirements_raw": "Job reference number 001\nAnswers to the following screening questions:\nAre you available to start on the date listed in the job posting?",
+      "screening_questions": [
+        "Are you available to start on the date listed in the job posting?"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:mail@sipkensnurseries.com\">mail@sipkensnurseries.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:mail@sipkensnurseries.com\">mail@sipkensnurseries.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49737040",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49737040",
+      "title": "nanny - Toronto, ON - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply",
+        "phone"
+      ],
+      "emails": [
+        "candiceweecare@gmail.com"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:candiceweecare@gmail.com\">candiceweecare@gmail.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:candiceweecare@gmail.com\">candiceweecare@gmail.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49735069",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49735069",
+      "title": "labourer, farm - Cavendish, NL - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply"
+      ],
+      "emails": [
+        "vikingfur04@gmail.com"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:vikingfur04@gmail.com\">vikingfur04@gmail.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:vikingfur04@gmail.com\">vikingfur04@gmail.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49731954",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49731954",
+      "title": "butcher - retail or wholesale - Toronto, ON - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "direct_apply",
+        "phone"
+      ],
+      "emails": []
+    },
+    {
+      "id": "49730267",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49730267",
+      "title": "general farm worker - harvesting - Langley, BC - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply",
+        "in_person"
+      ],
+      "emails": [
+        "jobs@coastcranberries.com"
+      ],
+      "application_requirements_raw": "Job reference number 2026\nCover letter",
+      "screening_questions": [],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:jobs@coastcranberries.com\">jobs@coastcranberries.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:jobs@coastcranberries.com\">jobs@coastcranberries.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49723653",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49723653",
+      "title": "greenhouse labourer - Kingsville, ON - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply",
+        "phone",
+        "mail",
+        "in_person"
+      ],
+      "emails": [
+        "careers.offshore.farms@muccifarms.com"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:careers.offshore.farms@muccifarms.com\">careers.offshore.farms@muccifarms.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:careers.offshore.farms@muccifarms.com\">careers.offshore.farms@muccifarms.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49722315",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49722315",
+      "title": "farm supervisor - Abbotsford, BC - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply",
+        "mail"
+      ],
+      "emails": [
+        "mgfarmscanada@gmail.com"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:mgfarmscanada@gmail.com\">mgfarmscanada@gmail.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:mgfarmscanada@gmail.com\">mgfarmscanada@gmail.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49698736",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49698736",
+      "title": "greenhouse labourer - Bradford, ON - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "direct_apply",
+        "online"
+      ],
+      "emails": []
+    },
+    {
+      "id": "49698672",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49698672",
+      "title": "harvesting labourer - Creston, BC - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply"
+      ],
+      "emails": [
+        "info@84investmentinc.ca"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:info@84investmentinc.ca\">info@84investmentinc.ca</a>",
+        "parent_html": "<p>\n<a href=\"mailto:info@84investmentinc.ca\">info@84investmentinc.ca</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49695183",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49695183",
+      "title": "butcher, industrial - Saint-Damase, QC - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "direct_apply",
+        "in_person"
+      ],
+      "emails": [],
+      "application_requirements_raw": "Answers to the following screening questions:\nAre you available for shift or on-call work?\nAre you currently a student?\nDo you have experience working in this field?",
+      "screening_questions": [
+        "Are you available for shift or on-call work?",
+        "Are you currently a student?",
+        "Do you have experience working in this field?"
+      ]
+    },
+    {
+      "id": "49683507",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49683507",
+      "title": "farm worker, grain - Rivers, MB - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply",
+        "mail"
+      ],
+      "emails": [
+        "bjornkristianslund@gmail.com"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:bjornkristianslund@gmail.com\">bjornkristianslund@gmail.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:bjornkristianslund@gmail.com\">bjornkristianslund@gmail.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49674820",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49674820",
+      "title": "grain farm worker - Wynyard, SK - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply",
+        "mail"
+      ],
+      "emails": [
+        "sportnorton@yahoo.ca"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:sportnorton@yahoo.ca\">sportnorton@yahoo.ca</a>",
+        "parent_html": "<p>\n<a href=\"mailto:sportnorton@yahoo.ca\">sportnorton@yahoo.ca</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49673195",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49673195",
+      "title": "general farm worker - harvesting - Abbotsford, BC - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply"
+      ],
+      "emails": [
+        "amarjeetk.sandhar@gmail.com"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:amarjeetk.sandhar@gmail.com\">amarjeetk.sandhar@gmail.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:amarjeetk.sandhar@gmail.com\">amarjeetk.sandhar@gmail.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49665161",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49665161",
+      "title": "general surgeon - Edmonton, AB - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply"
+      ],
+      "emails": [
+        "asperiamedicalclinic@gmail.com"
+      ],
+      "application_requirements_raw": "Answers to the following screening questions:\nDo you have the required certifications listed in the job posting?",
+      "screening_questions": [
+        "Do you have the required certifications listed in the job posting?"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:asperiamedicalclinic@gmail.com\">asperiamedicalclinic@gmail.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:asperiamedicalclinic@gmail.com\">asperiamedicalclinic@gmail.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49661013",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49661013",
+      "title": "farm supervisor - Abbotsford, BC - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply",
+        "mail"
+      ],
+      "emails": [
+        "amarjeetk.sandhar@gmail.com"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:amarjeetk.sandhar@gmail.com\">amarjeetk.sandhar@gmail.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:amarjeetk.sandhar@gmail.com\">amarjeetk.sandhar@gmail.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49656316",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49656316",
+      "title": "poultry operation supervisor - Saint-Gabriel, QC - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply",
+        "fax",
+        "in_person"
+      ],
+      "emails": [
+        "repartition@equipecharette.ca"
+      ],
+      "application_requirements_raw": "Answers to the following screening questions:\nAre you available for shift or on-call work?\nDo you have the required certifications listed in the job posting?",
+      "screening_questions": [
+        "Are you available for shift or on-call work?",
+        "Do you have the required certifications listed in the job posting?"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:repartition@equipecharette.ca\">repartition@equipecharette.ca</a>",
+        "parent_html": "<p>\n<a href=\"mailto:repartition@equipecharette.ca\">repartition@equipecharette.ca</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49652959",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49652959",
+      "title": "poultry farm worker - Whitbourne, NL - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply"
+      ],
+      "emails": [
+        "munnpoultryfarm@gmail.com"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:munnpoultryfarm@gmail.com\">munnpoultryfarm@gmail.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:munnpoultryfarm@gmail.com\">munnpoultryfarm@gmail.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49652866",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49652866",
+      "title": "farm supervisor - Aldergrove, BC - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply",
+        "mail"
+      ],
+      "emails": [
+        "chattufarmltd@gmail.com"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:chattufarmltd@gmail.com\">chattufarmltd@gmail.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:chattufarmltd@gmail.com\">chattufarmltd@gmail.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49651759",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49651759",
+      "title": "farm worker - livestock - Schomberg, ON - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply"
+      ],
+      "emails": [
+        "peelarfarmsofficial@gmail.com"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:peelarfarmsofficial@gmail.com\">peelarfarmsofficial@gmail.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:peelarfarmsofficial@gmail.com\">peelarfarmsofficial@gmail.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49646587",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49646587",
+      "title": "labourer, farm - Curran, ON - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply",
+        "mail"
+      ],
+      "emails": [
+        "schneider@ferme-reveuse.ca"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:schneider@ferme-reveuse.ca\">schneider@ferme-reveuse.ca</a>",
+        "parent_html": "<p>\n<a href=\"mailto:schneider@ferme-reveuse.ca\">schneider@ferme-reveuse.ca</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49641973",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49641973",
+      "title": "farm worker, fruit - Waterloo, ON - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "direct_apply",
+        "mail"
+      ],
+      "emails": [],
+      "application_requirements_raw": "Cover letter\nWhat might be required by the employer later in the hiring process:\nReferences attesting experience",
+      "screening_questions": []
+    },
+    {
+      "id": "49621828",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49621828",
+      "title": "personal support worker - home support - Brossard, QC - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "direct_apply",
+        "phone"
+      ],
+      "emails": [],
+      "application_requirements_raw": "Cover letter\nAnswers to the following screening questions:\nAre you available to start on the date listed in the job posting?\nDo you have experience working in this field?\nDo you meet the language requirements listed in the job posting for the position (English or French)?\nWhat might be required by the employer later in the hiring process:\nReferences attesting experience\nLetter of recommendation",
+      "screening_questions": [
+        "Are you available to start on the date listed in the job posting?",
+        "Do you have experience working in this field?",
+        "Do you meet the language requirements listed in the job posting for the position (English or French)?"
+      ]
+    },
+    {
+      "id": "49611648",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49611648",
+      "title": "pediatrician - Edmonton, AB - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply",
+        "mail",
+        "in_person"
+      ],
+      "emails": [
+        "parsonsparkmedicalclinic@gmail.com"
+      ],
+      "application_requirements_raw": "Cover letter",
+      "screening_questions": [],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:parsonsparkmedicalclinic@gmail.com\">parsonsparkmedicalclinic@gmail.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:parsonsparkmedicalclinic@gmail.com\">parsonsparkmedicalclinic@gmail.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49605022",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49605022",
+      "title": "neurologist - Calgary, AB - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply"
+      ],
+      "emails": [
+        "physicianrecruitment@well.company"
+      ],
+      "application_requirements_raw": "Cover letter",
+      "screening_questions": [],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:physicianrecruitment@well.company\">physicianrecruitment@well.company</a>",
+        "parent_html": "<p>\n<a href=\"mailto:physicianrecruitment@well.company\">physicianrecruitment@well.company</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49598256",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49598256",
+      "title": "farm supervisor - Osoyoos, BC - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "direct_apply",
+        "mail"
+      ],
+      "emails": [],
+      "application_requirements_raw": "Answers to the following screening questions:\nAre you available to start on the date listed in the job posting?\nDo you have experience working in this field?",
+      "screening_questions": [
+        "Are you available to start on the date listed in the job posting?",
+        "Do you have experience working in this field?"
+      ]
+    },
+    {
+      "id": "49589960",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49589960",
+      "title": "internal medicine specialist - Sherwood Park, AB - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply"
+      ],
+      "emails": [
+        "jobs_mic@yahoo.com"
+      ],
+      "application_requirements_raw": "Answers to the following screening questions:\nDo you have the required certifications listed in the job posting?",
+      "screening_questions": [
+        "Do you have the required certifications listed in the job posting?"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:jobs_mic@yahoo.com\">jobs_mic@yahoo.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:jobs_mic@yahoo.com\">jobs_mic@yahoo.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49589922",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49589922",
+      "title": "hunting guide - Leoville, SK - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply"
+      ],
+      "emails": [
+        "saskatchewanoutfitting@gmail.com"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:saskatchewanoutfitting@gmail.com\">saskatchewanoutfitting@gmail.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:saskatchewanoutfitting@gmail.com\">saskatchewanoutfitting@gmail.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    },
+    {
+      "id": "49589702",
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49589702",
+      "title": "pediatrician - Sherwood Park, AB - Job posting - Job Bank",
+      "expanded_additional": true,
+      "methods": [
+        "email",
+        "direct_apply"
+      ],
+      "emails": [
+        "jobs_mic@yahoo.com"
+      ],
+      "application_requirements_raw": "Answers to the following screening questions:\nDo you have the required certifications listed in the job posting?",
+      "screening_questions": [
+        "Do you have the required certifications listed in the job posting?"
+      ],
+      "email_dom_context": {
+        "tag": "a",
+        "class": null,
+        "id": null,
+        "is_mailto": true,
+        "html": "<a href=\"mailto:jobs_mic@yahoo.com\">jobs_mic@yahoo.com</a>",
+        "parent_html": "<p>\n<a href=\"mailto:jobs_mic@yahoo.com\">jobs_mic@yahoo.com</a> <span class=\"timepickler\" id=\"tp_applyByEmailAddress\"></span>\n</p>"
+      }
+    }
+  ]
+}
