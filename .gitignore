@@ -39,3 +39,7 @@ data/
 .idea/
 .vscode/
 *.swp
+
+# Spike output: keep JSON reports, ignore multi-MB HTML dumps
+spikes/out/*
+!spikes/out/*.json

@@ -1,0 +1,109 @@
+name: spikes
+
+# Runs the three validation spikes on a GitHub-hosted runner, which has ordinary
+# internet access, and commits the raw output back to the repo.
+#
+# Why this exists: the environment the project is being built in has an egress
+# policy that refuses CONNECT to gc.ca, so the assumptions the architecture rests
+# on cannot be checked from there. This moves that work to infrastructure that
+# can reach the site, without anyone having to run anything by hand.
+#
+# Caveat worth knowing before reading the results: GitHub runners have Azure
+# datacenter IPs, and government sites commonly refuse those. If the spikes come
+# back blocked, that is itself a finding — it means the production system needs a
+# residential or VPS IP, which is a deployment fact worth learning now rather
+# than in week six.
+
+on:
+  workflow_dispatch:
+    inputs:
+      posting_url:
+        description: "Optional: a specific posting URL for spike 1 (otherwise chained from spike 3)"
+        required: false
+        type: string
+  schedule:
+    # Weekly re-check. The site changes; the parsers should not silently rot.
+    - cron: "17 6 * * 1"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: spikes
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4 lxml playwright
+          playwright install --with-deps chromium
+
+      - name: Record runner egress IP
+        run: |
+          echo "Runner public IP (for interpreting any block):"
+          curl -sS --max-time 20 https://api.ipify.org || echo "(ipify unreachable)"
+          echo
+
+      - name: Run spikes
+        id: spikes
+        continue-on-error: true
+        run: |
+          if [ -n "${{ inputs.posting_url }}" ]; then
+            python spikes/03_search_listing.py || true
+            python spikes/01_fetch_posting.py --url "${{ inputs.posting_url }}" || true
+            python spikes/02_inspect_opendata.py || true
+          else
+            python spikes/run_all.py
+          fi
+
+      - name: Summarise into the job log
+        if: always()
+        run: |
+          echo "## Spike results" >> $GITHUB_STEP_SUMMARY
+          for f in spikes/out/*.json; do
+            [ -e "$f" ] || continue
+            echo "### $(basename "$f")" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            head -c 60000 "$f" >> $GITHUB_STEP_SUMMARY
+            echo '' >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          done
+
+      - name: Upload raw HTML as an artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spike-output
+          path: spikes/out/
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Commit results back
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # JSON reports are committed for review; raw HTML stays in the artifact
+          # so the repo does not fill up with multi-megabyte page dumps.
+          git add -f spikes/out/*.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "no changes to commit"
+          else
+            git commit -m "spikes: results from run ${{ github.run_number }}
+
+          Automated run on a GitHub-hosted runner, which can reach gc.ca where the
+          development environment cannot. Raw HTML is in the run artifact."
+            git push
+          fi
