@@ -66,14 +66,74 @@ are aimed at the part of the programme that Canada spent 2024–2026 deliberatel
 shrinking, in the cities where most jobs are. The web-developer applications are
 aimed at the part that was left largely intact.
 
-### The recommended split, and a correction
+### The split — corrected twice, now from measured data
 
-An earlier draft of this document recommended 60/40 between tech and general
-work. **That was wrong** — it was a compromise with the stated preference to
-"apply to everything", not a conclusion from the evidence above. Corrected:
+This section has been wrong twice. First 60/40 tech-to-general (a compromise with
+a stated preference, not a conclusion). Then 85/15 (reasoned from policy, but
+still without data). **Spike 5 measured the actual market on 2026-08-02**, and the
+answer inverts both.
 
-- **~85% of send capacity → NOC 21234 / 21233 / 22222 and adjacent tech roles**
-- **~15% → documented general work**, as a hedge, not a second strategy
+**Live counts, Job Bank, 2026-08-02:**
+
+| Query | Open to international (`fglo=1`) | LMIA-approved (`fskl=101020`) | Whole board |
+|---|---:|---:|---:|
+| **front end developer** | **0** | 0 | 5 |
+| web developer | 5 | 0 | 57 |
+| software developer | 11 | 1 | 167 |
+| programmer | 19 | 1 | 234 |
+| **All tech (sum)** | **35** | **2** | 463 |
+| | | | |
+| **painter** | **286** | 0 | 1,644 |
+| construction labourer | 198 | 0 | 1,128 |
+| farm worker | 106 | 34 | 1,993 |
+| general labourer | 39 | 7 | 273 |
+| warehouse | 18 | 0 | 197 |
+| security guard | 15 | 0 | 108 |
+| retail sales | 3 | 0 | 235 |
+| **All general (sum)** | **665** | **41** | 5,578 |
+| | | | |
+| *Everything* | 7,884 | 112 | 63,113 |
+
+**Three things follow, and none of them are comfortable.**
+
+1. **There is no front-end developer market for international candidates on Job
+   Bank.** Zero postings. Five on the entire board. This is not a ranking problem
+   or a scraper problem — the roles are not there.
+
+2. **His documented general work has ~19× the internationally-open opportunities
+   of his profession** — 665 against 35. The single largest category is
+   **painter: 286 roles open to international candidates**, and he has a
+   documented roof-painting placement.
+
+3. **The LMIA-approved facet is Canada's Agricultural Stream.** 112 postings,
+   ~70% agriculture, plus physicians and caregivers. Two tech roles in total.
+   For a developer it is effectively empty.
+
+**Revised recommendation: roughly invert the previous split** — the majority of
+send capacity to general work, led by painting and construction labouring, with
+tech applications as the smaller, higher-upside track.
+
+**But this is a life decision, not an engineering one, and it is Gedeon's to
+make.** The options are genuinely different futures:
+
+- **Optimise for getting to Canada.** Apply hard into the 665 internationally-open
+  general roles. Painting is the strongest single lane — real documented
+  experience, the largest market, and no credential barrier. It means arriving as
+  a manual worker and rebuilding the software career from inside the country,
+  where the 463-role tech market is reachable.
+- **Optimise for the career.** Keep applying to the ~35 tech roles here, but
+  understand Job Bank is the wrong channel — Canadian tech hiring runs through
+  LinkedIn, company sites and Indeed, mostly for people already authorised to
+  work. That argues for the **French-language Express Entry route** (F6) as the
+  primary path and job applications as secondary.
+- **Both**, weighted toward general work, accepting slower progress on each.
+
+**What this means for the software:** the transferable-skills track in
+`docs/04-cv-engine.md` is no longer a hedge — it becomes the **primary
+deliverable**. Which sharply raises the cost of the two unresolved profile gaps:
+FootGear and Cumpsty Electric are still `verify: true` and therefore excluded, and
+the painter record still has conflicting dates between two sources. Those were
+minor while tech was the plan. They are now load-bearing.
 
 The reasoning is arithmetic, not caution. Daily send capacity is capped at 30–40
 for deliverability reasons (F8) and that cap — not the supply of jobs — is the
