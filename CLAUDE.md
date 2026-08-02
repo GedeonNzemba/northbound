@@ -70,70 +70,42 @@ nothing to rank, because the answer is "all of them".
   → parse → diff. 100% recovery of the six fields or reject.
 
 **Two ways forward. They are independent — neither blocks the other.**
+### Next step
 
-### Path A — validate (needs Gedeon's machine, ~10 min)
+**Phase 1 — the CV engine**, per `docs/05-roadmap.md`. It touches Job Bank not at
+all: it needs `profile/master-profile.yaml` (complete) and the Claude API. Read
+`docs/07-cv-engine-research.md` first — it inverts the rendering design and adds
+the evaluation harness.
 
-The planning container cannot reach `gc.ca` (egress policy: `CONNECT` → 403 at
-the proxy, confirmed repeatedly across client stacks; `api.github.com` returns 200
-through the same proxy, so it is a policy denial, not a client fault). The spikes
-must therefore run on a machine with normal network.
-
-```bash
-pip install requests beautifulsoup4 lxml playwright && playwright install chromium
-python spikes/03_search_listing.py      # start here — no browser, prints spike 1's command
-python spikes/01_fetch_posting.py --url "<url spike 3 prints>" --headed
-python spikes/02_inspect_opendata.py
-```
-
-Send back `spikes/out/`. That unblocks ingest, matching and contact resolution
-(`docs/03`), all of which currently rest on inferences marked `inferred: true` in
-`config/sources.yaml`.
-
-### Path B — build the CV engine (blocked on nothing)
-
-**Phase 1 in `docs/05-roadmap.md` does not touch Job Bank at all.** It needs only
-`profile/master-profile.yaml` and the Claude API, both available. It is also the
-highest-value component — roughly two weeks of the estimate, and the piece whose
-output quality decides whether any of the rest matters.
-
-Deliverables: generation contract, claim audit **including the entailment pass**
-(`docs/04` — the structural checks alone are not sufficient), both CV tracks,
-HTML→PDF render, and a CLI that takes a posting and emits CV + cover letter +
-audit report.
+Sequence matters: **golden set → deterministic checks → ATS round-trip →
+generator → renderer → judge.** The measurement is built before the thing being
+measured, because a CV engine fails quietly.
 
 Exit test: **10 applications across both tracks that Gedeon would send unedited.**
 
-### Open items on Gedeon
+### Profile status: COMPLETE
 
-| | |
-|---|---|
-| Referees | Two current professional referees (Kurtosys / DataBalk). The two on file are 2018 youth-programme contacts. |
-| Dates | FootGear and Cumpsty Electric — both `verify: true`, so both currently **excluded** from generated CVs. That leaves Track B with three of five general-work entries and no trades experience. |
-| Corrections | AWS/Azure wording on LinkedIn (`https://www.linkedin.com/in/nzemba`) and the portfolio site — they are coursework, not certifications (D1). |
-| Optional | TEF Canada booking; Job Bank XML feed request; VPS + SPF/DKIM/DMARC on `gedeonchrist.com`. |
+All 13 roles confirmed and usable — 7 professional (2016→present, including 6.5
+years of continuous freelance) and 6 general (2013→2020: food production, trades,
+retail, warehouse, painting, security). No blocking gaps.
+
+**Standing instructions — do not revert these:**
+- **No referees.** The two former Salesian contacts are not to be used; names and
+  details are deleted from `master-profile.yaml`. They remain in
+  `CV-early-talentmarket.pdf` — do not reinstate from it. No referees section is
+  generated at all.
+- **IT Academy items are coursework**, rendered under Education as programme
+  content, never as held certifications (D1).
+- **Cumpsty carries no employment-type label** — Gedeon chose not to specify, and
+  a guessed label would be a false statement.
+- **Painter renders month-level only** (`Nov 2016 – Jan 2017`) — no day-level
+  dates, no performance ratings.
+
+Optional, still open: TEF Canada booking (highest-leverage item in the project —
+`docs/01`), Job Bank XML feed request, VPS + SPF/DKIM/DMARC on `gedeonchrist.com`.
 
 ---
 
-## Status: PLANNED, NOT YET VALIDATED. NO APPLICATION CODE.
-
-`docs/` is the plan. `profile/` is the factual foundation. `spikes/` contains two
-runnable scripts that check the assumptions the plan rests on.
-
-**Run the spikes before writing application code.** The planning container could
-not reach `gc.ca` (network policy refuses `CONNECT`), so two load-bearing claims
-were never checked against reality:
-
-1. What clicking **"Show how to apply"** actually does. The whole contact-resolution
-   design is built on a step nobody has observed.
-2. Whether the open-data CSV is fresh enough to support "monitor for new jobs".
-   **Probably not** — it appears to be monthly, against a near-real-time
-   requirement. If that holds, live discovery moves to the filtered search pages
-   and `docs/03` changes.
-
-Then start at `docs/05-roadmap.md` Phase 1.
-
-**Research confidence is graded** in `docs/00`. Anything grade C is a lead, not a
-fact. Nothing in this repo was read from a primary government page.
 
 ## Read these in order
 
