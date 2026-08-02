@@ -224,10 +224,43 @@ what he'd need to learn, and be short. Worked examples:
 - ❌ Never inflate the general roles. They were vacation placements; they were
   real, they were rated well, and that is enough.
 
+### Specificity is the defence — not sounding human (F-D)
+
+2026 surveys: **67%** of hiring managers say they can spot an AI-written cover
+letter and **54%** view them negatively. But **80% reject *generic* AI output
+while 63% accept AI-assisted applications that are genuinely personalised**, and
+reviewers spend **under 30 seconds** on an obviously-templated letter versus
+**2–3 minutes** on one that reads as written for them.
+
+So the objective is not "sound human". It is **be specific** — because
+specificity is exactly what a template cannot produce at volume, and what a
+reviewer uses to tell the difference.
+
+- **Specificity budget — enforced, not aspirational.** Every generated paragraph
+  must carry at least **two concrete particulars**: a named employer, a named
+  site, a number, a named tool, or a detail lifted from *this* posting. A
+  paragraph that would read identically on another application fails the check.
+- **Structural variation.** Cover letters must not share a skeleton with the
+  company name swapped. Vary the opening move, paragraph order and length.
+  Two of Gedeon's letters side by side must not look like one template.
+- **Answer the screening questions.** ~30% of LMIA postings ask them (spike 4).
+  Answering directly, near the top, is inherently non-generic — and most
+  applicants ignore them entirely.
+- **Use Gedeon's own register.** His real phrasing — *"working at height in full
+  protection"*, *"I've really learnt a lot of team work ethics"* — is more
+  convincing than polished corporate prose. Draw vocabulary from the profile,
+  not from résumé-speak.
+
 **Banned phrases** (audit rule 5): *extensive experience in* [uncited], *expert
 in* [uncited], *fully certified*, *licensed* (without a licence in the profile),
 *years of experience in* [a field with no profile entry], *proven track record in*
 [uncited], *equivalent to*, *essentially the same as*.
+
+**AI-genericness tells**, banned for the same reason (F-D): *I am writing to
+express my interest*, *I am excited to apply*, *I believe I would be a great
+fit*, *In today's fast-paced world*, *I am confident that my skills*, *dynamic*,
+*passionate about*, *team player* used as filler rather than evidenced,
+*leverage* as a verb, *proven ability to*, *seamlessly*, *cutting-edge*.
 
 ---
 
@@ -252,17 +285,48 @@ footer.
 
 ## Rendering
 
-Jinja2 → single-column semantic HTML → WeasyPrint → PDF.
+**REVISED 2026-08-02 by `docs/07-cv-engine-research.md` — DOCX is now primary.**
 
-- Filename: `Gedeon-Nzemba-CV-{Employer}-{Role}.pdf`. It shows up in the
+Earlier this said "HTML → WeasyPrint → PDF, plus a .docx". That was backwards.
+Testing across six major ATS platforms puts **DOCX at ~97% parsing accuracy and
+PDF at ~72%** (F-A), and PDFs without a proper text layer fail at up to 85%.
+
+- **DOCX is the canonical artefact**, generated natively via `python-docx` from
+  the structured object — never converted from HTML or PDF, which reintroduces
+  the layout artefacts that break parsers.
+- **PDF is a companion** for the human reader and portfolio use, rendered
+  separately from the same structured object.
+- Where a posting specifies a format, honour it exactly.
+
+### Layout is a specification, not a style choice
+
+Eye-tracking research (F-C: 30 recruiters, 10 weeks) shows a **7.4-second**
+initial screen with **~80% of it on six fields**: name, current title, current
+employer, previous title/employer, employment dates, education. Reading follows
+an F-pattern. Therefore:
+
+- Those six fields get visual priority — top of page, left-aligned, bold titles,
+  an unambiguous date column.
+- Employer and title on their own line. Never buried mid-paragraph.
+- **Bullets, never prose**, in the experience section.
+- Single column, generous white space, clear section headings.
+- **Contact details are body text in the first block. NEVER a header or footer** —
+  many parsers never read that region, and the application arrives anonymous (F-B).
+- No tables, columns, text boxes, images or icons anywhere.
+
+The practical consequence for generation: at seven seconds, *structure and
+keyword placement carry the first pass, not prose quality*. The model's effort
+belongs in selecting and ordering the right facts.
+
+- Filename: `Gedeon-Nzemba-CV-{Employer}-{Role}.docx`. It shows up in the
   employer's inbox and it should look considered.
-- Selectable text, no images, no ligature tricks. **Every generated PDF is run
-  back through a text extractor and the result is diffed against the structured
-  object** — if the text an ATS would read doesn't match what was generated, the
-  document is rejected. A beautiful PDF that parses to nothing is worse than a
-  plain one.
-- Both PDF and `.docx` produced. A meaningful share of Canadian employers and
-  agencies still ask for Word, and it costs nothing to have both ready.
+- **ATS round-trip test — the highest-value check in the system.** Every
+  generated document is parsed back by a real résumé parser and the result is
+  diffed against the structured object it came from. If the parser cannot recover
+  all six fields from F-C, the document is **rejected**, however good it looks.
+  Run against at least two independent parsers so a pass is not one library's
+  quirk. Threshold is 100% on those fields — anything less is a defect.
+- Both DOCX and PDF are produced and retained.
 - Every generated document is retained and linked from the application record.
   When an employer replies three weeks later, Gedeon needs to see exactly what
   they were sent.

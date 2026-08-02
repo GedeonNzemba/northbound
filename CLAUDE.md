@@ -54,6 +54,21 @@ nothing to rank, because the answer is "all of them".
   butchers. **Two** tech roles in the entire facet.
 - Job Bank serves GitHub Actions runners fine — HTTP 200, no bot checks.
 
+### CV engine non-negotiables (docs/07)
+
+- **DOCX is primary, PDF is the companion.** DOCX parses at ~97% across ATS
+  platforms, PDF at ~72%. Generate DOCX natively; never convert from HTML/PDF.
+- **Contact details are body text.** Never a header or footer — many parsers
+  never read that region and the application arrives anonymous.
+- **7.4 seconds, ~80% on six fields** (name, current title/employer, previous
+  title/employer, dates, education). Structure and keyword placement carry the
+  first pass, not prose quality.
+- **Genericness is the risk, not AI.** 80% of hiring managers reject generic AI
+  output; 63% accept genuinely personalised AI-assisted applications. Enforce a
+  specificity budget: two concrete particulars per paragraph, minimum.
+- **The ATS round-trip test is the highest-value check in the system.** Generate
+  → parse → diff. 100% recovery of the six fields or reject.
+
 **Two ways forward. They are independent — neither blocks the other.**
 
 ### Path A — validate (needs Gedeon's machine, ~10 min)
@@ -131,6 +146,7 @@ fact. Nothing in this repo was read from a primary government page.
 | `docs/04-cv-engine.md` | Generation contract, Canadian format rules, the two tracks |
 | `docs/05-roadmap.md` | Phased delivery |
 | `docs/06-decisions.md` | **Settled decisions — don't re-litigate these** |
+| `docs/07-cv-engine-research.md` | **Research behind the CV engine. Read before touching generation or rendering.** |
 | `profile/master-profile.yaml` | **Single source of truth for every generated document** |
 | `profile/PROFILE-GAPS.md` | What must be confirmed before mass sending |
 
