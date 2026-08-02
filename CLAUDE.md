@@ -144,6 +144,7 @@ fact. Nothing in this repo was read from a primary government page.
 | `docs/02-legal-compliance.md` | Job Bank ToU, CASL, the sanctioned data sources. **Architecture-determining.** |
 | `docs/03-architecture.md` | Stack, components, data model, dashboard |
 | `docs/04-cv-engine.md` | Generation contract, Canadian format rules, the two tracks |
+| `docs/07-cv-engine-research.md` | **ATS parsing, recruiter behaviour, hallucination detection, eval harness. Read before building generation or rendering.** |
 | `docs/05-roadmap.md` | Phased delivery |
 | `docs/06-decisions.md` | **Settled decisions — don't re-litigate these** |
 | `docs/07-cv-engine-research.md` | **Research behind the CV engine. Read before touching generation or rendering.** |
