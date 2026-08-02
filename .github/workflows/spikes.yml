@@ -21,6 +21,11 @@ on:
         description: "Optional: a specific posting URL for spike 1 (otherwise chained from spike 3)"
         required: false
         type: string
+      census_limit:
+        description: "Spike 4: how many LMIA postings to census"
+        required: false
+        default: "30"
+        type: string
   schedule:
     # Weekly re-check. The site changes; the parsers should not silently rot.
     - cron: "17 6 * * 1"
@@ -67,6 +72,7 @@ jobs:
           else
             python spikes/run_all.py
           fi
+          python spikes/04_method_census.py --limit "${{ inputs.census_limit || 30 }}" || true
 
       - name: Summarise into the job log
         if: always()
