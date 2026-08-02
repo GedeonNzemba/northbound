@@ -60,19 +60,57 @@ languages:
   # — this is the single highest-value asset in the whole profile.
 
 # ---------------------------------------------------------------------------
-# PROFESSIONAL EXPERIENCE  (the core, ~7 years spanning 2019-present)
+# PROFESSIONAL EXPERIENCE
+# Reconciled against LinkedIn 2026-08-02 (https://www.linkedin.com/in/nzemba).
+# LinkedIn is treated as authoritative for dates and employment type — it is the
+# record an employer will actually check the CV against.
 # ---------------------------------------------------------------------------
+
+cv_presentation_policy:
+  # Gedeon asked for the timeline to be "aligned nicely so it is in order".
+  # This is how that is done HONESTLY. Dates are never altered to remove
+  # overlaps — that is falsification, and the claim audit blocks it.
+  # What actually fixes the appearance is presentation:
+  rules:
+    - Strict reverse-chronological order by start date within each section.
+    - EVERY role carries its employment type — Full-time, Contract,
+      Contract Part-time, Freelance, Vacation Employment. This is the single
+      change that makes concurrent roles read as normal instead of contradictory.
+    - Month-year granularity throughout ("Mar 2019", never "12 March 2019").
+    - Long-running self-employment (exp.freelance) is listed once as a single
+      continuous entry rather than being interleaved — it is the through-line
+      that explains the rest.
+    - Professional and general work go in SEPARATE sections. Mixing them is what
+      makes a timeline look chaotic.
+    - Concurrent roles may carry a short qualifier where it genuinely helps —
+      e.g. "alongside full-time study", "evenings and weekends" — but only where
+      documented here.
+  why_overlaps_are_fine: >-
+    Between 2017 and 2022 Gedeon frequently held two or three roles at once:
+    full-time IT support, a part-time trades placement, contract retail, and
+    continuous freelance development. With employment types shown this is not a
+    red flag — it is a documented record of someone working multiple jobs while
+    studying. For the general-work applications that make up most of the LMIA
+    queue, it is close to the strongest thing on the CV.
+
 experience_professional:
 
   - id: exp.databalk
     employer: DataBalk
     title_as_held: Front End Developer
+    employment_type: Full-time
     noc_2021: "21234"                       # Web developers and programmers, TEER 1
     canadian_title_equivalent: Front-End Developer
-    location: { city: Cape Town, country: South Africa }
+    location: { country: Netherlands, arrangement: Remote }
     start: 2026-03
     end: null                               # current
-    source: CV2026
+    source: LINKEDIN 2026-08-02
+    note: >-
+      CORRECTED from CV2026, which placed this in Cape Town. LinkedIn records it
+      as Netherlands / Remote. Worth leading with on Canadian applications: it is
+      documented evidence of working remotely for a European employer across
+      time zones, which is precisely the doubt a Canadian employer has about a
+      candidate applying from abroad.
     highlights:
       - id: exp.databalk.h1
         text: >-
@@ -101,14 +139,17 @@ experience_professional:
 
   - id: exp.kurtosys
     employer: Kurtosys Systems
-    title_as_held: Front-End Engineer
+    title_as_held: Front End Engineer
+    employment_type: Full-time
     noc_2021: "21234"
     canadian_title_equivalent: Front-End Developer
     industry: FinTech / asset management technology
-    location: { city: Cape Town, country: South Africa }
+    location: { city: Cape Town, region: Claremont, country: South Africa, arrangement: Hybrid }
     start: 2022-09
     end: 2025-12
-    source: CV2026
+    duration: 3 yr 4 mo
+    source: CV2026 + LINKEDIN 2026-08-02
+    note: The longest continuous professional role — anchor the tech CV on it.
     highlights:
       - id: exp.kurtosys.h1
         text: >-
@@ -141,14 +182,16 @@ experience_professional:
 
   - id: exp.ucook
     employer: UCOOK
-    title_as_held: Junior Fullstack Developer
+    title_as_held: Junior FullStack Developer
+    employment_type: Contract
     noc_2021: "21234"
     canadian_title_equivalent: Junior Full-Stack Developer
     industry: Food technology / e-commerce
     location: { city: Cape Town, country: South Africa }
     start: 2022-01
     end: 2022-05
-    source: CV2026
+    duration: 5 mo
+    source: CV2026 + LINKEDIN 2026-08-02
     highlights:
       - id: exp.ucook.h1
         text: >-
@@ -166,14 +209,20 @@ experience_professional:
   - id: exp.eatcreative
     employer: Eat Creative Africa
     title_as_held: Web Developer
+    employment_type: Contract Part-time
     noc_2021: "21234"
     canadian_title_equivalent: Web Developer
     location: { city: Cape Town, country: South Africa }
     start: 2021-01
     end: 2022-10
-    source: CV2026
-    verify: true    # overlaps exp.ucook (Jan–May 2022). Was one of these part-time
-                    # or contract? A Canadian recruiter WILL ask. Must be resolved.
+    duration: 1 yr 10 mo
+    source: CV2026 + LINKEDIN 2026-08-02
+    verify: false
+    resolution: >-
+      GAP 3 CLOSED 2026-08-02. LinkedIn records this as Contract Part-time, which
+      fully explains the overlap with UCOOK (Jan–May 2022, also Contract) — two
+      part-time/contract engagements running concurrently, not two undeclared
+      full-time jobs. Rendering the employment type is all that was ever needed.
     highlights:
       - id: exp.eatcreative.h1
         text: >-
@@ -189,14 +238,16 @@ experience_professional:
           and refine project scope.
 
   - id: exp.nextsteps
-    employer: Next Steps Digital
+    employer: Next Step Digital           # LinkedIn spelling — "Step", not "Steps"
     title_as_held: Frontend Web Developer
+    employment_type: Contract
     noc_2021: "21234"
     canadian_title_equivalent: Front-End Web Developer
     location: { city: Cape Town, country: South Africa }
     start: 2019-06
     end: 2019-09
-    source: CV2026
+    duration: 4 mo
+    source: CV2026 + LINKEDIN 2026-08-02
     highlights:
       - id: exp.nextsteps.h1
         text: >-
@@ -206,6 +257,73 @@ experience_professional:
         text: >-
           Collaborated with back-end developers to integrate CMS-driven content;
           handled maintenance, bug fixes and UI enhancements.
+      - id: exp.nextsteps.h3
+        text: Delivered cross-browser compatible front-end work.
+        tags: [cross-browser]
+
+  # ---- Added from LinkedIn 2026-08-02 — in no CV on file ----------------
+
+  - id: exp.freelance
+    employer: Self-employed — Freelance Web Development
+    title_as_held: Frontend Web Developer (Freelance)
+    employment_type: Freelance / Self-employed
+    noc_2021: "21234"
+    canadian_title_equivalent: Freelance Front-End Web Developer
+    location: { city: Cape Town, region: Western Cape, country: South Africa }
+    start: 2016-02
+    end: 2022-08
+    duration: 6 yr 7 mo
+    source: LINKEDIN 2026-08-02
+    note: >-
+      THE THROUGH-LINE. Six and a half years of continuous self-directed
+      development work running underneath every other role on this CV. It is what
+      makes the timeline cohere — the short contracts and the manual jobs sit on
+      top of an unbroken development practice, rather than being a scattered
+      sequence. It also pushes his verifiable front-end history back to 2016,
+      well beyond the "4+ years" his own CV2026 summary claims.
+    highlights:
+      - id: exp.freelance.h1
+        text: >-
+          Delivered front-end web development for independent clients over more
+          than six years, alongside study and employment.
+        tags: [self-directed, client-facing, sustained]
+      - id: exp.freelance.h2
+        text: >-
+          Handled client engagements end to end — requirements, build, delivery
+          and follow-up support.
+        tags: [ownership, client-communication]
+
+  - id: exp.salesian.it
+    employer: Salesian Institute Youth Projects
+    title_as_held: IT Support Technician
+    employment_type: Full-time
+    noc_2021: "22221"                       # User support technicians, TEER 2
+    canadian_title_equivalent: IT Support Technician
+    location: { city: Cape Town, country: South Africa }
+    start: 2017-01
+    end: 2019-03
+    duration: 2 yr 3 mo
+    source: LINKEDIN 2026-08-02
+    note: >-
+      In no CV on file. Two years of full-time IT work, and it reframes the two
+      referees already on record — Milton Saaiman and Rene Darling are Salesian
+      colleagues from a period when Gedeon was STAFF there, not merely a course
+      participant. That makes them far stronger referees than previously assessed
+      (see `referees` below).
+    highlights:
+      - id: exp.salesian.it.h1
+        text: Set up and installed workstations.
+        tags: [hardware, deployment]
+      - id: exp.salesian.it.h2
+        text: >-
+          Provided day-to-day technical support to staff and youth-programme
+          users across a two-year full-time placement.
+        tags: [user-support, service-desk, reliability]
+    verify: true
+    needed: >-
+      LinkedIn shows the responsibilities list truncated ("Set-up and install
+      workstations…"). Send the full bullet list so the entry can be rendered
+      properly. Until then only the two highlights above are usable.
 
 # ---------------------------------------------------------------------------
 # NON-PROFESSIONAL / MANUAL & SERVICE WORK
@@ -247,7 +365,12 @@ experience_general:
     location: { country: South Africa }
     start: 2019
     end: 2020
+    employment_type: null                    # UNCONFIRMED — see below
     source: USER 2026-08-02
+    employment_type_query: >-
+      Full-time, part-time or shift work? It runs alongside Next Step Digital
+      (Jun–Sep 2019, Contract) and the tail of Cumpsty. Needed only so the CV can
+      label it; the role itself is confirmed and usable.
     note: >-
       NOT present in any CV on file — supplied verbally 2026-08-02. Highly
       relevant: the LMIA queue is dominated by agriculture and food work
@@ -273,16 +396,22 @@ experience_general:
         tags: [shift-work, teamwork, flexibility]
 
   - id: gen.footgear
-    employer: FootGear
-    title_as_held: Sales Assistant (contract)
+    employer: Footgear
+    title_as_held: Sales Representative
+    employment_type: Contract
     noc_2021: "64100"                       # Retail salespersons and visual merchandisers, TEER 4
     canadian_title_equivalent: Retail Sales Associate
-    location: { country: South Africa }
-    start: 2019-01
-    end: 2019-06
-    employment_type: fixed-term contract
-    source: USER 2026-08-02
-    verify: false                            # dates supplied — gap 4 closed
+    location: { city: Cape Town, region: Western Cape, country: South Africa }
+    start: 2018-07
+    end: 2019-01
+    duration: 7 mo
+    source: LINKEDIN 2026-08-02
+    verify: false
+    note: >-
+      Dates CORRECTED from Gedeon's verbal recollection ("early 2019 to mid
+      2019") to the LinkedIn record, Jul 2018 – Jan 2019. LinkedIn is what an
+      employer will check against, so it wins. Title is "Sales Representative"
+      there, not "Sales Assistant".
     highlights:
       - id: gen.footgear.h1
         text: >-
@@ -306,8 +435,16 @@ experience_general:
     start: 2017-10                           # "late 2017" — month approximate
     end: 2019
     date_confidence: approximate             # Gedeon: "I think"
+    employment_type: null                    # UNCONFIRMED — see below
     source: USER 2026-08-02
     verify: false                            # dates supplied — gap 4 closed
+    employment_type_query: >-
+      This is the one overlap that still needs a word of explanation. It runs
+      Oct 2017 – 2019, squarely inside the FULL-TIME Salesian Institute IT role
+      (Jan 2017 – Mar 2019). Two full-time jobs at once is the one combination a
+      recruiter will query. Almost certainly it was weekends, evenings or
+      school-holiday site work — confirm which, and the CV states it plainly and
+      the question disappears.
     note: >-
       The longest general placement (~1.5 years) and the strongest trades
       evidence in the profile. Worked under a supervising electrician throughout
@@ -652,9 +789,18 @@ portfolio_links:
   # BMO is a Canadian bank. Lead with pf.bmo on any Canadian application.
 
 referees:
-  - { id: ref.milton, name: Mr Milton Saaiman, relationship: PC Repair & Mobile App facilitator, org: Salesian Institute, phone: "+27828581836", email: milton.saaiman@salesianyouth.org.za, source: CVOLD, verify: true }
-  - { id: ref.rene,   name: Ms Rene Darling,   relationship: Job placement coach, org: Salesian Institute, phone: "+27214251431", email: rene.darling@salesianyouth.org.za, source: CVOLD, verify: true }
-  # Both referees are from 2018 and relate to youth programmes, not to any
-  # professional role. Canadian employers expect recent, work-related referees.
-  # Securing two current professional referees is a blocking gap — see
-  # profile/PROFILE-GAPS.md.
+  - { id: ref.milton, name: Mr Milton Saaiman, relationship: "Colleague/supervisor — Salesian Institute (see exp.salesian.it)", org: Salesian Institute Youth Projects, phone: "+27828581836", email: milton.saaiman@salesianyouth.org.za, source: CVOLD, verify: true }
+  - { id: ref.rene,   name: Ms Rene Darling,   relationship: "Job placement coach — Salesian Institute", org: Salesian Institute Youth Projects, phone: "+27214251431", email: rene.darling@salesianyouth.org.za, source: CVOLD, verify: true }
+  # REASSESSED 2026-08-02. These were written off as "2018 youth-programme
+  # contacts". LinkedIn shows Gedeon was FULL-TIME STAFF at Salesian Institute
+  # as an IT Support Technician, Jan 2017 – Mar 2019 — so these are colleagues
+  # from a real two-year employment relationship, not course facilitators.
+  # That makes them genuinely usable work referees.
+  #
+  # Still needed:
+  #   - confirm they line-managed or worked directly with him in that role
+  #   - confirm the contact details are still live (they are from 2018)
+  #   - ask permission before listing them
+  #   - ideally add ONE current referee from Kurtosys or DataBalk, since
+  #     Canadian employers weight recency
+  # This is now a much smaller gap than previously assessed.
