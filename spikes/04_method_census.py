@@ -106,6 +106,7 @@ def inspect(page, pid: str) -> dict:
 
     rec["title"] = page.title()
 
+    # ---- CLICK 1 of 2: "Show how to apply" -----------------------------
     btn = page.locator("#applynowbutton")
     if btn.count() == 0:
         btn = page.get_by_role("button", name=re.compile(r"how to apply", re.I))
@@ -116,14 +117,69 @@ def inspect(page, pid: str) -> dict:
 
     btn.first.click()
     page.wait_for_timeout(1800)
-    after = page.content()
 
+    # ---- CLICK 2 of 2: "Additional ways to apply" ----------------------
+    # THE BUG THAT INVALIDATED SPIKE 1. The first click reveals only the
+    # employer's PREFERRED method (often Direct Apply). Every other method —
+    # including the email — sits inside a second collapsed disclosure. Stopping
+    # after click 1 reports "Direct Apply only, no email" on postings that do
+    # in fact have one.
+    rec["expanded_additional"] = False
+    for build in (
+        lambda: page.locator("summary", has_text=re.compile(r"additional ways to apply", re.I)),
+        lambda: page.get_by_text(re.compile(r"additional ways to apply", re.I)),
+        lambda: page.locator("a,button", has_text=re.compile(r"additional ways to apply", re.I)),
+    ):
+        try:
+            loc = build()
+            if loc.count() and loc.first.is_visible():
+                loc.first.click()
+                page.wait_for_timeout(1200)
+                rec["expanded_additional"] = True
+                break
+        except Exception:
+            continue
+    # <details> may need opening directly rather than via a click.
+    if not rec["expanded_additional"]:
+        try:
+            n = page.evaluate("""() => {
+                let n = 0;
+                document.querySelectorAll('details').forEach(d => {
+                    if (/additional ways to apply/i.test(d.textContent) && !d.open) {
+                        d.open = true; n++;
+                    }
+                });
+                return n;
+            }""")
+            if n:
+                page.wait_for_timeout(600)
+                rec["expanded_additional"] = True
+                rec["expanded_via"] = "details.open"
+        except Exception:
+            pass
+
+    after = page.content()
     text = page.inner_text("body")
     rec["methods"] = [name for name, rx in METHODS.items() if rx.search(text)]
 
-    # Emails that appeared only after the reveal, minus known noise.
+    # Emails that appeared only after the reveals, minus known noise.
     new = sorted(set(EMAIL_RE.findall(after)) - set(EMAIL_RE.findall(before)))
     rec["emails"] = [e for e in new if not NOISE.match(e)]
+
+    # ---- Application requirements (screenshot 4) -----------------------
+    # "What you must include in your application:" — cover letter, and often
+    # screening questions the employer expects answered in the email body.
+    # The cover-letter generator has to answer these explicitly.
+    m = re.search(
+        r"What you must include in your application:?(.{0,900})",
+        text, re.I | re.S)
+    if m:
+        block = m.group(1)
+        block = re.split(r"Advertised until|Important notice", block)[0].strip()
+        rec["application_requirements_raw"] = block[:700]
+        rec["screening_questions"] = [
+            q.strip() for q in re.findall(r"([^\n?]{10,160}\?)", block)
+        ][:8]
 
     # Where does the address actually live? The resolver needs this.
     if rec["emails"]:
@@ -189,6 +245,8 @@ def main() -> int:
         "method_distribution": dict(method_counts),
         "email_capable": len(with_email),
         "email_capable_pct": round(100 * len(with_email) / len(ok), 1) if ok else None,
+        "expanded_additional_ok": sum(1 for r in ok if r.get("expanded_additional")),
+        "with_screening_questions": sum(1 for r in ok if r.get("screening_questions")),
         "verdict": (
             "email path viable for this queue" if ok and len(with_email) / len(ok) >= 0.4
             else "EMAIL PATH NOT VIABLE for this queue — most postings are not "
