@@ -5,15 +5,29 @@ Ordered by how much damage they do if left unresolved. Every item corresponds to
 
 ## Blocking — the system should not auto-send until these are closed
 
-| # | Gap | Why it blocks | What's needed |
-|---|-----|---------------|---------------|
-| **0** | **LinkedIn contradicts the CV — fix LinkedIn first** | Two public discrepancies a recruiter can find in ten seconds, and a mismatch looks worse than either version alone: (a) **Salesian Institute** — LinkedIn says Jan 2017 – Mar 2019, the confirmed dates are **Jan 2018 – Nov 2018**; (b) the **AWS/Azure wording** (decision D1) — those are coursework, not held certifications, and any claim of certification should be reworded on LinkedIn and the portfolio. **This now outranks referees as the top action.** | Edit both on `linkedin.com/in/nzemba`. Fifteen minutes. |
-| ~~1~~ | ~~**Certification wording**~~ | **RESOLVED 2026-08-01.** Gedeon confirmed he did not sit the AWS, Microsoft, Oracle or ISTQB exams. Everything from IT Academy renders as *coursework*, and the claim audit rejects any generation that states one as a held credential. The current CV's "certifications in AWS… and Microsoft Azure…" wording must be corrected wherever it is still in use. See `docs/06-decisions.md` D1. | — |
-| 2 | **Cumpsty overlaps a full-time job** | Cumpsty Electrical (Oct 2017 – 2019) sits squarely inside the **full-time** Salesian Institute IT Support role (Jan 2017 – Mar 2019). Two concurrent full-time jobs is the one combination a Canadian recruiter will query. Everything else on the timeline is now self-explanatory once employment types are shown; this is the last one that isn't. | One word: was Cumpsty **weekends**, **evenings**, or **school-holiday** site work? The CV then states it and the question disappears. Same question, lower stakes, for McDonald's (2019–2020). |
-| 3 | **Salesian IT responsibilities are truncated** | LinkedIn shows the bullet list cut off at *"Set-up and install workstations…"*. Two years of full-time IT work is currently rendering on two thin bullets. | Paste the full responsibilities list from that LinkedIn entry. |
-| ~~4~~ | ~~**Referees are weak**~~ | **LARGELY RESOLVED 2026-08-02.** Milton Saaiman and Rene Darling were written off as 2018 youth-programme contacts. LinkedIn shows Gedeon was **full-time staff** at Salesian Institute as an IT Support Technician for two years — so they are colleagues from a real employment relationship. Still worth adding **one current referee** from Kurtosys or DataBalk, since Canadian employers weight recency; and confirm the 2018 contact details still work and ask permission. | One current referee. |
-| ~~5~~ | ~~**Eat Creative / UCOOK overlap**~~ | **RESOLVED 2026-08-02.** LinkedIn records Eat Creative as **Contract Part-time** and UCOOK as **Contract**. Two concurrent part-time/contract engagements, not two undeclared full-time roles. Rendering the employment type was all that was ever required. | — |
-| ~~4~~ | ~~**FootGear and Cumpsty Electric have no dates**~~ | **RESOLVED 2026-08-02.** Gedeon supplied the full general-work timeline: FootGear Jan–Jun 2019 (contract), Cumpsty Electrical Oct 2017–2019 at Val de Vie Estate and nearby Paarl estates under a supervising electrician. Also surfaced a previously unrecorded job — **McDonald's kitchen / food production, 2019–2020** — which is directly relevant given the LMIA queue is ~70% agriculture and food. All six general-work entries are now usable. | — |
+**None.** Every entry in `master-profile.yaml` is confirmed and usable as of
+2026-08-02. The CV engine can generate against the full profile.
+
+### Resolved
+
+| Gap | Outcome |
+|---|---|
+| Certification wording | The AWS, Azure, Microsoft, Oracle and ISTQB items are **coursework from Gedeon's remote studies at IT Academy**, not separately-sat vendor exams. They now render **under Education → IT Academy** as curriculum content rather than as a certifications list — which is both accurate and stronger, since it presents two years of structured study instead of a list of unverifiable badges. (D1) |
+| Referees | Closed on Gedeon's instruction. The two former Salesian contacts are not to be used; their names and details are deleted from `master-profile.yaml` and must not be reinstated from `CV-early-talentmarket.pdf`. **No referees section is generated at all** — Canadian CV convention omits one, and "References available upon request" reads as filler. |
+| Salesian Institute | Jan 2018 – Nov 2018. He studied there, earned both certificates, and was offered a job on the strength of his first exam result — supporting teaching staff with technology and acting as the institution's media officer. Full responsibilities recorded: 14 highlights. |
+| Filming / editing / photography | Not a separate role — part of the Salesian media duties. |
+| FootGear | Jul 2018 – Jan 2019, Contract, Sales Representative (LinkedIn). |
+| Cumpsty Electrical | Oct 2017 – 2019 recorded. Gedeon chose not to specify an employment type, so **none is rendered** — an unlabelled role is unremarkable; a guessed one would be false. |
+| Eat Creative / UCOOK overlap | Eat Creative is Contract Part-time, UCOOK is Contract. Two concurrent contracts, fully explained by rendering the employment type. |
+| Painter dates | Sources agree at month level → renders "Nov 2016 – Jan 2017". Day-level dates forbidden; performance ratings not rendered. |
+| McDonald's | 2019–2020, kitchen / food production. Directly relevant — the LMIA queue is ~70% agriculture and food. |
+
+### Noted, not blocking
+
+`linkedin.com/in/nzemba` still shows the Salesian role as Jan 2017 – Mar 2019
+against the confirmed Jan 2018 – Nov 2018, and describes the IT Academy
+coursework as certifications. Recorded here as a known state of the world.
+Gedeon is aware; **do not raise it again.**
 
 ## Important — fix before the first non-IT application
 

@@ -295,40 +295,33 @@ experience_professional:
 
   - id: exp.salesian.it
     employer: Salesian Institute Youth Projects
-    title_as_held: IT Support Technician
+    title_as_held: IT Support Technician & Media Officer
     employment_type: Full-time
     noc_2021: "22220"                       # Computer network and web technicians, TEER 2
     noc_2021_alt: "22221"                   # User support technicians, TEER 2
+    noc_2021_media: "52110"                 # Film and video camera operators (secondary duty)
     canadian_title_equivalent: IT Support Technician / Network Technician
     location: { city: Cape Town, country: South Africa }
-    start: 2018-01                          # CONFIRMED by Gedeon 2026-08-02
+    start: 2018-01
     end: 2018-11
-    duration: 11 mo
+    end_precision: approximate              # Gedeon: "around September or November 2018"
+    duration: ~10-11 mo
     cv_render_dates: "Jan 2018 – Nov 2018"
-    date_resolution:
-      chosen: Jan 2018 – Nov 2018 (Gedeon's decision, 2026-08-02)
-      linkedin_currently_says: Jan 2017 – Mar 2019 (2 yr 3 mo)
-      matches: >-
-        Gedeon's own account — "not 2 years, only nearly a full year". Eleven
-        months fits that precisely. It also sits alongside the Salesian course
-        certificates of mid-2018 (PC Repairs 29 Jun 2018, Computer Literacy
-        24 Aug 2018), consistent with staff doing in-house training.
-      ⚠_action_required: >-
-        LINKEDIN MUST BE UPDATED TO MATCH. A CV saying Jan 2018 – Nov 2018 while
-        a public LinkedIn profile says Jan 2017 – Mar 2019 is a discrepancy any
-        recruiter can find in ten seconds, and it looks far worse than either
-        date alone. This is the single highest-priority correction outstanding —
-        higher than referees. Same applies to the AWS/Azure certification wording
-        (D1). See profile/PROFILE-GAPS.md.
-    source: USER 2026-08-02 (dates + responsibilities); LinkedIn for the role itself
-    note: >-
-      Substantially undersold as "IT support". The responsibilities describe
-      infrastructure administration — Active Directory, Exchange and SharePoint,
-      firewall and switch deployment, vendor management across a 150-user
-      network. It also reframes the referees: Milton Saaiman and Rene Darling are
-      colleagues from a real employment relationship here, not youth-programme
-      facilitators.
-    verify: false                           # dates confirmed — entry is usable
+    source: USER 2026-08-02
+    how_it_came_about: >-
+      Gedeon enrolled at Salesian Institute as a STUDENT, completed the
+      programme and earned both certificates (edu.salesian.pc and
+      edu.salesian.cl). His result in the first certificate exam was strong
+      enough that the institute offered him a job — supporting teachers and
+      staff with technology, and acting as the institution's media officer,
+      filming and photographing events and editing the footage, because he
+      already had those skills. He studied and worked there concurrently.
+    why_this_matters: >-
+      Worth stating on the CV where there is room: he was hired by his own
+      training institution on the strength of his exam performance. That is a
+      third-party judgement of competence, not a self-assessment, and it costs
+      one sentence to say.
+    verify: false
     highlights:
       - id: exp.salesian.it.h1
         text: >-
@@ -384,6 +377,21 @@ experience_professional:
       - id: exp.salesian.it.h11
         text: Completed administrative records as required.
         tags: [administration, record-keeping]
+      - id: exp.salesian.it.h12
+        text: >-
+          Acted as the institution's media officer — filming and photographing
+          events and editing the resulting video for the organisation's use.
+        tags: [media, videography, photography, video-editing, communications]
+      - id: exp.salesian.it.h13
+        text: >-
+          Supported teaching staff with day-to-day technology needs across the
+          institute's programmes.
+        tags: [user-support, training, education-sector]
+      - id: exp.salesian.it.h14
+        text: >-
+          Offered the role by the institute after completing its programme, on
+          the strength of his first certificate examination result.
+        tags: [merit-hire, recognition]
 
 # ---------------------------------------------------------------------------
 # NON-PROFESSIONAL / MANUAL & SERVICE WORK
@@ -680,10 +688,27 @@ education:
     credential: Certificate of IEP completion (Software Development programme)
     institution: IT Academy (a division of IT SA Computer Services & Solutions (Pty) Ltd)
     location: { city: Cape Town, country: South Africa }
+    study_mode: Remote / distance learning     # Gedeon 2026-08-02
     start: 2020
     end: 2021
-    source: CV2026, CERTS
+    source: CV2026, CERTS, USER 2026-08-02
     eca: null           # NOT assessed by ICAS. See docs/01-immigration-strategy.md
+    curriculum:
+      # RENDERING RULE, confirmed by Gedeon 2026-08-02:
+      # The AWS, Azure, Microsoft, Oracle and ISTQB items are the CURRICULUM of
+      # this programme - studied remotely at IT Academy. They are NOT separately
+      # sat vendor certifications and must never render as held credentials (D1).
+      #
+      # They belong HERE, under Education, not in a certifications list. That is
+      # both accurate and stronger: it reads as structured study across cloud,
+      # backend, testing and mobile, rather than a list of badges an employer
+      # cannot verify.
+      render_as: coursework_under_education
+      see: certifications.coursework_completed
+      summary_line: >-
+        Programme covered cloud (AWS, Microsoft Azure), .NET and C#, Java,
+        Python, SQL Server, HTML5/JavaScript/CSS3, mobile development and
+        software testing.
 
   - id: edu.shaw
     credential: Professional Diploma in Web Development (EQF Level 5, Distinction)
@@ -755,8 +780,10 @@ certifications:
     - { id: cert.fcc, name: "freeCodeCamp — Responsive Web Design Developer Certification (~300 hours)", issued: 2019-06-04, verify_url: "https://www.freecodecamp.org/certification/gedeon/responsive-web-design", source: CERTS p5 }
 
   coursework_completed:
+    # Curriculum of edu.itacademy, studied REMOTELY. Render under Education.
     issuer: IT Academy (IT SA Computer Services & Solutions (Pty) Ltd)
-    render_as: coursework
+    render_as: coursework_under_education
+    never_render_as: certification
     items:
       - { id: cert.dva,    name: "AWS Certified Developer – Associate (DVA-C01)", completed: 2021-01-25, source: CERTS p17-18 }
       - { id: cert.az900,  name: "AZ-900 Microsoft Azure Fundamentals",           completed: 2020-11-21, source: CERTS p21 }
@@ -870,18 +897,14 @@ portfolio_links:
   # BMO is a Canadian bank. Lead with pf.bmo on any Canadian application.
 
 referees:
-  - { id: ref.milton, name: Mr Milton Saaiman, relationship: "Colleague/supervisor — Salesian Institute (see exp.salesian.it)", org: Salesian Institute Youth Projects, phone: "+27828581836", email: milton.saaiman@salesianyouth.org.za, source: CVOLD, verify: true }
-  - { id: ref.rene,   name: Ms Rene Darling,   relationship: "Job placement coach — Salesian Institute", org: Salesian Institute Youth Projects, phone: "+27214251431", email: rene.darling@salesianyouth.org.za, source: CVOLD, verify: true }
-  # REASSESSED 2026-08-02. These were written off as "2018 youth-programme
-  # contacts". LinkedIn shows Gedeon was FULL-TIME STAFF at Salesian Institute
-  # as an IT Support Technician, Jan 2017 – Mar 2019 — so these are colleagues
-  # from a real two-year employment relationship, not course facilitators.
-  # That makes them genuinely usable work referees.
+  # REMOVED on Gedeon's instruction, 2026-08-02. The two Salesian Institute
+  # contacts previously listed here are NOT to be used or contacted, and their
+  # names and details have been deleted from this file. They still appear in
+  # CV-early-talentmarket.pdf — do NOT reinstate them from that source. Any
+  # future session re-reading the source documents must respect this.
   #
-  # Still needed:
-  #   - confirm they line-managed or worked directly with him in that role
-  #   - confirm the contact details are still live (they are from 2018)
-  #   - ask permission before listing them
-  #   - ideally add ONE current referee from Kurtosys or DataBalk, since
-  #     Canadian employers weight recency
-  # This is now a much smaller gap than previously assessed.
+  # No referees are listed, and none are needed. Canadian CV convention is to
+  # omit a referees section entirely; even "References available upon request"
+  # is treated as filler. Employers ask at offer stage.
+  render_on_cv: false
+  entries: []
