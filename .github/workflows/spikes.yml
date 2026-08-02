@@ -73,6 +73,7 @@ jobs:
             python spikes/run_all.py
           fi
           python spikes/04_method_census.py --limit "${{ inputs.census_limit || 30 }}" || true
+          python spikes/05_market_probe.py || true
 
       - name: Summarise into the job log
         if: always()
