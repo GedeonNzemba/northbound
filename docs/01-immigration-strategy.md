@@ -109,24 +109,35 @@ answer inverts both.
    ~70% agriculture, plus physicians and caregivers. Two tech roles in total.
    For a developer it is effectively empty.
 
-**Revised recommendation: roughly invert the previous split** — the majority of
-send capacity to general work, led by painting and construction labouring, with
-tech applications as the smaller, higher-upside track.
+### Gedeon's decision — 2026-08-02
 
-**But this is a life decision, not an engineering one, and it is Gedeon's to
-make.** The options are genuinely different futures:
+**Both queues, with opposite role filters.** Full statement in
+`docs/06-decisions.md` D6 and encoded in `config/sources.yaml`:
 
-- **Optimise for getting to Canada.** Apply hard into the 665 internationally-open
-  general roles. Painting is the strongest single lane — real documented
-  experience, the largest market, and no credential barrier. It means arriving as
-  a manual worker and rebuilding the software career from inside the country,
-  where the 463-role tech market is reachable.
-- **Optimise for the career.** Keep applying to the ~35 tech roles here, but
-  understand Job Bank is the wrong channel — Canadian tech hiring runs through
-  LinkedIn, company sites and Indeed, mostly for people already authorised to
-  work. That argues for the **French-language Express Entry route** (F6) as the
-  primary path and job applications as secondary.
-- **Both**, weighted toward general work, accepting slower progress on each.
+| Queue | Filter | Meaning |
+|---|---|---|
+| LMIA-approved (112) | **none** | Apply to every posting — farm, greenhouse, labouring, caregiving, butchery included |
+| International (7,884) | **developer roles only** | Web / front-end / software developer and adjacent. The 286 painter and 198 construction-labourer postings here are out of scope. |
+
+**The reasoning holds up better than the percentage splits it replaces:** filter
+on whatever is *not* already guaranteed. In the LMIA queue sponsorship is proven
+and role fit is the variable, so take any role. In the international queue role
+fit is achievable and sponsorship is not, so spend those slots only on the
+profession.
+
+There is no ratio to tune. The split is emergent — it lands wherever the postings
+land.
+
+**Note the interpretation this does NOT support.** Applying to farm and general
+work in the LMIA queue is not "giving up on the career". It is buying the entry
+ticket — the offer gets a work permit, the permit gets Canadian experience, and
+that experience gets CEC or a provincial nomination, at which point the 463-role
+domestic tech market is reachable from inside the country. Meanwhile the tech
+applications in the international queue run in parallel at no cost to the first
+track.
+
+The French-language route (F6) remains the highest-leverage item and is
+independent of both queues.
 
 **What this means for the software:** the transferable-skills track in
 `docs/04-cv-engine.md` is no longer a hedge — it becomes the **primary

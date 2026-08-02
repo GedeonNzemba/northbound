@@ -97,6 +97,42 @@ Superseded in part by **D5** on how apply details are retrieved.
 
 ---
 
+## D6 — Opposite role filters on the two queues
+**Decided 2026-08-02 by Gedeon.** Status: settled. Supersedes every earlier
+tech/general percentage split in `docs/01`.
+
+| Queue | Role filter | Why |
+|---|---|---|
+| **LMIA-approved** (`fskl=101020`, 112 postings) | **None — apply to everything** | Sponsorship is proven; role fit is the variable |
+| **International** (`fglo=1`, 7,884 postings) | **Developer roles only** | Role fit is achievable; sponsorship is unproven |
+
+**The principle: in each queue, filter on whatever is not already guaranteed.**
+
+An employer in the LMIA facet has paid the fee, run the recruitment and waited
+out the decision. That willingness is rarer and harder to find than a matching
+job title, so occupation is not a reason to skip one — farm work, greenhouse,
+labouring, caregiving and butchery are all in scope. Only hard blockers exclude a
+posting (unattainable licence, driver's licence, existing work authorisation
+required, closed).
+
+An employer in the international facet has shown only that they will read an
+application from abroad. A general-labour application there carries neither
+sponsorship nor role fit, so those slots go to Gedeon's actual profession. The
+286 painter and 198 construction-labourer postings in that facet are
+**deliberately out of scope** despite being the largest categories in it.
+
+**This replaces the percentage-split framing entirely.** There is no 60/40, 85/15
+or any other ratio — the split is an emergent consequence of two per-queue rules,
+and it will land wherever the postings land.
+
+**Operational consequence:** the initial universe is ~147 applications (112 + ~35),
+about four to five days of sending. After that this is a **monitoring** system,
+not a bulk sender. It also means the ranking layer matters far less than
+`docs/03` assumed: for the LMIA queue there is nothing to rank, because the
+answer is "all of them".
+
+---
+
 ## D5 — Per-posting apply-detail retrieval is the default path
 **Decided 2026-08-01 by Gedeon.** Status: settled. Supersedes the off-by-default
 position in D4.

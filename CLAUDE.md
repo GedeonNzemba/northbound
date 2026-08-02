@@ -20,8 +20,39 @@ inflated claims.
 
 ## ▶ RESUME HERE — state as of 2026-08-02
 
-**Where things stand:** planning complete, decisions recorded, three spikes
-written, zero application code. Four commits, all pushed, `main` = working branch.
+**Where things stand:** planning complete, decisions recorded, five spikes
+written **and run against the live site via GitHub Actions**, zero application
+code. `main` = working branch.
+
+### The application rule (D6) — read this before touching the matcher
+
+Two queues, **opposite** role filters. Filter on whatever is not already
+guaranteed:
+
+| Queue | Postings | Role filter |
+|---|---:|---|
+| **LMIA-approved** `fskl=101020` | 112 | **NONE — apply to all of them.** Sponsorship is proven; occupation is irrelevant. Farm, greenhouse, labouring, caregiving, butchery all in scope. |
+| **International** `fglo=1` | 7,884 | **Developer roles only.** Sponsorship is unproven; slots go to the profession. The 286 painter / 198 construction postings here are deliberately out of scope. |
+
+Initial universe ≈ **147 applications** (~4–5 days of sending). After that this is
+a **monitoring** system, not a bulk sender — and for the LMIA queue there is
+nothing to rank, because the answer is "all of them".
+
+### Measured facts (spikes 3–5, 2026-08-02, live)
+
+- `sort=M` is **newest-first** — polling page 1 is a valid live feed.
+- Search results are **server-rendered**, 25/page, `?page=N`. No browser needed
+  for discovery.
+- The apply reveal is **two clicks**: `#applynowbutton` ("Show how to apply"),
+  then the **"Additional ways to apply"** disclosure. The email is behind the
+  *second* one — missing it makes a posting look like Direct Apply only.
+- **75%** of LMIA postings are email-capable; address is a plain
+  `<a href="mailto:…">`.
+- **30%** carry screening questions the employer expects answered in the
+  application. The cover letter must answer them explicitly.
+- LMIA queue composition: ~70% agriculture, plus physicians, caregivers,
+  butchers. **Two** tech roles in the entire facet.
+- Job Bank serves GitHub Actions runners fine — HTTP 200, no bot checks.
 
 **Two ways forward. They are independent — neither blocks the other.**
 
