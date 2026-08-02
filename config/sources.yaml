@@ -1,0 +1,85 @@
+# Job Bank search sources — supplied by Gedeon 2026-08-02.
+#
+# These are the two queries the whole discovery layer hangs off. Both are
+# ordinary public search URLs — the same pages a person browsing Job Bank sees.
+#
+# STATUS: parameters below are INFERRED from the URL shape and NOT yet verified
+# against the live site (this container's egress policy blocks gc.ca). Everything
+# marked `inferred: true` must be confirmed by spikes/03_search_listing.py before
+# code depends on it.
+
+searches:
+  - id: international_candidates
+    label: Jobs open to international candidates
+    url: https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=&locationstring=&locationparam=&fglo=1&sort=M
+    facet: fglo=1
+    note: >-
+      Broader net. Employers who have flagged openness to candidates from
+      outside Canada. Not all will have or pursue an LMIA.
+
+  - id: lmia_approved
+    label: LMIA-approved employers
+    url: https://www.jobbank.gc.ca/jobsearch/jobsearch?page=1&sort=M&fskl=101020
+    facet: fskl=101020
+    note: >-
+      Narrower and higher-value. This is the primary queue — an employer already
+      through the LMIA process is demonstrably willing and able to sponsor.
+
+# ---------------------------------------------------------------------------
+# Parameter meanings — INFERRED, pending spike 3
+# ---------------------------------------------------------------------------
+parameters:
+  searchstring:
+    inferred: true
+    meaning: free-text keyword; empty returns everything
+    use: >-
+      Leave empty for the broad sweeps. Optionally run extra narrow queries for
+      "front end developer", "react developer", "web developer" to catch tech
+      postings that sit outside the two facets above.
+  locationstring / locationparam:
+    inferred: true
+    meaning: location filter; empty = nationwide
+    use: >-
+      Keep empty. Province filtering happens in our own ranking, where it can be
+      weighted against PNP activity rather than being a hard cut.
+  page:
+    inferred: true
+    meaning: 1-based pagination
+  sort:
+    inferred: true
+    meaning: "M — believed to be most-recent-first"
+    criticality: HIGH
+    why: >-
+      If M really is newest-first, page 1 of each search is a live feed of new
+      postings, and monitoring is just "poll page 1, diff against seen ids".
+      That would resolve the freshness gap that the monthly open-data CSV
+      cannot. If M means something else (relevance, match), the monitoring
+      design needs a different sort value and spike 3 must find it.
+  fglo:
+    inferred: true
+    meaning: facet — open to candidates outside Canada
+  fskl:
+    inferred: true
+    meaning: facet — 101020 believed to be the LMIA / TFW-approved facet
+    fragility: >-
+      A numeric facet code is an internal identifier. It can change without
+      notice and would fail SILENTLY — the query still returns results, just the
+      wrong ones. Guard: record the expected result-count magnitude at ingest and
+      alert on a large unexplained swing, and assert the facet label text still
+      appears on the rendered page.
+
+# ---------------------------------------------------------------------------
+# Polling — deliberately conservative
+# ---------------------------------------------------------------------------
+polling:
+  interval_minutes: 60
+  pages_per_poll: 1          # page 1 only; deeper paging only on first backfill
+  rationale: >-
+    Two page loads an hour is less traffic than one person refreshing the site
+    over a coffee break. Sort by newest means page 1 is sufficient to catch
+    everything as long as fewer than one page of jobs is posted per hour; if the
+    diff ever comes back completely new, that is the signal to page deeper.
+  backfill:
+    pages: 20
+    once: true
+    note: Paced the same as normal polling. One-time, on first run.

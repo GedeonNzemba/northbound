@@ -55,7 +55,10 @@ Rough cost: ~30 tailored applications/day at ~15K input (mostly cached) + ~4K ou
 ```
                       ┌──────────────────────────────────────────┐
                       │  SOURCES                                 │
-                      │  • open.canada.ca job-postings CSV       │
+                      │  • Job Bank search polling ◄── LIVE FEED │
+                      │      fskl=101020  (LMIA approved)        │
+                      │      fglo=1       (international)        │
+                      │  • open.canada.ca CSV (backfill only)    │
                       │  • Job Bank XML feed (once granted)      │
                       │  • TFWP positive-LMIA employer list      │
                       │  • ESDC refusal-to-process CMA list      │
@@ -98,6 +101,45 @@ Rough cost: ~30 tailored applications/day at ~15K input (mostly cached) + ~4K ou
 ```
 
 Every stage writes an immutable row to `events`. The dashboard is a projection of that table — which means the live view and the audit trail are the same thing, and there is no way for the UI to show something the system didn't actually do.
+
+---
+
+## Discovery — revised 2026-08-02
+
+Gedeon supplied the two search URLs the system runs on (`config/sources.yaml`):
+
+| | Facet | Role |
+|---|---|---|
+| **LMIA approved** | `fskl=101020` | Primary queue. The employer is already through the LMIA process — demonstrably willing and able to sponsor. |
+| **International candidates** | `fglo=1` | Wider net. Open to candidates outside Canada; may or may not pursue an LMIA. |
+
+Both carry **`sort=M`**, believed to be newest-first. If that holds — spike 3
+settles it — then **polling page 1 of each search is the live feed**, and the
+monitoring requirement is met by two page loads an hour. That is less traffic
+than one person refreshing the site over a coffee break, and it closes the
+freshness gap that the monthly open-data CSV structurally cannot.
+
+**This demotes the open-data CSV.** It was designed as the discovery layer; it
+becomes **backfill and employer corroboration** instead. That was the right call
+to make once the live source existed — the earlier design was building a
+monitoring system on a monthly file, which could never have satisfied the
+requirement.
+
+Guards, because the whole feed hangs off two URLs:
+
+- **`fskl=101020` is an internal facet code.** It can change without notice and
+  would fail *silently* — the query keeps returning results, just the wrong ones.
+  Ingest asserts that LMIA/TFW label text still appears on the rendered page, and
+  alerts on any large unexplained swing in result count.
+- **Page-1-only assumes fewer than one page of new jobs per poll.** If a diff ever
+  comes back entirely new, that is the signal to page deeper — the system detects
+  and reports this rather than silently missing postings.
+- **One-time backfill** of ~20 pages on first run, paced identically to normal
+  polling.
+
+Every parameter meaning in `config/sources.yaml` is currently marked
+`inferred: true`. None of it has been checked against the live site — spike 3
+exists to do that.
 
 ---
 

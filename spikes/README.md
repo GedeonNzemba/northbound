@@ -9,14 +9,17 @@ written in confident prose**. That's a real weakness in the plan, not a formalit
 
 ## Run them on your own machine
 
+**Start with spike 3** — it needs no browser, takes seconds, and prints the exact
+command for spike 1 with a real posting URL already filled in.
+
 ```bash
-pip install playwright requests && playwright install chromium
+pip install requests beautifulsoup4 lxml playwright && playwright install chromium
 
-# 1. The one that matters most. Any single Job Bank posting URL.
-python spikes/01_fetch_posting.py --url "https://www.jobbank.gc.ca/jobsearch/jobposting/XXXXXXX"
+# 3. The two search URLs. No browser needed.
+python spikes/03_search_listing.py
 
-# watch it happen the first time
-python spikes/01_fetch_posting.py --url "..." --headed
+# 1. Then a real posting — spike 3 prints this command for you with a live URL.
+python spikes/01_fetch_posting.py --url "<url spike 3 printed>" --headed
 
 # 2. Independent, run any time.
 python spikes/02_inspect_opendata.py
@@ -47,20 +50,35 @@ pushes back, that's an answer, not an obstacle.
 | **C2 — has an LMIA / foreign-candidate signal** | The Stage 1 "LMIA employers only" filter has no basis in this source and must come from the filtered search URL or the XML feed instead. |
 | **C3 — has NOC, wage, employer, location** | Ranking would have to be derived from the posting page itself, making spike 1's path the primary source rather than a supplement. |
 
+### Spike 3 — the two search URLs
+
+Added 2026-08-02, once Gedeon supplied the actual queries (`config/sources.yaml`).
+It is now the **most decisive** of the three.
+
+| Question | Why it matters |
+|---|---|
+| **Does `sort=M` mean newest-first?** | If yes, polling page 1 of each search is the live feed, and the monitoring requirement is solved by two page loads an hour. This single answer decides whether the discovery architecture is right. |
+| Server-rendered or JS-assembled? | Server-rendered means no browser in production — cheaper, faster, less conspicuous. |
+| Posting-URL / ID pattern | The dedup key the whole state machine turns on. |
+| What's on the result card? | Every field readable from the listing is one we never open a posting for — directly reduces how often we touch the site. |
+| Do the facet label words still appear? | `fskl=101020` is an internal code. If it silently changes meaning, the query still returns results — just the wrong ones. This is the guard against that. |
+
 ## What I expect to find
 
-Stating predictions up front so the spikes can actually falsify something,
-rather than being read to confirm what's already written:
+Predictions on record, so the spikes can falsify something rather than be read as
+confirmation:
 
-1. **C1 fails.** Monthly open data cannot support "tell me about new jobs." The
-   likely correction is: open data becomes a *backfill and employer-corroboration*
-   source, and live discovery moves to the filtered search pages — which makes
-   the fetch path in D5 central to discovery too, not just to contact resolution.
-2. **Spike 1 shows AJAX or already-in-DOM**, not navigation. Either would let us
-   drop Playwright from the production path entirely.
-3. **A meaningful share of postings are not email-apply.** If it's above roughly
-   a third, the `non_email` manual queue is a main workflow rather than an edge
-   case, and the dashboard needs to treat it as such.
+1. **Spike 2's freshness check fails**, and the open-data CSV is demoted from
+   discovery layer to backfill. *(Already acted on — `docs/03` now treats search
+   polling as the live feed. If spike 2 surprises us and the CSV turns out to be
+   near-daily, that decision gets revisited.)*
+2. **`sort=M` is newest-first.** The `M` and the fact that Gedeon uses these URLs
+   to spot new postings both point that way. If it turns out to mean relevance or
+   match, monitoring needs a different sort value and spike 3 will surface it.
+3. **Spike 1 shows AJAX or already-in-DOM**, not a navigation. Either drops
+   Playwright from the production path.
+4. **A meaningful share of postings are not email-apply.** Above roughly a third
+   and the `non_email` manual queue is a main workflow rather than an edge case,
+   and the dashboard has to treat it as one.
 
-If the results contradict these, the plan changes — that's the point of running
-them before writing code.
+Where the results contradict these, the plan changes. That is the point.
