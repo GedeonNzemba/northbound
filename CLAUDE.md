@@ -12,7 +12,8 @@ each one**, sends the application, tracks replies, and shows the whole thing
 happening live on a dashboard.
 
 The purpose is immigration to Canada via an LMIA-supported job offer. Gedeon is a
-front-end developer with 7 years of experience, currently in Cape Town. The system
+front-end developer in Cape Town, with front-end work running continuously from
+Feb 2016 (freelance) alongside employed roles. The system
 applies to **both** software roles and general roles backed by his real documented
 work history (painting, warehouse, security, retail, electrical assistance) — the
 non-software applications are honest transferable-skills applications, never
@@ -78,7 +79,6 @@ nothing to rank, because the answer is "all of them".
 - **State the ICAS equivalency with its file number.** Most overseas applicants
   never mention an ECA.
 
-**Two ways forward. They are independent — neither blocks the other.**
 ### Next step
 
 **Phase 1 — the CV engine**, per `docs/05-roadmap.md`. It touches Job Bank not at
@@ -115,7 +115,6 @@ Optional, still open: TEF Canada booking (highest-leverage item in the project �
 
 ---
 
-
 ## Read these in order
 
 | File | What it settles |
@@ -129,7 +128,6 @@ Optional, still open: TEF Canada booking (highest-leverage item in the project �
 | `docs/08-canadian-cv-specification.md` | **THE format authority.** Layout, section order per track, applying-from-abroad handling, what agricultural employers weight, cover-letter spec. Supersedes `docs/00` F11. |
 | `docs/05-roadmap.md` | Phased delivery |
 | `docs/06-decisions.md` | **Settled decisions — don't re-litigate these** |
-| `docs/07-cv-engine-research.md` | **Research behind the CV engine. Read before touching generation or rendering.** |
 | `profile/master-profile.yaml` | **Single source of truth for every generated document** |
 | `profile/PROFILE-GAPS.md` | What must be confirmed before mass sending |
 
