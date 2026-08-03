@@ -1,16 +1,387 @@
 {
   "spike": "03_search_listing",
-  "run_at": "2026-08-02T10:51:17.297282+00:00",
+  "run_at": "2026-08-03T07:25:54.045301+00:00",
   "results": [
     {
       "name": "international_candidates",
       "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=&locationstring=&locationparam=&fglo=1&sort=M",
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='www.jobbank.gc.ca', port=443): Max retries exceeded with url: /jobsearch/jobsearch?searchstring=&locationstring=&locationparam=&fglo=1&sort=M (Caused by ConnectTimeoutError(<HTTPSConnection(host='www.jobbank.gc.ca', port=443) at 0x7f3a10dac3e0>, 'Connection to www.jobbank.gc.ca timed out. (connect timeout=45)'))"
+      "http_status": 200,
+      "bytes": 281798,
+      "Q3_postings": {
+        "count_on_page": 25,
+        "id_looks_numeric": true,
+        "first_10": [
+          {
+            "id": "49999015",
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49999015;jsessionid=A2851A1EB1174D4F51B3B24E71F5ED4A.jobsearch75?source=searchresults"
+          },
+          {
+            "id": "49997402",
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49997402;jsessionid=A2851A1EB1174D4F51B3B24E71F5ED4A.jobsearch75?source=searchresults"
+          },
+          {
+            "id": "49996941",
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49996941;jsessionid=A2851A1EB1174D4F51B3B24E71F5ED4A.jobsearch75?source=searchresults"
+          },
+          {
+            "id": "49996940",
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49996940;jsessionid=A2851A1EB1174D4F51B3B24E71F5ED4A.jobsearch75?source=searchresults"
+          },
+          {
+            "id": "49996937",
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49996937;jsessionid=A2851A1EB1174D4F51B3B24E71F5ED4A.jobsearch75?source=searchresults"
+          },
+          {
+            "id": "49996188",
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49996188;jsessionid=A2851A1EB1174D4F51B3B24E71F5ED4A.jobsearch75?source=searchresults"
+          },
+          {
+            "id": "49996018",
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49996018;jsessionid=A2851A1EB1174D4F51B3B24E71F5ED4A.jobsearch75?source=searchresults"
+          },
+          {
+            "id": "49996015",
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49996015;jsessionid=A2851A1EB1174D4F51B3B24E71F5ED4A.jobsearch75?source=searchresults"
+          },
+          {
+            "id": "49995870",
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49995870;jsessionid=A2851A1EB1174D4F51B3B24E71F5ED4A.jobsearch75?source=searchresults"
+          },
+          {
+            "id": "49995859",
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49995859;jsessionid=A2851A1EB1174D4F51B3B24E71F5ED4A.jobsearch75?source=searchresults"
+          }
+        ],
+        "dedup_key_note": "posting id from the URL path is the natural dedup key"
+      },
+      "Q2_server_rendered": {
+        "verdict": "server_rendered",
+        "implication": "plain HTTP GET is sufficient \u2014 no browser needed for discovery"
+      },
+      "Q1_sort_order": {
+        "date_like_strings_in_page_order": [
+          "August 03, 2026",
+          "August 03, 2026",
+          "August 02, 2026",
+          "August 02, 2026",
+          "August 02, 2026",
+          "August 02, 2026",
+          "August 02, 2026",
+          "August 02, 2026",
+          "August 02, 2026",
+          "August 02, 2026",
+          "August 02, 2026",
+          "August 02, 2026",
+          "August 02, 2026",
+          "August 02, 2026",
+          "August 02, 2026",
+          "August 02, 2026",
+          "August 02, 2026",
+          "August 02, 2026",
+          "August 02, 2026",
+          "August 02, 2026",
+          "August 02, 2026",
+          "August 02, 2026",
+          "August 02, 2026",
+          "August 02, 2026",
+          "August 02, 2026"
+        ],
+        "how_to_read": "If these run newest \u2192 oldest down the page, sort=M is newest-first and polling page 1 is a valid live feed. If they look unordered, sort=M is NOT date sort and the monitoring design needs a different sort value.",
+        "verdict": "INSPECT MANUALLY \u2014 this one needs a human eye"
+      },
+      "Q4_pagination": {
+        "reported_total": "7,909",
+        "page_links_sample": [
+          {
+            "page": "1",
+            "href": "https://www.jobbank.gc.ca/jobsearch/jobsearch?fglo=1&page=1&sort=M"
+          },
+          {
+            "page": "1",
+            "href": "https://www.jobbank.gc.ca?fglo=1&page=1&sort=M"
+          },
+          {
+            "page": "1",
+            "href": "https://www.jobbank.gc.ca?fglo=1&page=1&sort=D"
+          },
+          {
+            "page": "1",
+            "href": "https://www.jobbank.gc.ca/jobsearch/advancedsearch?fglo=1&page=1&sort=M"
+          }
+        ],
+        "mechanism": "query param ?page=N"
+      },
+      "Q5_result_card": {
+        "html_excerpt": "<div class=\"results-list-wrapper col-md-9\" id=\"results-list-wrapper\">\n<h1 id=\"wb-cont\" property=\"name\">\n\t\t\t\t\t\t\tAvailable jobs - Search\n\t\t\t\t\t\t\n\t\t\t\t\t</h1>\n<div class=\"results-list-content\" id=\"results-list-content\">\n<span class=\"skip-to-filters wb-init wb-disable-inited visible-md visible-lg\"><span class=\"wb-slc\"><a class=\"wb-sl\" href=\"#locationstring-radiusmap\" tabindex=\"0\">Skip to filters</a></span></span>\n<span class=\"skip-to-filters wb-init wb-disable-inited visible-md visible-lg\"><span class=\"wb-slc\"><a class=\"wb-sl\" href=\"#map-help\" tabindex=\"0\">Skip to map</a></span></span>\n<div class=\"results-nav\">\n<div class=\"results-filter-button-overlay\">\n<button class=\"btn btn-default btn-sm command-result-filter-overlay\" type=\"button\"><span aria-hidden=\"true\" class=\"fal fa-sliders-h\"></span> Filters</button>\n<button class=\"btn btn-default btn-sm command-result-sortby-overlay\" type=\"button\"><span aria-hidden=\"true\" class=\"fas fa-sort\"></span> Sort by</button>\n<button class=\"btn btn-primary btn-sm command-search-overlay\" type=\"button\"><span aria-hidden=\"true\" class=\"far fa-search\"></span> <span class=\"text\">Search</span></button>\n</div>\n<div class=\"dropdown-btn-group\">\n<button class=\"btn btn-default btn-sm btn-mobile btn-dropdown-toggle\" type=\"button\">Recent searches <span aria-hidden=\"true\" class=\"fa-icon far fa-chevron-down\"></span></button>\n<ul class=\"dropdown-actions\">\n<li><a href=\"/jobsearch/jobsearch?fglo=1&amp;page=1&amp;sort=M\">Available jobs</a></li>\n</ul>\n</div>\n<div class=\"jobalert-group\">\n<div class=\"ja-buttons\"><a class=\"btn btn-default btn-sm btn-mobile command-create-alert\" href=\"/jobsearch/jobalert/indregister/fglo=1&amp;page=1&amp;sort=M;jsessionid=A2851A1EB1174D4F51B3B24E71F5ED4A.jobsearch75\" id=\"ajaxupdateform:j_id_35_3_19\">\n<span aria-hidden=\"true\" class=\"far fa-bell\"></span> Create alert \n\t\t\t\t\t\t\t\t\t\t  \t</a>\n</div>\n<div class=\"clearfix\"></div>\n</div>\n<div class=\"clearfix\"></div>\n<div class=\"clearfix\"></div>\n<div class=\"query-terms-group row col-md-12\">\n<ul class=\"list-unstyled\">\n<li class=\"pull-left\"><a class=\"btn btn-link btn-xs btn-keyword\" href=\"?sort=M\" role=\"button\"><span class=\"wb-inv\">Remove keyword</span> Canadians and international candidates<span aria-hidden=\"true\" class=\"fa fa-times\"></span></a></li>\n</ul>\n</div>\n<div class=\"clearfix\"></div>\n<div class=\"jobalert-results-group row\">\n<div class=\"results-summary\">\n<h2><span class=\"found\" id=\"results-count\">7,909</span> results\n\t\t\t\t\t\t\t\t\t</h2>\n</div>\n<div class=\"results-sortby-group btn-gr",
+        "text": "Available jobs - Search Skip to filters Skip to map Filters Sort by Search Recent searches Available jobs Create alert Remove keyword Canadians and international candidates 7,909 results Sort by: Best match Selected Best match Date posted Results sorted by \n\t\t\t\t\t\t\tBest match New On site Direct Apply Posted on Job Bank This job was posted directly by the employer on Job Bank. Job Bank handyperson August 03, 2026 Spruce Meadow Farms ltd. Location Happy Valley-Goose Bay (NL) Salary\n\t\t\t\t\t\t$17.00 hourly Job Bank Job number: 3636670 handyperson - Save to favourites Your favourites To add a job posti",
+        "classes_seen": [
+          [
+            "wb-inv",
+            103
+          ],
+          [
+            "fa",
+            103
+          ],
+          [
+            "btn",
+            85
+          ],
+          [
+            "description",
+            50
+          ],
+          [
+            "fa-info-circle",
+            50
+          ],
+          [
+            "job-source",
+            50
+          ],
+          [
+            "job-source-icon-16",
+            50
+          ],
+          [
+            "btn-cta",
+            50
+          ],
+          [
+            "btn-default",
+            33
+          ],
+          [
+            "fas",
+            31
+          ],
+          [
+            "btn-primary",
+            26
+          ],
+          [
+            "list-unstyled",
+            26
+          ],
+          [
+            "action-buttons",
+            25
+          ],
+          [
+            "resultJobItem",
+            25
+          ],
+          [
+            "title",
+            25
+          ]
+        ]
+      },
+      "Q6_facet_guard": {
+        "lmia_words_present": [
+          "lmia",
+          "labour market impact"
+        ],
+        "international_words_present": [
+          "international"
+        ],
+        "why": "If the facet code silently changes meaning, these words disappear while the query still returns results. Assert on them at ingest."
+      }
     },
     {
       "name": "lmia_approved",
       "url": "https://www.jobbank.gc.ca/jobsearch/jobsearch?page=1&sort=M&fskl=101020",
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='www.jobbank.gc.ca', port=443): Max retries exceeded with url: /jobsearch/jobsearch?page=1&sort=M&fskl=101020 (Caused by ConnectTimeoutError(<HTTPSConnection(host='www.jobbank.gc.ca', port=443) at 0x7f3a10d6bbf0>, 'Connection to www.jobbank.gc.ca timed out. (connect timeout=45)'))"
+      "http_status": 200,
+      "bytes": 278504,
+      "Q3_postings": {
+        "count_on_page": 25,
+        "id_looks_numeric": true,
+        "first_10": [
+          {
+            "id": "49917442",
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49917442?source=searchresults"
+          },
+          {
+            "id": "49868805",
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49868805?source=searchresults"
+          },
+          {
+            "id": "49864338",
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49864338?source=searchresults"
+          },
+          {
+            "id": "49851619",
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49851619?source=searchresults"
+          },
+          {
+            "id": "49837841",
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49837841?source=searchresults"
+          },
+          {
+            "id": "49820302",
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49820302?source=searchresults"
+          },
+          {
+            "id": "49816590",
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49816590?source=searchresults"
+          },
+          {
+            "id": "49811841",
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49811841?source=searchresults"
+          },
+          {
+            "id": "49782423",
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49782423?source=searchresults"
+          },
+          {
+            "id": "49768683",
+            "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49768683?source=searchresults"
+          }
+        ],
+        "dedup_key_note": "posting id from the URL path is the natural dedup key"
+      },
+      "Q2_server_rendered": {
+        "verdict": "server_rendered",
+        "implication": "plain HTTP GET is sufficient \u2014 no browser needed for discovery"
+      },
+      "Q1_sort_order": {
+        "date_like_strings_in_page_order": [
+          "July 16, 2026",
+          "July 08, 2026",
+          "July 08, 2026",
+          "July 06, 2026",
+          "July 03, 2026",
+          "June 30, 2026",
+          "June 30, 2026",
+          "June 29, 2026",
+          "June 24, 2026",
+          "June 22, 2026",
+          "June 19, 2026",
+          "June 19, 2026",
+          "June 17, 2026",
+          "June 17, 2026",
+          "June 16, 2026",
+          "June 16, 2026",
+          "June 15, 2026",
+          "June 15, 2026",
+          "June 11, 2026",
+          "June 11, 2026",
+          "June 11, 2026",
+          "June 08, 2026",
+          "June 08, 2026",
+          "June 06, 2026",
+          "June 05, 2026"
+        ],
+        "how_to_read": "If these run newest \u2192 oldest down the page, sort=M is newest-first and polling page 1 is a valid live feed. If they look unordered, sort=M is NOT date sort and the monitoring design needs a different sort value.",
+        "verdict": "INSPECT MANUALLY \u2014 this one needs a human eye"
+      },
+      "Q4_pagination": {
+        "reported_total": "110",
+        "page_links_sample": [
+          {
+            "page": "1",
+            "href": "https://www.guichetemplois.gc.ca/jobsearch/rechercheemplois?page=1&sort=M&fskl=101020"
+          },
+          {
+            "page": "1",
+            "href": "https://www.jobbank.gc.ca/jobsearch/jobsearch?fskl=101020&page=1&sort=M"
+          },
+          {
+            "page": "1",
+            "href": "https://www.jobbank.gc.ca/jobsearch/jobsearch?fglo=1&page=1&sort=M"
+          },
+          {
+            "page": "1",
+            "href": "https://www.jobbank.gc.ca?fskl=101020&page=1&sort=M"
+          },
+          {
+            "page": "1",
+            "href": "https://www.jobbank.gc.ca?fskl=101020&page=1&sort=D"
+          },
+          {
+            "page": "1",
+            "href": "https://www.jobbank.gc.ca/jobsearch/advancedsearch?page=1&sort=M&fskl=101020"
+          }
+        ],
+        "mechanism": "query param ?page=N"
+      },
+      "Q5_result_card": {
+        "html_excerpt": "<div class=\"results-list-wrapper col-md-9\" id=\"results-list-wrapper\">\n<h1 id=\"wb-cont\" property=\"name\">\n\t\t\t\t\t\t\tAvailable jobs - Search\n\t\t\t\t\t\t\n\t\t\t\t\t</h1>\n<div class=\"results-list-content\" id=\"results-list-content\">\n<span class=\"skip-to-filters wb-init wb-disable-inited visible-md visible-lg\"><span class=\"wb-slc\"><a class=\"wb-sl\" href=\"#locationstring-radiusmap\" tabindex=\"0\">Skip to filters</a></span></span>\n<span class=\"skip-to-filters wb-init wb-disable-inited visible-md visible-lg\"><span class=\"wb-slc\"><a class=\"wb-sl\" href=\"#map-help\" tabindex=\"0\">Skip to map</a></span></span>\n<div class=\"results-nav\">\n<div class=\"results-filter-button-overlay\">\n<button class=\"btn btn-default btn-sm command-result-filter-overlay\" type=\"button\"><span aria-hidden=\"true\" class=\"fal fa-sliders-h\"></span> Filters</button>\n<button class=\"btn btn-default btn-sm command-result-sortby-overlay\" type=\"button\"><span aria-hidden=\"true\" class=\"fas fa-sort\"></span> Sort by</button>\n<button class=\"btn btn-primary btn-sm command-search-overlay\" type=\"button\"><span aria-hidden=\"true\" class=\"far fa-search\"></span> <span class=\"text\">Search</span></button>\n</div>\n<div class=\"dropdown-btn-group\">\n<button class=\"btn btn-default btn-sm btn-mobile btn-dropdown-toggle\" type=\"button\">Recent searches <span aria-hidden=\"true\" class=\"fa-icon far fa-chevron-down\"></span></button>\n<ul class=\"dropdown-actions\">\n<li><a href=\"/jobsearch/jobsearch?fskl=101020&amp;page=1&amp;sort=M\">Available jobs</a></li>\n<li><a href=\"/jobsearch/jobsearch?fglo=1&amp;page=1&amp;sort=M\">Available jobs</a></li>\n</ul>\n</div>\n<div class=\"jobalert-group\">\n<div class=\"ja-buttons\"><a class=\"btn btn-default btn-sm btn-mobile command-create-alert\" href=\"/jobsearch/jobalert/indregister/page=1&amp;sort=M&amp;fskl=101020\" id=\"ajaxupdateform:j_id_35_3_19\">\n<span aria-hidden=\"true\" class=\"far fa-bell\"></span> Create alert \n\t\t\t\t\t\t\t\t\t\t  \t</a>\n</div>\n<div class=\"clearfix\"></div>\n</div>\n<div class=\"clearfix\"></div>\n<div class=\"clearfix\"></div>\n<div class=\"query-terms-group row col-md-12\">\n<ul class=\"list-unstyled\">\n<li class=\"pull-left\"><a class=\"btn btn-link btn-xs btn-keyword\" href=\"?\" role=\"button\"><span class=\"wb-inv\">Remove keyword</span> Approved LMIA<span aria-hidden=\"true\" class=\"fa fa-times\"></span></a></li>\n</ul>\n</div>\n<div class=\"clearfix\"></div>\n<div class=\"jobalert-results-group row\">\n<div class=\"results-summary\">\n<h2><span class=\"found\" id=\"results-count\">110</span> results\n\t\t\t\t\t\t\t\t\t</h2>\n</div>\n<div class=\"results-sortby-gro",
+        "text": "Available jobs - Search Skip to filters Skip to map Filters Sort by Search Recent searches Available jobs Available jobs Create alert Remove keyword Approved LMIA 110 results Sort by: Best match Selected Best match Date posted Search jobs from Canadian employers who want to recruit temporary foreign workers. Results sorted by \n\t\t\t\t\t\t\tBest match On site Direct Apply Posted on Job Bank This job was posted directly by the employer on Job Bank. Job Bank general labourer - farm July 16, 2026 Cebulak Family Farms Location Windham Centre (ON) Salary\n\t\t\t\t\t\t$17.60 hourly Job Bank Job number: 3623471 ge",
+        "classes_seen": [
+          [
+            "wb-inv",
+            103
+          ],
+          [
+            "fa",
+            103
+          ],
+          [
+            "btn",
+            85
+          ],
+          [
+            "description",
+            50
+          ],
+          [
+            "fa-info-circle",
+            50
+          ],
+          [
+            "job-source",
+            50
+          ],
+          [
+            "job-source-icon-16",
+            50
+          ],
+          [
+            "btn-cta",
+            50
+          ],
+          [
+            "btn-default",
+            33
+          ],
+          [
+            "fas",
+            30
+          ],
+          [
+            "btn-primary",
+            26
+          ],
+          [
+            "list-unstyled",
+            26
+          ],
+          [
+            "action-buttons",
+            25
+          ],
+          [
+            "resultJobItem",
+            25
+          ],
+          [
+            "title",
+            25
+          ]
+        ]
+      },
+      "Q6_facet_guard": {
+        "lmia_words_present": [
+          "lmia",
+          "labour market impact",
+          "temporary foreign worker"
+        ],
+        "international_words_present": [
+          "international"
+        ],
+        "why": "If the facet code silently changes meaning, these words disappear while the query still returns results. Assert on them at ingest."
+      }
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "run_at": "2026-08-02T10:51:17.137878+00:00",
+  "run_at": "2026-08-03T07:25:53.804312+00:00",
   "runner": "github-actions",
   "steps": {
     "03_search_listing": {
@@ -7,13 +7,14 @@
       "ok": true
     },
     "01_fetch_posting": {
-      "skipped": true,
-      "reason": "spike 3 produced no posting URL \u2014 either it was blocked, or the results are not server-rendered (see its report)"
+      "exit": 0,
+      "ok": true,
+      "url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49917442?source=searchresults"
     },
     "02_inspect_opendata": {
       "exit": 1,
       "ok": false
     }
   },
-  "chained_posting_url": null
+  "chained_posting_url": "https://www.jobbank.gc.ca/jobsearch/jobposting/49917442?source=searchresults"
 }
