@@ -87,11 +87,22 @@ category's trust-ramp counter and re-locks auto-send.
 
 ---
 
-## Canadian format rules (from `docs/00-research-findings.md` F11)
+## Canadian format rules
+
+> **`docs/08-canadian-cv-specification.md` is the authority.** It supersedes
+> `docs/00` F11, which rested on résumé-builder marketing sources. What follows
+> is the summary; the full spec — layout, section order per track, sector
+> expectations, applying-from-abroad handling, cover-letter structure — is there.
 
 Baked into the template, not left to the model:
 
-- **1–2 pages**, reverse-chronological.
+- **Track A: 2 pages. Track B: 1 page.** Reverse-chronological. (`docs/08` §1.5)
+- **City and country only** in the contact block — no street address, no postal
+  code. Phone in full `+CC` international format.
+- **Every foreign employer carries a context clause** — a Canadian reader does
+  not know what Kurtosys, UCOOK or Polarama are. (`docs/08` §3.2)
+- **State the ICAS equivalency explicitly** under Education, with the file
+  number. Most overseas applicants never mention an ECA. (`docs/08` §3.1)
 - **No photo. No date of birth. No age. No marital status. No nationality. No ID
   number. No gender.** Canadian human-rights law makes these unwelcome and they
   get applications discarded.
@@ -111,9 +122,14 @@ Baked into the template, not left to the model:
 - **Map the title to NOC 2021.** *"Front-End Engineer"* → *"Front-End Developer
   (NOC 21234)"*. Cite the ICAS assessment explicitly under Education — Canadian
   employers know what an ECA is and its presence signals a serious candidate.
-- One line, near the top: *"Seeking an LMIA-supported position; available to
-  relocate to Canada."* Employers who are not open to sponsorship should know in
-  five seconds, and the ones who are should know they are in the right place.
+- **NO work-permit or visa line on the CV.** *(Corrected 2026-08-02 — see
+  `docs/08` §1.2.)* An earlier version of this document put
+  "Seeking an LMIA-supported position" near the top of the CV. That is the wrong
+  document: immigration status is not a Canadian résumé element, it sits
+  alongside exactly the personal characteristics that must not appear, and in the
+  header it invites filtering before anything else is read. It goes in **cover
+  letter paragraph 4**, as one plain factual sentence. Nothing is concealed — the
+  CV earns the read, the letter states the position one paragraph later.
 
 ---
 
@@ -125,10 +141,16 @@ The `track` field from the matcher decides which of these runs.
 
 Standard strong technical CV. What matters:
 
-- Lead the summary with **7 years of production front-end experience**, and with
-  the fact that he has shipped for **North American clients including BMO** — a
-  Canadian bank is the single most relevant line in the whole profile for a
-  Canadian employer.
+- **Lead with the remote-work evidence.** The employer's actual doubt about an
+  overseas applicant is whether they can function in the organisation from a
+  distance. Gedeon's answer is documentary, not aspirational: **DataBalk is a
+  Netherlands company and he works for them remotely, now.** Add the Kurtosys
+  client work across the US, Canada, UK and Netherlands — **including BMO, a
+  Canadian bank**. (`docs/08` §3.4)
+- **Front-end experience runs from Feb 2016**, not 2019 — `exp.freelance` is six
+  years seven months of continuous freelance development underneath the employed
+  roles. His own CV2026 summary claims "4+ years" and under-sells him by several
+  years. State the real span.
 - Mirror the posting's stack precisely. React role → React work first. WordPress
   role → Kurtosys and Eat Creative first. TypeScript in the posting →
   TypeScript in the skills line, not "JavaScript (ES6+), TypeScript, …".
@@ -145,6 +167,13 @@ Standard strong technical CV. What matters:
 This is the harder document, and the one the user specifically asked to get right.
 It must be **honest, specific, and confident** — not apologetic, not padded, and
 never implying experience he doesn't have.
+
+**Section order — deliberately different from Track A** (`docs/08` §2.4). A farm
+or food employer reading for seven seconds must hit relevant physical experience
+immediately; opening with "Front-End Engineer at a FinTech company" tells them in
+one second that this is the wrong applicant. The software career is not hidden —
+it sits under *Additional Experience*, where it reads as context rather than
+mismatch.
 
 **Structure:**
 
@@ -163,9 +192,21 @@ never implying experience he doesn't have.
    framed for what actually transfers: reliability, working to a spec, safety
    discipline, communication with clients.
 5. **Education & Training** — Northlink N1–N2–N4 Mechanical Engineering leads
-   here for any trades or technical role. It is the strongest formal technical
-   credential he has for non-software work and it is currently missing from his
-   2026 CV entirely.
+   here for any trades or technical role, followed by the **ICAS equivalency
+   stated explicitly with its file number** (`docs/08` §3.1). Most overseas
+   applicants never mention an ECA; on this track it is close to the strongest
+   education line available, because it tells the employer in their own frame of
+   reference exactly what the qualification is worth.
+
+**What these employers actually weight** (`docs/08` §4), in their order:
+previous hands-on experience > physical capability and stamina > reliability and
+being asked back > safety awareness > English > availability > teamwork.
+`docs/08` §4 maps every one of those to a specific cited entry in
+`master-profile.yaml`.
+
+**Register:** plain, concrete, unembellished. Short sentences. Real nouns —
+harness, trench, conduit, pallet, shift. Corporate résumé-speak reads as a poor
+fit to a farm employer, not as professionalism.
 6. **Skills** — practical first. Working at height with fall-arrest PPE. Hand
    tools. Stock counting and verification. Customer service. Then languages —
    **French, English, Lingala, Kituba, Afrikaans is a genuine asset** in a

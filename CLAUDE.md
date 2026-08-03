@@ -68,6 +68,15 @@ nothing to rank, because the answer is "all of them".
   specificity budget: two concrete particulars per paragraph, minimum.
 - **The ATS round-trip test is the highest-value check in the system.** Generate
   → parse → diff. 100% recovery of the six fields or reject.
+- **Work-permit status goes in the COVER LETTER, never the CV** (`docs/08` §1.2).
+  Immigration status is not a Canadian résumé element.
+- **Contact block: city + country only.** No street address, no postal code.
+  Phone in `+CC` format.
+- **Track A = 2 pages, Track B = 1 page**, and Track B uses a *different section
+  order* — relevant physical experience first, software career under
+  *Additional Experience*.
+- **State the ICAS equivalency with its file number.** Most overseas applicants
+  never mention an ECA.
 
 **Two ways forward. They are independent — neither blocks the other.**
 ### Next step
@@ -117,6 +126,7 @@ Optional, still open: TEF Canada booking (highest-leverage item in the project �
 | `docs/03-architecture.md` | Stack, components, data model, dashboard |
 | `docs/04-cv-engine.md` | Generation contract, Canadian format rules, the two tracks |
 | `docs/07-cv-engine-research.md` | **ATS parsing, recruiter behaviour, hallucination detection, eval harness. Read before building generation or rendering.** |
+| `docs/08-canadian-cv-specification.md` | **THE format authority.** Layout, section order per track, applying-from-abroad handling, what agricultural employers weight, cover-letter spec. Supersedes `docs/00` F11. |
 | `docs/05-roadmap.md` | Phased delivery |
 | `docs/06-decisions.md` | **Settled decisions — don't re-litigate these** |
 | `docs/07-cv-engine-research.md` | **Research behind the CV engine. Read before touching generation or rendering.** |
