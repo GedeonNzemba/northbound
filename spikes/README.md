@@ -82,3 +82,28 @@ confirmation:
    and the dashboard has to treat it as one.
 
 Where the results contradict these, the plan changes. That is the point.
+
+## 06 — golden set harvest (one-shot)
+
+Builds `postings/golden/` — 15 LMIA-queue postings (all occupations, D6) and 5
+developer roles from the international queue — as `Posting` JSON the CLI reads
+directly:
+
+```
+northbound generate --posting postings/golden/49816590.json --out out/
+```
+
+**It refuses to overwrite an existing set.** That is the point: an evaluation
+set that re-harvests is a moving target, and two runs against different inputs
+cannot be compared. Job Bank postings expire, so build a *new* set under a new
+directory rather than refreshing this one.
+
+Run it from the Actions tab: *spikes* → *Run workflow* → tick
+**harvest_golden_set** (and **skip_other_spikes** to run only the harvest).
+
+Extraction is multi-path by design — JSON-LD first, then labelled fields, then
+a text fallback — and the report records which path won per field, so the next
+version can drop the paths that never fire. Provenance (capture time, SHA,
+extraction paths, email-capability) goes in `MANIFEST.json`; the posting files
+themselves carry only the fields `Posting` accepts, because the CLI rejects
+unknown keys.
