@@ -26,6 +26,16 @@ on:
         required: false
         default: "30"
         type: string
+      harvest_golden_set:
+        description: "Spike 6: harvest the frozen golden set (one-shot; refuses if one already exists)"
+        required: false
+        default: false
+        type: boolean
+      skip_other_spikes:
+        description: "Run ONLY the golden-set harvest (skip spikes 1-5)"
+        required: false
+        default: false
+        type: boolean
   schedule:
     # Weekly re-check. The site changes; the parsers should not silently rot.
     - cron: "17 6 * * 1"
@@ -63,6 +73,7 @@ jobs:
 
       - name: Run spikes
         id: spikes
+        if: inputs.skip_other_spikes != true
         continue-on-error: true
         run: |
           if [ -n "${{ inputs.posting_url }}" ]; then
@@ -74,6 +85,15 @@ jobs:
           fi
           python spikes/04_method_census.py --limit "${{ inputs.census_limit || 30 }}" || true
           python spikes/05_market_probe.py || true
+
+      # One-shot, and opt-in for exactly that reason. The golden set is frozen:
+      # the spike refuses to overwrite an existing one, because re-harvesting
+      # would silently make two evaluation runs incomparable.
+      - name: Harvest the golden set
+        id: golden
+        if: inputs.harvest_golden_set == true
+        continue-on-error: true
+        run: python spikes/06_golden_set.py --lmia 15 --intl 5
 
       - name: Summarise into the job log
         if: always()
@@ -105,6 +125,9 @@ jobs:
           # JSON reports are committed for review; raw HTML stays in the artifact
           # so the repo does not fill up with multi-megabyte page dumps.
           git add -f spikes/out/*.json 2>/dev/null || true
+          # The golden set is committed because it is the frozen evaluation
+          # input — it has to live in version control to be frozen at all.
+          git add -f postings/golden/*.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "no changes to commit"
           else

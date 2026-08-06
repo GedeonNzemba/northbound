@@ -29,10 +29,31 @@ from .generate.generator import (
     GenerationError, Posting, choose_track, finalise, generate_application,
     render_parked,
 )
-from .generate.llm import DEFAULT_MODEL, LLMError, default_client
+from .generate.llm import (
+    DEFAULT_MODEL, LLMError, RefusalError, UsageTally, default_client,
+)
+from .generate.prompts import TASK_DIRECTIVE, posting_block, system_blocks
 from .profile import ProfileError, load_profile
 
 EXIT_OK, EXIT_ERROR, EXIT_PARKED = 0, 1, 2
+
+
+def posting_from_json(text: str, *, default_id: str) -> Posting:
+    """
+    Parse one posting file. Unknown keys are an error, not a shrug.
+
+    The golden set is frozen, so a field the harvester writes but `Posting` does
+    not accept would break every entry at load time with no way to fix it by
+    re-harvesting. Better to fail on the first file than to silently drop data.
+    """
+    data = json.loads(text)
+    data.setdefault("posting_id", default_id)
+    data["screening"] = tuple(data.get("screening", ()) or ())
+    unknown = set(data) - set(Posting.__dataclass_fields__)
+    if unknown:
+        raise GenerationError(
+            f"unknown field(s) in posting JSON: {', '.join(sorted(unknown))}")
+    return Posting(**data)
 
 
 def _load_posting(args: argparse.Namespace) -> Posting:
@@ -55,15 +76,8 @@ def _load_posting(args: argparse.Namespace) -> Posting:
     text = sys.stdin.read() if src == "-" else Path(src).read_text(encoding="utf-8")
 
     if src.endswith(".json") or text.lstrip().startswith("{"):
-        data = json.loads(text)
-        data.setdefault("posting_id", "stdin" if src == "-" else Path(src).stem)
-        data["screening"] = tuple(data.get("screening", ()) or ())
-        known = {f for f in Posting.__dataclass_fields__}
-        unknown = set(data) - known
-        if unknown:
-            raise GenerationError(
-                f"unknown field(s) in posting JSON: {', '.join(sorted(unknown))}")
-        posting = Posting(**data)
+        posting = posting_from_json(
+            text, default_id="stdin" if src == "-" else Path(src).stem)
     else:
         if not (args.employer and args.title):
             raise GenerationError(
@@ -96,7 +110,6 @@ def _cmd_generate(args: argparse.Namespace) -> int:
         print(f"screening: {len(qs)} question(s) the letter must answer")
 
     if args.dry_run:
-        from .generate.prompts import TASK_DIRECTIVE, posting_block, system_blocks
         blocks = system_blocks(profile, track)
         print("\n===== SYSTEM =====")
         for b in blocks:
@@ -121,9 +134,14 @@ def _cmd_generate(args: argparse.Namespace) -> int:
 
     out_dir = Path(args.out)
     if outcome.ready:
-        paths = finalise(outcome, profile, out_dir / "ready")
-        print(f"CV     : {paths['cv']}")
-        print(f"Letter : {paths['letter']}")
+        paths = finalise(outcome, profile, out_dir / "ready", pdf=not args.no_pdf)
+        for label, key in (("CV", "cv"), ("Letter", "letter"),
+                           ("CV (pdf)", "cv_pdf"), ("Letter (pdf)", "letter_pdf")):
+            if key in paths:
+                print(f"{label:<13}: {paths[key]}")
+        if not args.no_pdf and "cv_pdf" not in paths:
+            print("(no PDF companions — LibreOffice cannot convert on this "
+                  "machine. The DOCX is the canonical artefact and is unaffected.)")
         return EXIT_OK
 
     paths = render_parked(outcome, profile, out_dir / "parked")
@@ -131,6 +149,92 @@ def _cmd_generate(args: argparse.Namespace) -> int:
     for k in ("cv", "letter", "report"):
         print(f"  {k:7}: {paths[k]}")
     return EXIT_PARKED
+
+
+def _cmd_batch(args: argparse.Namespace) -> int:
+    """
+    Run the whole golden set. One posting failing must not stop the run.
+
+    `--dry-run` here is the cheap smoke test that matters most: it proves every
+    posting loads, picks a track, and builds a prompt, across twenty real
+    documents, without spending anything. Run it before the first paid pass.
+    """
+    profile = load_profile(args.profile)
+    directory = Path(args.dir)
+    files = sorted(f for f in directory.glob("*.json") if f.name != "MANIFEST.json")
+    if not files:
+        raise GenerationError(f"no posting files in {directory}")
+
+    client = None if args.dry_run else default_client(os.environ.get("ANTHROPIC_API_KEY"))
+    out_dir = Path(args.out)
+    rows: list[tuple[str, str, str, str]] = []
+    totals = UsageTally()
+    failures = 0
+
+    print(f"{len(files)} posting(s) from {directory}\n")
+    for n, f in enumerate(files, 1):
+        try:
+            posting = posting_from_json(f.read_text(encoding="utf-8"),
+                                        default_id=f.stem)
+        except (GenerationError, json.JSONDecodeError, TypeError) as exc:
+            rows.append((f.stem, "-", "LOAD-FAIL", str(exc)[:60]))
+            failures += 1
+            print(f"[{n:>2}/{len(files)}] {f.name}: LOAD FAILED — {exc}")
+            continue
+
+        track = args.track or choose_track(posting)
+        label = f"{posting.employer[:24]} — {posting.title[:30]}"
+
+        if args.dry_run:
+            # Build the prompt for real; a failure here is a bug we want now.
+            blocks = system_blocks(profile, track)
+            user = posting_block(posting.body, posting.employer, posting.title,
+                                 posting.questions)
+            rows.append((posting.posting_id, track, "PROMPT-OK",
+                         f"{sum(len(b['text']) for b in blocks) + len(user):,} chars, "
+                         f"{len(posting.questions)}q"))
+            print(f"[{n:>2}/{len(files)}] {label}  [{track}]  ok")
+            continue
+
+        try:
+            outcome = generate_application(
+                client, posting, profile, track=track, model=args.model,
+                max_attempts=args.max_attempts, verify_entailment=not args.no_verify)
+        except Exception as exc:  # noqa: BLE001 — one posting must not kill the run
+            rows.append((posting.posting_id, track, "ERROR", f"{type(exc).__name__}: {exc}"[:60]))
+            failures += 1
+            print(f"[{n:>2}/{len(files)}] {label}  ERROR — {type(exc).__name__}: {exc}")
+            continue
+
+        for field in ("calls", "input_tokens", "output_tokens",
+                      "cache_creation_input_tokens", "cache_read_input_tokens"):
+            setattr(totals, field, getattr(totals, field) + getattr(outcome.usage, field))
+
+        if outcome.ready:
+            finalise(outcome, profile, out_dir / "ready", pdf=not args.no_pdf)
+            rows.append((posting.posting_id, track, "READY",
+                         f"{outcome.attempts} attempt(s)"))
+        else:
+            render_parked(outcome, profile, out_dir / "parked")
+            rows.append((posting.posting_id, track, "PARKED", outcome.parked_reason[:60]))
+        print(f"[{n:>2}/{len(files)}] {label}  [{track}]  {rows[-1][2]}  {rows[-1][3]}")
+
+    # ---- summary ---------------------------------------------------------- #
+    print("\n" + "=" * 78)
+    width = max(len(r[0]) for r in rows)
+    for pid, track, status, note in rows:
+        print(f"  {pid:<{width}}  {track:<12}  {status:<10}  {note}")
+
+    counts: dict[str, int] = {}
+    for _, _, status, _ in rows:
+        counts[status] = counts.get(status, 0) + 1
+    print("\n  " + "   ".join(f"{k} {v}" for k, v in sorted(counts.items())))
+    if not args.dry_run:
+        print("  " + totals.report().replace("\n", "\n  "))
+
+    if failures:
+        return EXIT_ERROR
+    return EXIT_PARKED if counts.get("PARKED") else EXIT_OK
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -153,6 +257,8 @@ def build_parser() -> argparse.ArgumentParser:
                         "iteration; NEVER appropriate for a document to be sent")
     g.add_argument("--dry-run", action="store_true",
                    help="print the exact prompt and exit without calling the model")
+    g.add_argument("--no-pdf", action="store_true",
+                   help="skip the PDF companions (DOCX is canonical either way)")
     # Metadata for plain-text postings, and overrides for JSON ones.
     g.add_argument("--employer")
     g.add_argument("--title")
@@ -162,6 +268,21 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--queue", choices=["lmia_approved", "international_candidates"])
     g.add_argument("--url")
     g.set_defaults(func=_cmd_generate)
+
+    b = sub.add_parser("batch", help="run every posting in a directory (the golden set)")
+    b.add_argument("--dir", default="postings/golden",
+                   help="directory of posting JSON files (default: postings/golden)")
+    b.add_argument("--out", default="out")
+    b.add_argument("--profile", default=None)
+    b.add_argument("--track", choices=["direct", "transferable"], default=None)
+    b.add_argument("--model", default=DEFAULT_MODEL)
+    b.add_argument("--max-attempts", type=int, default=2)
+    b.add_argument("--no-verify", action="store_true")
+    b.add_argument("--no-pdf", action="store_true")
+    b.add_argument("--dry-run", action="store_true",
+                   help="load, choose a track and build every prompt without "
+                        "calling the model — the smoke test to run first")
+    b.set_defaults(func=_cmd_batch)
     return p
 
 
@@ -169,6 +290,12 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
         return args.func(args)
+    except RefusalError as exc:
+        print(f"error: {exc}\n"
+              "The request was declined by a safety classifier. Retrying the "
+              "same posting will fail the same way — check what in the posting "
+              "text triggered it before trying again.", file=sys.stderr)
+        return EXIT_ERROR
     except (GenerationError, ProfileError, LLMError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return EXIT_ERROR

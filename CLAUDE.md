@@ -36,15 +36,40 @@ What exists in `backend/northbound/`:
 | `generate/audit.py` | Layer 1, deterministic, blocking. |
 | `generate/entailment.py` | Layer 3, claim-level, context-isolated. |
 | `generate/render_docx.py` | Native DOCX. No tables/headers/images, ever. |
+| `generate/render_pdf.py` | PDF companion, converted from the DOCX. Optional. |
+| `generate/llm.py` | The single seam onto the Anthropic SDK. Usage/cache tally. |
 | `evaluate/ats_roundtrip.py` | Layer 2. Generate → parse → diff. The hard gate. |
-| `cli.py` | `northbound generate --posting <file>`. Exit 0 ready, 2 parked, 1 error. |
+| `cli.py` | `generate` (one posting) and `batch` (the golden set). Exit 0 ready, 2 parked, 1 error. |
 
 **The gate is closed by default.** `status` is `parked` unless every check
 passed; `finalise()` refuses to render a parked application to the send path.
 One draft, one repair, then parked for human review — never auto-sent.
 
 Try it without spending anything:
-`python3 -m northbound.cli generate --posting <file>.json --dry-run`
+`python3 -m northbound.cli batch --dir postings/golden --dry-run`
+
+**Facts about `claude-opus-5` this engine depends on** (verified against the
+current API reference, not remembered):
+
+- Thinking is **on by default** and counts against `max_tokens`. A limit sized
+  around the JSON alone truncates mid-document. 16000 for generation, 4000 for
+  the verifier.
+- A request can be **declined** — HTTP 200, `stop_reason: "refusal"`, no
+  parsed output. `RefusalError`, distinct from a parse failure, because a
+  retry of the same prompt fails identically.
+- `messages.parse(output_format=Model)` → `resp.parsed_output`; `effort` lives
+  inside `output_config`; `cache_control` goes on the **last** system block
+  (render order is tools → system → messages, so the posting stays after the
+  breakpoint). Minimum cacheable prefix is 512 tokens — the profile block is
+  far above it.
+- **Unverified, documented at its call site in `llm.py`:** whether
+  `output_config` may ride alongside `parse()`'s `output_format`. If a live run
+  rejects it, drop the `effort` argument; nothing else depends on it.
+
+**LibreOffice `soffice` on PATH is not a PDF capability check.** An install
+without the Writer module has the binary, exits 0, prints "source file could
+not be loaded", and produces nothing — for every document. `pdf_available()`
+converts a real probe document instead of inferring.
 
 ### The application rule (D6) — read this before touching the matcher
 
@@ -106,16 +131,23 @@ The engine runs; what it has never done is run **against the real model on real
 postings**. Everything so far is verified with a fake client, which proves the
 gate works and proves nothing about document quality.
 
-1. **Golden set** — freeze 20 real postings from the spike output (15 LMIA-queue,
-   5 international developer) as JSON in `postings/`. Nothing can be measured
-   until the inputs stop moving.
-2. **First real runs.** `pip install anthropic`, set `ANTHROPIC_API_KEY`, run the
-   CLI over the golden set. Read what gets parked and why — the parked reasons
-   are the prompt's bug report.
-3. **Layer 4 human calibration** before Layer 3's judge: Gedeon rates ~20
+1. **Golden set** — `spikes/06_golden_set.py`, run from the Actions tab
+   (*spikes* → *Run workflow* → tick `harvest_golden_set` and
+   `skip_other_spikes`). Writes `postings/golden/`. It **refuses to overwrite**
+   an existing set: an evaluation input that re-harvests is a moving target,
+   and Job Bank postings expire, so two runs would silently measure different
+   things. Build a new set in a new directory instead.
+2. **Smoke test, free:** `northbound batch --dir postings/golden --dry-run`.
+   Every format bug in the harvested set surfaces here rather than a third of
+   the way through a paid run.
+3. **First real runs.** `pip install anthropic`, set `ANTHROPIC_API_KEY`, then
+   `northbound batch --dir postings/golden --out out/`. Read what gets parked
+   and why — the parked reasons are the prompt's bug report. Watch the cache
+   read percentage in the usage line; it is the only evidence the cached
+   profile prefix is working.
+4. **Layer 4 human calibration** before Layer 3's judge: Gedeon rates ~20
    documents, and the judge is only trusted once it agrees with him (Cohen's κ).
    A judge built before that measures its own preferences.
-4. **PDF companion renderer** — DOCX stays canonical.
 
 Sequence matters: **golden set → deterministic checks → ATS round-trip →
 generator → renderer → judge.** The measurement is built before the thing being

@@ -23,6 +23,7 @@ from northbound.generate.generator import (
     GenerationError, Posting, choose_track, finalise, generate_application,
     render_parked,
 )
+from northbound.generate.llm import LLMError, RefusalError
 from northbound.generate.prompts import render_profile_block, system_blocks
 from northbound.generate.schemas import DocumentSet
 
@@ -31,10 +32,22 @@ from northbound.generate.schemas import DocumentSet
 # Fake client
 # --------------------------------------------------------------------------- #
 
+class _Usage:
+    """Mirrors the shape the SDK returns. Cache reads are the field that matters."""
+
+    def __init__(self, cache_read=1000, cache_creation=0, inp=200, out=800):
+        self.input_tokens = inp
+        self.output_tokens = out
+        self.cache_creation_input_tokens = cache_creation
+        self.cache_read_input_tokens = cache_read
+
+
 class _Resp:
-    def __init__(self, parsed):
+    def __init__(self, parsed, stop_reason="end_turn", usage=None, stop_details=None):
         self.parsed_output = parsed
-        self.stop_reason = "end_turn"
+        self.stop_reason = stop_reason
+        self.usage = usage if usage is not None else _Usage()
+        self.stop_details = stop_details
 
 
 class _FakeMessages:
@@ -335,6 +348,68 @@ def test_a_parked_application_cannot_be_finalised(tmp_path):
     out = generate_application(FakeClient([bad, bad]), FARM, PROFILE)
     with pytest.raises(GenerationError, match="parked"):
         finalise(out, PROFILE, tmp_path)
+
+
+# --------------------------------------------------------------------------- #
+# SDK surface — the failures that only show up against the real API
+# --------------------------------------------------------------------------- #
+
+def test_a_refusal_is_raised_as_its_own_error_not_a_parse_failure():
+    """Retrying a declined prompt fails the same way — the remedy differs."""
+    class Refusing:
+        messages = type("M", (), {
+            "parse": staticmethod(lambda **kw: _Resp(
+                None, stop_reason="refusal",
+                stop_details=type("D", (), {"category": "cyber"})())),
+        })()
+
+    with pytest.raises(RefusalError, match="cyber"):
+        generate_application(Refusing(), FARM, PROFILE)
+
+
+def test_truncation_names_max_tokens_and_says_thinking_counts():
+    """
+    claude-opus-5 thinks by default and thinking counts against max_tokens, so
+    a limit sized around the JSON alone truncates. The error has to say that.
+    """
+    class Truncating:
+        messages = type("M", (), {
+            "parse": staticmethod(lambda **kw: _Resp(None, stop_reason="max_tokens")),
+        })()
+
+    with pytest.raises(LLMError) as exc:
+        generate_application(Truncating(), FARM, PROFILE)
+    assert "max_tokens" in str(exc.value) and "thinking" in str(exc.value)
+
+
+def test_usage_is_tallied_across_generation_and_verification():
+    client = FakeClient([docset()])
+    out = generate_application(client, FARM, PROFILE)
+
+    assert out.usage.calls == len(client.messages.calls)
+    assert out.usage.calls > 1, "generation plus per-claim verification"
+    assert out.usage.total_prompt_tokens == (
+        out.usage.input_tokens + out.usage.cache_creation_input_tokens
+        + out.usage.cache_read_input_tokens)
+    assert "cached" in out.report()
+
+
+def test_zero_cache_reads_across_calls_is_surfaced_as_a_warning():
+    """
+    The cached prefix is byte-stable by construction — but construction is an
+    argument, not a measurement. Zero reads means something is invalidating it.
+    """
+    client = FakeClient([docset()])
+    original = client.messages.parse
+
+    def parse_without_cache_hits(**kw):
+        resp = original(**kw)
+        resp.usage = _Usage(cache_read=0, cache_creation=0)
+        return resp
+
+    client.messages.parse = parse_without_cache_hits
+    out = generate_application(client, FARM, PROFILE)
+    assert "zero cache reads" in out.report()
 
 
 def test_render_parked_writes_the_documents_and_says_why(tmp_path):
