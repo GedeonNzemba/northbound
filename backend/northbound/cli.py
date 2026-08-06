@@ -121,9 +121,14 @@ def _cmd_generate(args: argparse.Namespace) -> int:
 
     out_dir = Path(args.out)
     if outcome.ready:
-        paths = finalise(outcome, profile, out_dir / "ready")
-        print(f"CV     : {paths['cv']}")
-        print(f"Letter : {paths['letter']}")
+        paths = finalise(outcome, profile, out_dir / "ready", pdf=not args.no_pdf)
+        for label, key in (("CV", "cv"), ("Letter", "letter"),
+                           ("CV (pdf)", "cv_pdf"), ("Letter (pdf)", "letter_pdf")):
+            if key in paths:
+                print(f"{label:<13}: {paths[key]}")
+        if not args.no_pdf and "cv_pdf" not in paths:
+            print("(no PDF companions — LibreOffice cannot convert on this "
+                  "machine. The DOCX is the canonical artefact and is unaffected.)")
         return EXIT_OK
 
     paths = render_parked(outcome, profile, out_dir / "parked")
@@ -153,6 +158,8 @@ def build_parser() -> argparse.ArgumentParser:
                         "iteration; NEVER appropriate for a document to be sent")
     g.add_argument("--dry-run", action="store_true",
                    help="print the exact prompt and exit without calling the model")
+    g.add_argument("--no-pdf", action="store_true",
+                   help="skip the PDF companions (DOCX is canonical either way)")
     # Metadata for plain-text postings, and overrides for JSON ones.
     g.add_argument("--employer")
     g.add_argument("--title")

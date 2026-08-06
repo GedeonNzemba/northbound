@@ -275,14 +275,19 @@ def generate_application(
 # Rendering — the last gate
 # --------------------------------------------------------------------------- #
 
-def finalise(outcome: GenerationOutcome, profile: Profile,
-             out_dir: Path | str) -> dict[str, Path]:
+def finalise(outcome: GenerationOutcome, profile: Profile, out_dir: Path | str,
+             *, pdf: bool = True) -> dict[str, Path]:
     """
-    Render the DOCX pair and run the Layer 2 round-trip.
+    Render the DOCX pair, run the Layer 2 round-trip, and add PDF companions.
 
     Round-trip failure raises rather than returning a flag. A document that an
     ATS cannot parse arrives at the employer as an anonymous blob, and there is
     no version of "send it anyway" that is better than stopping.
+
+    The PDFs are best-effort and deliberately cannot block: DOCX is the
+    canonical artefact (docs/07 F-A), the PDF is a companion for a human who
+    opens the attachment directly. A machine without LibreOffice still produces
+    a complete, sendable application.
 
     Parked outcomes are rendered too — `render_parked` exists precisely so a
     human can read what failed — but they never come through this function,
@@ -306,7 +311,15 @@ def finalise(outcome: GenerationOutcome, profile: Profile,
         out_dir / f"{stem}-Cover-Letter.docx")
 
     assert_roundtrip(cv_path, outcome.application.cv, profile)
-    return {"cv": cv_path, "letter": letter_path}
+
+    paths = {"cv": cv_path, "letter": letter_path}
+    if pdf:
+        from .render_pdf import pdf_available, render_pdf  # noqa: PLC0415
+
+        if pdf_available():
+            paths["cv_pdf"] = render_pdf(cv_path)
+            paths["letter_pdf"] = render_pdf(letter_path)
+    return paths
 
 
 def render_parked(outcome: GenerationOutcome, profile: Profile,
