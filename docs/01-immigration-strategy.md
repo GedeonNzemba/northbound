@@ -66,14 +66,85 @@ are aimed at the part of the programme that Canada spent 2024–2026 deliberatel
 shrinking, in the cities where most jobs are. The web-developer applications are
 aimed at the part that was left largely intact.
 
-### The recommended split, and a correction
+### The split — corrected twice, now from measured data
 
-An earlier draft of this document recommended 60/40 between tech and general
-work. **That was wrong** — it was a compromise with the stated preference to
-"apply to everything", not a conclusion from the evidence above. Corrected:
+This section has been wrong twice. First 60/40 tech-to-general (a compromise with
+a stated preference, not a conclusion). Then 85/15 (reasoned from policy, but
+still without data). **Spike 5 measured the actual market on 2026-08-02**, and the
+answer inverts both.
 
-- **~85% of send capacity → NOC 21234 / 21233 / 22222 and adjacent tech roles**
-- **~15% → documented general work**, as a hedge, not a second strategy
+**Live counts, Job Bank, 2026-08-02:**
+
+| Query | Open to international (`fglo=1`) | LMIA-approved (`fskl=101020`) | Whole board |
+|---|---:|---:|---:|
+| **front end developer** | **0** | 0 | 5 |
+| web developer | 5 | 0 | 57 |
+| software developer | 11 | 1 | 167 |
+| programmer | 19 | 1 | 234 |
+| **All tech (sum)** | **35** | **2** | 463 |
+| | | | |
+| **painter** | **286** | 0 | 1,644 |
+| construction labourer | 198 | 0 | 1,128 |
+| farm worker | 106 | 34 | 1,993 |
+| general labourer | 39 | 7 | 273 |
+| warehouse | 18 | 0 | 197 |
+| security guard | 15 | 0 | 108 |
+| retail sales | 3 | 0 | 235 |
+| **All general (sum)** | **665** | **41** | 5,578 |
+| | | | |
+| *Everything* | 7,884 | 112 | 63,113 |
+
+**Three things follow, and none of them are comfortable.**
+
+1. **There is no front-end developer market for international candidates on Job
+   Bank.** Zero postings. Five on the entire board. This is not a ranking problem
+   or a scraper problem — the roles are not there.
+
+2. **His documented general work has ~19× the internationally-open opportunities
+   of his profession** — 665 against 35. The single largest category is
+   **painter: 286 roles open to international candidates**, and he has a
+   documented roof-painting placement.
+
+3. **The LMIA-approved facet is Canada's Agricultural Stream.** 112 postings,
+   ~70% agriculture, plus physicians and caregivers. Two tech roles in total.
+   For a developer it is effectively empty.
+
+### Gedeon's decision — 2026-08-02
+
+**Both queues, with opposite role filters.** Full statement in
+`docs/06-decisions.md` D6 and encoded in `config/sources.yaml`:
+
+| Queue | Filter | Meaning |
+|---|---|---|
+| LMIA-approved (112) | **none** | Apply to every posting — farm, greenhouse, labouring, caregiving, butchery included |
+| International (7,884) | **developer roles only** | Web / front-end / software developer and adjacent. The 286 painter and 198 construction-labourer postings here are out of scope. |
+
+**The reasoning holds up better than the percentage splits it replaces:** filter
+on whatever is *not* already guaranteed. In the LMIA queue sponsorship is proven
+and role fit is the variable, so take any role. In the international queue role
+fit is achievable and sponsorship is not, so spend those slots only on the
+profession.
+
+There is no ratio to tune. The split is emergent — it lands wherever the postings
+land.
+
+**Note the interpretation this does NOT support.** Applying to farm and general
+work in the LMIA queue is not "giving up on the career". It is buying the entry
+ticket — the offer gets a work permit, the permit gets Canadian experience, and
+that experience gets CEC or a provincial nomination, at which point the 463-role
+domestic tech market is reachable from inside the country. Meanwhile the tech
+applications in the international queue run in parallel at no cost to the first
+track.
+
+The French-language route (F6) remains the highest-leverage item and is
+independent of both queues.
+
+**What this means for the software:** the transferable-skills track in
+`docs/04-cv-engine.md` is no longer a hedge — it becomes the **primary
+deliverable**. Which sharply raises the cost of the two unresolved profile gaps:
+FootGear and Cumpsty Electric are still `verify: true` and therefore excluded, and
+the painter record still has conflicting dates between two sources. Those were
+minor while tech was the plan. They are now load-bearing.
 
 The reasoning is arithmetic, not caution. Daily send capacity is capped at 30–40
 for deliverability reasons (F8) and that cap — not the supply of jobs — is the

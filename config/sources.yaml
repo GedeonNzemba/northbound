@@ -8,22 +8,105 @@
 # marked `inferred: true` must be confirmed by spikes/03_search_listing.py before
 # code depends on it.
 
-searches:
-  - id: international_candidates
-    label: Jobs open to international candidates
-    url: https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=&locationstring=&locationparam=&fglo=1&sort=M
-    facet: fglo=1
-    note: >-
-      Broader net. Employers who have flagged openness to candidates from
-      outside Canada. Not all will have or pursue an LMIA.
+# ===========================================================================
+# APPLICATION POLICY — decided by Gedeon 2026-08-02 (docs/06-decisions.md D6)
+#
+# The two queues get OPPOSITE role filters, and the reasoning is what makes it
+# work: in each queue, filter on whatever is NOT already guaranteed.
+#
+#   LMIA queue      → sponsorship is PROVEN, role fit is the variable.
+#                     Take any role. Do not filter on occupation.
+#   International   → role fit is achievable, sponsorship is UNPROVEN.
+#                     Spend slots only on his actual profession.
+# ===========================================================================
 
+searches:
   - id: lmia_approved
     label: LMIA-approved employers
     url: https://www.jobbank.gc.ca/jobsearch/jobsearch?page=1&sort=M&fskl=101020
     facet: fskl=101020
-    note: >-
-      Narrower and higher-value. This is the primary queue — an employer already
-      through the LMIA process is demonstrably willing and able to sponsor.
+    priority: 1
+    measured_2026_08_02:
+      total_postings: 112
+      composition: ~70% agriculture, plus physicians, caregivers, butchers
+      tech_roles: 2
+      email_capable: 75%          # spike 4, n=40
+    apply_policy:
+      role_filter: NONE
+      rationale: >-
+        Apply to EVERY posting in this queue regardless of occupation, including
+        farm work, greenhouse, labouring, caregiving and butchery. These
+        employers have already been through the LMIA process — they have paid
+        the fee, run the recruitment and waited out the decision. That
+        willingness is far rarer and harder to find than a matching job title,
+        and it is the thing that actually converts into a work permit.
+      exclusions_only:
+        - requires a Canadian licence or certification he cannot hold
+        - requires a driver's licence (see profile/PROFILE-GAPS.md item 8)
+        - requires existing Canadian work authorisation
+        - closing date passed
+        - already applied to this employer + NOC within the cooldown window
+      cv_track: transferable        # docs/04 Track B, per posting
+      note: >-
+        Small and slow-moving: 112 total, newest seen was 17 days old. The whole
+        queue is roughly 3-4 days of sending. After the initial sweep this
+        becomes a monitoring problem, not a volume problem.
+
+  - id: international_candidates
+    label: Jobs open to international candidates
+    url: https://www.jobbank.gc.ca/jobsearch/jobsearch?searchstring=&locationstring=&locationparam=&fglo=1&sort=M
+    facet: fglo=1
+    priority: 2
+    measured_2026_08_02:
+      total_postings: 7884
+      tech_roles: ~35
+      general_roles: ~665
+    apply_policy:
+      role_filter: TECH_ONLY
+      rationale: >-
+        Do NOT apply to general work in this queue. These employers accept
+        applications from candidates outside Canada but have not demonstrated
+        any willingness to sponsor, so a general-labour application here is a
+        slot spent with neither sponsorship nor role fit behind it. The 286
+        painter and 198 construction-labourer postings in this facet are
+        deliberately OUT OF SCOPE.
+      include_noc:
+        - "21234"   # Web developers and programmers
+        - "21233"   # Web designers
+        - "21232"   # Software developers and programmers
+        - "21230"   # Computer systems developers and programmers
+        - "22222"   # Information systems testing technicians
+      include_title_keywords:
+        - web developer
+        - front end developer
+        - frontend developer
+        - front-end developer
+        - software developer
+        - full stack developer
+        - javascript developer
+        - react developer
+        - ui developer
+        - application developer
+        - programmer
+        - web designer
+      cv_track: direct              # docs/04 Track A
+      note: >-
+        Title keywords are the fallback where a posting carries no usable NOC.
+        Both signals are ORed; a posting matching either is in scope.
+
+# ---------------------------------------------------------------------------
+# Volume consequence — worth understanding before building for scale
+# ---------------------------------------------------------------------------
+volume:
+  initial_backlog: ~147            # 112 LMIA (all) + ~35 international tech
+  at_30_40_per_day: ~4-5 days
+  steady_state: >-
+    After the opening sweep this is a MONITORING system, not a bulk sender. New
+    LMIA postings arrive slowly. Daily volume drops to whatever was posted since
+    the last poll — typically a handful. The 30-40/day cap and the warm-up ramp
+    comfortably cover both phases, and the sophisticated ranking layer matters
+    far less than first assumed: for the LMIA queue there is nothing to rank,
+    because the answer is "all of them".
 
 # ---------------------------------------------------------------------------
 # Parameter meanings — INFERRED, pending spike 3

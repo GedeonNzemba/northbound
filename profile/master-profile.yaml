@@ -60,19 +60,57 @@ languages:
   # — this is the single highest-value asset in the whole profile.
 
 # ---------------------------------------------------------------------------
-# PROFESSIONAL EXPERIENCE  (the core, ~7 years spanning 2019-present)
+# PROFESSIONAL EXPERIENCE
+# Reconciled against LinkedIn 2026-08-02 (https://www.linkedin.com/in/nzemba).
+# LinkedIn is treated as authoritative for dates and employment type — it is the
+# record an employer will actually check the CV against.
 # ---------------------------------------------------------------------------
+
+cv_presentation_policy:
+  # Gedeon asked for the timeline to be "aligned nicely so it is in order".
+  # This is how that is done HONESTLY. Dates are never altered to remove
+  # overlaps — that is falsification, and the claim audit blocks it.
+  # What actually fixes the appearance is presentation:
+  rules:
+    - Strict reverse-chronological order by start date within each section.
+    - EVERY role carries its employment type — Full-time, Contract,
+      Contract Part-time, Freelance, Vacation Employment. This is the single
+      change that makes concurrent roles read as normal instead of contradictory.
+    - Month-year granularity throughout ("Mar 2019", never "12 March 2019").
+    - Long-running self-employment (exp.freelance) is listed once as a single
+      continuous entry rather than being interleaved — it is the through-line
+      that explains the rest.
+    - Professional and general work go in SEPARATE sections. Mixing them is what
+      makes a timeline look chaotic.
+    - Concurrent roles may carry a short qualifier where it genuinely helps —
+      e.g. "alongside full-time study", "evenings and weekends" — but only where
+      documented here.
+  why_overlaps_are_fine: >-
+    Between 2017 and 2022 Gedeon frequently held two or three roles at once:
+    full-time IT support, a part-time trades placement, contract retail, and
+    continuous freelance development. With employment types shown this is not a
+    red flag — it is a documented record of someone working multiple jobs while
+    studying. For the general-work applications that make up most of the LMIA
+    queue, it is close to the strongest thing on the CV.
+
 experience_professional:
 
   - id: exp.databalk
     employer: DataBalk
     title_as_held: Front End Developer
+    employment_type: Full-time
     noc_2021: "21234"                       # Web developers and programmers, TEER 1
     canadian_title_equivalent: Front-End Developer
-    location: { city: Cape Town, country: South Africa }
+    location: { country: Netherlands, arrangement: Remote }
     start: 2026-03
     end: null                               # current
-    source: CV2026
+    source: LINKEDIN 2026-08-02
+    note: >-
+      CORRECTED from CV2026, which placed this in Cape Town. LinkedIn records it
+      as Netherlands / Remote. Worth leading with on Canadian applications: it is
+      documented evidence of working remotely for a European employer across
+      time zones, which is precisely the doubt a Canadian employer has about a
+      candidate applying from abroad.
     highlights:
       - id: exp.databalk.h1
         text: >-
@@ -101,14 +139,17 @@ experience_professional:
 
   - id: exp.kurtosys
     employer: Kurtosys Systems
-    title_as_held: Front-End Engineer
+    title_as_held: Front End Engineer
+    employment_type: Full-time
     noc_2021: "21234"
     canadian_title_equivalent: Front-End Developer
     industry: FinTech / asset management technology
-    location: { city: Cape Town, country: South Africa }
+    location: { city: Cape Town, region: Claremont, country: South Africa, arrangement: Hybrid }
     start: 2022-09
     end: 2025-12
-    source: CV2026
+    duration: 3 yr 4 mo
+    source: CV2026 + LINKEDIN 2026-08-02
+    note: The longest continuous professional role — anchor the tech CV on it.
     highlights:
       - id: exp.kurtosys.h1
         text: >-
@@ -141,14 +182,16 @@ experience_professional:
 
   - id: exp.ucook
     employer: UCOOK
-    title_as_held: Junior Fullstack Developer
+    title_as_held: Junior FullStack Developer
+    employment_type: Contract
     noc_2021: "21234"
     canadian_title_equivalent: Junior Full-Stack Developer
     industry: Food technology / e-commerce
     location: { city: Cape Town, country: South Africa }
     start: 2022-01
     end: 2022-05
-    source: CV2026
+    duration: 5 mo
+    source: CV2026 + LINKEDIN 2026-08-02
     highlights:
       - id: exp.ucook.h1
         text: >-
@@ -166,14 +209,20 @@ experience_professional:
   - id: exp.eatcreative
     employer: Eat Creative Africa
     title_as_held: Web Developer
+    employment_type: Contract Part-time
     noc_2021: "21234"
     canadian_title_equivalent: Web Developer
     location: { city: Cape Town, country: South Africa }
     start: 2021-01
     end: 2022-10
-    source: CV2026
-    verify: true    # overlaps exp.ucook (Jan–May 2022). Was one of these part-time
-                    # or contract? A Canadian recruiter WILL ask. Must be resolved.
+    duration: 1 yr 10 mo
+    source: CV2026 + LINKEDIN 2026-08-02
+    verify: false
+    resolution: >-
+      GAP 3 CLOSED 2026-08-02. LinkedIn records this as Contract Part-time, which
+      fully explains the overlap with UCOOK (Jan–May 2022, also Contract) — two
+      part-time/contract engagements running concurrently, not two undeclared
+      full-time jobs. Rendering the employment type is all that was ever needed.
     highlights:
       - id: exp.eatcreative.h1
         text: >-
@@ -189,14 +238,16 @@ experience_professional:
           and refine project scope.
 
   - id: exp.nextsteps
-    employer: Next Steps Digital
+    employer: Next Step Digital           # LinkedIn spelling — "Step", not "Steps"
     title_as_held: Frontend Web Developer
+    employment_type: Contract
     noc_2021: "21234"
     canadian_title_equivalent: Front-End Web Developer
     location: { city: Cape Town, country: South Africa }
     start: 2019-06
     end: 2019-09
-    source: CV2026
+    duration: 4 mo
+    source: CV2026 + LINKEDIN 2026-08-02
     highlights:
       - id: exp.nextsteps.h1
         text: >-
@@ -206,13 +257,291 @@ experience_professional:
         text: >-
           Collaborated with back-end developers to integrate CMS-driven content;
           handled maintenance, bug fixes and UI enhancements.
+      - id: exp.nextsteps.h3
+        text: Delivered cross-browser compatible front-end work.
+        tags: [cross-browser]
+
+  # ---- Added from LinkedIn 2026-08-02 — in no CV on file ----------------
+
+  - id: exp.freelance
+    employer: Self-employed — Freelance Web Development
+    title_as_held: Frontend Web Developer (Freelance)
+    employment_type: Freelance / Self-employed
+    noc_2021: "21234"
+    canadian_title_equivalent: Freelance Front-End Web Developer
+    location: { city: Cape Town, region: Western Cape, country: South Africa }
+    start: 2016-02
+    end: 2022-08
+    duration: 6 yr 7 mo
+    source: LINKEDIN 2026-08-02
+    note: >-
+      THE THROUGH-LINE. Six and a half years of continuous self-directed
+      development work running underneath every other role on this CV. It is what
+      makes the timeline cohere — the short contracts and the manual jobs sit on
+      top of an unbroken development practice, rather than being a scattered
+      sequence. It also pushes his verifiable front-end history back to 2016,
+      well beyond the "4+ years" his own CV2026 summary claims.
+    highlights:
+      - id: exp.freelance.h1
+        text: >-
+          Delivered front-end web development for independent clients over more
+          than six years, alongside study and employment.
+        tags: [self-directed, client-facing, sustained]
+      - id: exp.freelance.h2
+        text: >-
+          Handled client engagements end to end — requirements, build, delivery
+          and follow-up support.
+        tags: [ownership, client-communication]
+
+  - id: exp.salesian.it
+    employer: Salesian Institute Youth Projects
+    title_as_held: IT Support Technician & Media Officer
+    employment_type: Full-time
+    noc_2021: "22220"                       # Computer network and web technicians, TEER 2
+    noc_2021_alt: "22221"                   # User support technicians, TEER 2
+    noc_2021_media: "52110"                 # Film and video camera operators (secondary duty)
+    canadian_title_equivalent: IT Support Technician / Network Technician
+    location: { city: Cape Town, country: South Africa }
+    start: 2018-01
+    end: 2018-11
+    end_precision: approximate              # Gedeon: "around September or November 2018"
+    duration: ~10-11 mo
+    cv_render_dates: "Jan 2018 – Nov 2018"
+    source: USER 2026-08-02
+    how_it_came_about: >-
+      Gedeon enrolled at Salesian Institute as a STUDENT, completed the
+      programme and earned both certificates (edu.salesian.pc and
+      edu.salesian.cl). His result in the first certificate exam was strong
+      enough that the institute offered him a job — supporting teachers and
+      staff with technology, and acting as the institution's media officer,
+      filming and photographing events and editing the footage, because he
+      already had those skills. He studied and worked there concurrently.
+    why_this_matters: >-
+      Worth stating on the CV where there is room: he was hired by his own
+      training institution on the strength of his exam performance. That is a
+      third-party judgement of competence, not a self-assessment, and it costs
+      one sentence to say.
+    verify: false
+    highlights:
+      - id: exp.salesian.it.h1
+        text: >-
+          Provided on-site Level 2 support for a 150-user network built on
+          Microsoft services.
+        tags: [level-2, scale, microsoft, infrastructure]
+      - id: exp.salesian.it.h2
+        text: >-
+          Administered Microsoft File and Print Services, Active Directory,
+          Exchange and SharePoint — creating users, assigning security
+          permissions and applying policy.
+        tags: [active-directory, exchange, sharepoint, identity, security]
+      - id: exp.salesian.it.h3
+        text: >-
+          Set up and deployed networking equipment including switches, wireless
+          access points, firewalls, telephones and printers.
+        tags: [networking, firewalls, deployment, hardware]
+      - id: exp.salesian.it.h4
+        text: >-
+          Ran IT helpdesk and incident management, handling technical issues
+          escalated from Level 1 support.
+        tags: [incident-management, helpdesk, escalation]
+      - id: exp.salesian.it.h5
+        text: >-
+          Diagnosed and resolved hardware and software faults, and troubleshot
+          issues affecting core IT services.
+        tags: [troubleshooting, diagnostics, hardware, software]
+      - id: exp.salesian.it.h6
+        text: >-
+          Set up and installed workstations, including related hardware and
+          software.
+        tags: [hardware, deployment, workstations]
+      - id: exp.salesian.it.h7
+        text: >-
+          Managed third-party service providers for cabling and equipment
+          installation against IT standards.
+        tags: [vendor-management, standards, coordination]
+      - id: exp.salesian.it.h8
+        text: >-
+          Maintained IT asset management, and documented deployments and
+          changes.
+        tags: [asset-management, documentation, process]
+      - id: exp.salesian.it.h9
+        text: >-
+          Administered IT support tooling for software deployment, fault
+          finding and proactive support.
+        tags: [tooling, automation, proactive-support]
+      - id: exp.salesian.it.h10
+        text: >-
+          Trained users and staff to improve productivity, process efficiency
+          and security awareness.
+        tags: [training, security-awareness, communication]
+      - id: exp.salesian.it.h11
+        text: Completed administrative records as required.
+        tags: [administration, record-keeping]
+      - id: exp.salesian.it.h12
+        text: >-
+          Acted as the institution's media officer — filming and photographing
+          events and editing the resulting video for the organisation's use.
+        tags: [media, videography, photography, video-editing, communications]
+      - id: exp.salesian.it.h13
+        text: >-
+          Supported teaching staff with day-to-day technology needs across the
+          institute's programmes.
+        tags: [user-support, training, education-sector]
+      - id: exp.salesian.it.h14
+        text: >-
+          Offered the role by the institute after completing its programme, on
+          the strength of his first certificate examination result.
+        tags: [merit-hire, recognition]
 
 # ---------------------------------------------------------------------------
 # NON-PROFESSIONAL / MANUAL & SERVICE WORK
-# This is what makes non-IT applications HONEST rather than aspirational.
-# It is real, documented, physical, customer-facing work.
+#
+# Following D6, the LMIA queue is applied to WITHOUT a role filter and is ~70%
+# agriculture, food and manual work. That makes this section the PRIMARY source
+# material for the majority of applications — not a hedge. Treat it accordingly.
+#
+# Dates and the McDonald's entry supplied by Gedeon 2026-08-02.
 # ---------------------------------------------------------------------------
+
+general_work_context:
+  # Not a CV section. Context for the cover-letter generator, which should be
+  # able to explain WHY a developer has this history without it reading as drift.
+  summary: >-
+    Gedeon arrived in South Africa from the DRC at around ten years old and
+    completed primary school, high school and further study there. From high
+    school onward he worked through the short and long school holidays — first
+    to contribute to the household, then to fund his own studies. The manual and
+    service jobs below are that period: consecutive, purposeful, and worked
+    around school and later online study, ending when he moved into professional
+    software work.
+  use_guidance: >-
+    This explains the pattern honestly and turns what could look like an
+    unfocused history into evidence of exactly the traits these employers hire
+    for — showing up, working through holidays, doing physical work while
+    studying. Use it in cover letters for general-work applications where it
+    fits naturally. Never use it to solicit sympathy, and never invent hardship
+    detail beyond what is stated here.
+  source: USER 2026-08-02
+
 experience_general:
+
+  - id: gen.mcdonalds
+    employer: McDonald's
+    title_as_held: Kitchen / Food Production Crew
+    noc_2021: "65201"                       # Food counter attendants, kitchen helpers, TEER 5
+    canadian_title_equivalent: Food Service / Kitchen Helper
+    location: { country: South Africa }
+    start: 2019
+    end: 2020
+    employment_type: null                    # UNCONFIRMED — see below
+    source: USER 2026-08-02
+    employment_type_query: >-
+      Full-time, part-time or shift work? It runs alongside Next Step Digital
+      (Jun–Sep 2019, Contract) and the tail of Cumpsty. Needed only so the CV can
+      label it; the role itself is confirmed and usable.
+    note: >-
+      NOT present in any CV on file — supplied verbally 2026-08-02. Highly
+      relevant: the LMIA queue is dominated by agriculture and food work
+      (butchers appear in it directly), so commercial food-production experience
+      is among the strongest transferable assets in this profile.
+    verify: false
+    highlights:
+      - id: gen.mcdonalds.h1
+        text: >-
+          Worked in kitchen and food production in a high-volume quick-service
+          restaurant, preparing food to standardised procedures under time
+          pressure.
+        tags: [food-production, food-safety, high-volume, procedure-following]
+      - id: gen.mcdonalds.h2
+        text: >-
+          Held to strict hygiene, food-handling and consistency standards on
+          every shift.
+        tags: [food-safety, hygiene, standards]
+      - id: gen.mcdonalds.h3
+        text: >-
+          Worked shift patterns as part of a production line team, moving
+          between stations as service volume demanded.
+        tags: [shift-work, teamwork, flexibility]
+
+  - id: gen.footgear
+    employer: Footgear
+    title_as_held: Sales Representative
+    employment_type: Contract
+    noc_2021: "64100"                       # Retail salespersons and visual merchandisers, TEER 4
+    canadian_title_equivalent: Retail Sales Associate
+    location: { city: Cape Town, region: Western Cape, country: South Africa }
+    start: 2018-07
+    end: 2019-01
+    duration: 7 mo
+    source: LINKEDIN 2026-08-02
+    verify: false
+    note: >-
+      Dates CORRECTED from Gedeon's verbal recollection ("early 2019 to mid
+      2019") to the LinkedIn record, Jul 2018 – Jan 2019. LinkedIn is what an
+      employer will check against, so it wins. Title is "Sales Representative"
+      there, not "Sales Assistant".
+    highlights:
+      - id: gen.footgear.h1
+        text: >-
+          Sold footwear on the shop floor, advising customers on fit, use and
+          product range.
+        tags: [customer-service, sales]
+      - id: gen.footgear.h2
+        text: >-
+          Moved a customer from an entry-level product to the highest-value shoe
+          in the store by matching the product to their actual need.
+        tags: [upselling, persuasion, sales]
+
+  - id: gen.cumpsty
+    employer: Cumpsty Electrical
+    title_as_held: General Electrical Assistant
+    noc_2021: "75110"                       # Construction trades helpers and labourers, TEER 5
+    noc_2021_alt: "72200"                   # Electricians — as ASSISTANT only, never claim the trade
+    canadian_title_equivalent: Electrician's Helper / Construction Labourer
+    location: { city: Paarl, region: Western Cape, country: South Africa }
+    sites: [Val de Vie Estate, other nearby residential estates in the Paarl area]
+    start: 2017-10                           # "late 2017" — month approximate
+    end: 2019
+    date_confidence: approximate             # Gedeon: "I think"
+    employment_type: null                    # UNCONFIRMED — see below
+    source: USER 2026-08-02
+    verify: false                            # dates supplied — gap 4 closed
+    employment_type_query: >-
+      Asked 2026-08-02; Gedeon chose to proceed without specifying. Handling:
+      render NO employment-type label for this entry rather than guess one.
+      An unlabelled role is unremarkable on a CV; a wrong label is a false
+      statement, and inventing one is exactly what the claim audit exists to
+      prevent. The dates here are Gedeon's own recollection ("late 2017 I
+      think"), not documentary — they remain the softest dates in the profile.
+      It still overlaps the Salesian role (Jan–Nov 2018) and Footgear
+      (Jul 2018 – Jan 2019); he should simply be ready to say "I was working
+      several jobs at once then", which is true and unremarkable.
+    note: >-
+      The longest general placement (~1.5 years) and the strongest trades
+      evidence in the profile. Worked under a supervising electrician throughout
+      — the CV must always say assistant/helper, never electrician.
+      Ran alongside online study.
+    highlights:
+      - id: gen.cumpsty.h1
+        text: >-
+          Assisted qualified electricians on residential estate construction
+          sites, including Val de Vie Estate, under direct supervision.
+        tags: [trades, site-work, supervised, construction]
+      - id: gen.cumpsty.h2
+        text: >-
+          Carried out chasing and breaking of walls, trenching and excavation for
+          cable and conduit runs, and general site preparation.
+        tags: [manual-labour, hand-tools, excavation, site-work]
+      - id: gen.cumpsty.h3
+        text: >-
+          Worked on active construction sites over roughly eighteen months,
+          returning across multiple projects.
+        tags: [reliability, site-safety, sustained-placement]
+      - id: gen.cumpsty.h4
+        text: >-
+          Held the placement while studying online, balancing full site days
+          against coursework.
+        tags: [work-ethic, time-management]
 
   - id: gen.painter
     employer: Private company (name not on record)
@@ -224,12 +553,20 @@ experience_general:
     end: 2017-01-05
     performance_rating: Well Balanced
     source: SCREEN
+    cv_render_dates: "Nov 2016 – Jan 2017"
     conflict:
       note: >-
-        CVOLD records this placement as 4 Nov 2016 – 9 Jan 2017 with rating
-        "Excellent"; SCREEN records 23 Nov 2016 – 5 Jan 2017 with rating
-        "Well Balanced". Dates and rating must be confirmed before use.
-      verify: true
+        CVOLD records 4 Nov 2016 – 9 Jan 2017, rating "Excellent"; SCREEN records
+        23 Nov 2016 – 5 Jan 2017, rating "Well Balanced".
+      resolution: >-
+        RESOLVED by granularity, 2026-08-02. Both sources agree at month level,
+        and Canadian CV convention is "Mon YYYY" anyway (docs/04) — so rendering
+        "Nov 2016 – Jan 2017" is true under either record and the conflict never
+        reaches the page. Day-level dates must NOT be emitted for this entry.
+        The performance rating is not rendered at all: ratings are a South
+        African placement-report convention, they are not a Canadian CV element,
+        and the two sources disagree.
+      verify: false
     highlights:
       - id: gen.painter.h1
         text: Roof painting on school buildings and high-rise structures.
@@ -246,14 +583,26 @@ experience_general:
         tags: [teamwork]
 
   - id: gen.packer
-    employer: Polarama
-    title_as_held: Packer (Vacation Employment)
+    employer: Polarama (wholesaler)
+    title_as_held: Packer (Vacation Employment, recurring)
     noc_2021: "75101"                       # Material handlers, TEER 4
     canadian_title_equivalent: Warehouse Worker / Order Packer
     start: 2015-11-02
     end: 2016-01-07
     performance_rating: Truly Exceptional
-    source: CVOLD
+    source: CVOLD + USER 2026-08-02
+    cv_render_dates: "Nov 2015 – Jan 2016"
+    conflict:
+      note: >-
+        CVOLD records a single placement, 2 Nov 2015 – 7 Jan 2016. Gedeon recalls
+        "nearly 1 year, every school holidays", starting "mid 2016 I think".
+      resolution: >-
+        RESOLVED by scope, 2026-08-02. The entry renders the DOCUMENTED window at
+        month granularity — "Nov 2015 – Jan 2016" — which is supported by the
+        contemporaneous record. The recurring-placements claim is isolated in the
+        separately-flagged highlight below and is excluded until confirmed, so it
+        does not block the entry itself.
+      verify: false
     highlights:
       - id: gen.packer.h1
         text: >-
@@ -266,16 +615,33 @@ experience_general:
       - id: gen.packer.h3
         text: Promoted to a higher duty during the placement.
         tags: [promotion, reliability]
+      - id: gen.packer.h4
+        verify: true      # excluded until the recurrence is confirmed
+        text: >-
+          Invited back across successive school holidays, working with the
+          employer over roughly a year in total.
+        tags: [reliability, repeat-engagement]
+        needed: >-
+          Confirm the placement genuinely recurred beyond Jan 2016, and roughly
+          when the last one ended. This is a strong reliability signal for
+          agricultural and warehouse employers — being asked back is exactly what
+          they want to see — so it is worth pinning down.
 
   - id: gen.security
-    employer: SpeedTrainer (sports retail)
+    employer: SpeedTrainer (sports retail, Paarl)
     title_as_held: Security Guard (Vacation Employment)
     noc_2021: "64410"                       # Security guards and related security service occupations, TEER 4
     canadian_title_equivalent: Security Guard
+    location: { city: Paarl, region: Western Cape, country: South Africa }
     start: 2013-11-05
     end: 2014-01-05
+    duration: ~2 months
     performance_rating: Well Balanced
-    source: CVOLD
+    source: CVOLD + USER 2026-08-02
+    note: >-
+      Gedeon confirms: sports shop in Paarl, hired for the December Christmas
+      trading season specifically for loss prevention. He recalls 2-3 months;
+      CVOLD's dates give two, and are the ones to state. This was his FIRST job.
     highlights:
       - id: gen.security.h1
         text: >-
@@ -288,42 +654,15 @@ experience_general:
           concentration across the whole floor for the full day.
         tags: [accountability, loss-prevention]
 
-  - id: gen.footgear
-    employer: FootGear
-    title_as_held: Sales Assistant
-    noc_2021: "64100"                       # Retail salespersons and visual merchandisers, TEER 4
-    canadian_title_equivalent: Retail Sales Associate
-    source: USER
-    verify: true      # NOT in either CV. Dates, location and store branch required.
-    highlights:
-      - id: gen.footgear.h1
-        text: >-
-          Sold footwear on the shop floor; consulted customers on fit, use case
-          and product range.
-        tags: [customer-service, sales]
-      - id: gen.footgear.h2
-        text: >-
-          Upsold a customer from an entry-level product to the highest-value shoe
-          in the store by matching the product to their actual need.
-        tags: [upselling, persuasion, sales]
-
-  - id: gen.cumpsty
-    employer: Cumpsty Electric
-    title_as_held: General Electrical Assistant
-    noc_2021: "75110"                       # Construction trades helpers and labourers, TEER 5
-    canadian_title_equivalent: Electrician's Helper / Construction Labourer
-    source: USER
-    verify: true      # NOT in either CV. Dates and a contactable referee required.
-    highlights:
-      - id: gen.cumpsty.h1
-        text: >-
-          Assisted qualified electricians on site with general electrical work.
-        tags: [trades, site-work]
-      - id: gen.cumpsty.h2
-        text: >-
-          Carried out chasing and breaking of walls, trenching and excavation for
-          cable and conduit runs, and general site preparation.
-        tags: [manual-labour, hand-tools, excavation, site-work]
+# Chronology of the general-work period, for the CV generator's ordering:
+#   2013-11 → 2014-01   security guard, SpeedTrainer (first job)
+#   2015-11 → 2016-01   packer, Polarama (recurring across school holidays)
+#   2016-11 → 2017-01   painter (roofs, multi-storey)
+#   2017-10 → 2019      general electrical assistant, Cumpsty Electrical
+#   2019-01 → 2019-06   sales assistant, FootGear (contract)
+#   2019    → 2020      kitchen / food production, McDonald's
+#   2022-01 →           professional software career begins (UCOOK)
+# Continuous purposeful work from age ~15 through to the software career.
 
 # ---------------------------------------------------------------------------
 # EDUCATION
@@ -349,10 +688,27 @@ education:
     credential: Certificate of IEP completion (Software Development programme)
     institution: IT Academy (a division of IT SA Computer Services & Solutions (Pty) Ltd)
     location: { city: Cape Town, country: South Africa }
+    study_mode: Remote / distance learning     # Gedeon 2026-08-02
     start: 2020
     end: 2021
-    source: CV2026, CERTS
+    source: CV2026, CERTS, USER 2026-08-02
     eca: null           # NOT assessed by ICAS. See docs/01-immigration-strategy.md
+    curriculum:
+      # RENDERING RULE, confirmed by Gedeon 2026-08-02:
+      # The AWS, Azure, Microsoft, Oracle and ISTQB items are the CURRICULUM of
+      # this programme - studied remotely at IT Academy. They are NOT separately
+      # sat vendor certifications and must never render as held credentials (D1).
+      #
+      # They belong HERE, under Education, not in a certifications list. That is
+      # both accurate and stronger: it reads as structured study across cloud,
+      # backend, testing and mobile, rather than a list of badges an employer
+      # cannot verify.
+      render_as: coursework_under_education
+      see: certifications.coursework_completed
+      summary_line: >-
+        Programme covered cloud (AWS, Microsoft Azure), .NET and C#, Java,
+        Python, SQL Server, HTML5/JavaScript/CSS3, mobile development and
+        software testing.
 
   - id: edu.shaw
     credential: Professional Diploma in Web Development (EQF Level 5, Distinction)
@@ -424,8 +780,10 @@ certifications:
     - { id: cert.fcc, name: "freeCodeCamp — Responsive Web Design Developer Certification (~300 hours)", issued: 2019-06-04, verify_url: "https://www.freecodecamp.org/certification/gedeon/responsive-web-design", source: CERTS p5 }
 
   coursework_completed:
+    # Curriculum of edu.itacademy, studied REMOTELY. Render under Education.
     issuer: IT Academy (IT SA Computer Services & Solutions (Pty) Ltd)
-    render_as: coursework
+    render_as: coursework_under_education
+    never_render_as: certification
     items:
       - { id: cert.dva,    name: "AWS Certified Developer – Associate (DVA-C01)", completed: 2021-01-25, source: CERTS p17-18 }
       - { id: cert.az900,  name: "AZ-900 Microsoft Azure Fundamentals",           completed: 2020-11-21, source: CERTS p21 }
@@ -502,6 +860,24 @@ skills:
   tooling: [Git, VS Code, Postman, Jira, Salesforce (case handling), Agile, Kanban]
   design: [Figma, Adobe XD, Tailwind CSS, Bootstrap, Material UI]
   office_admin: [MS Word, MS Excel, MS Access, email and internet, invoicing, receipts, minute-taking, meeting notifications]
+  it_infrastructure:
+    # From exp.salesian.it. A genuinely distinct skill area that appears
+    # NOWHERE in the 2026 CV, and one that matters: many Canadian employers
+    # hiring general or technical staff value in-house IT capability, and it
+    # widens the range of postings worth applying to beyond pure front-end.
+    [Level 2 support, Microsoft Active Directory, Microsoft Exchange, SharePoint administration,
+     File and Print Services, user and permission administration, Group Policy,
+     network switches, wireless access points, firewalls, VoIP telephones, printers,
+     workstation setup and deployment, IT helpdesk and incident management,
+     IT asset management, third-party vendor management, IT documentation,
+     end-user training and security awareness]
+  media:
+    # Listed by Gedeon 2026-08-02, alongside the LinkedIn extract.
+    verify: true
+    needed: >-
+      Is this a role, a freelance service, or a personal skill? And roughly when?
+      Recorded but NOT rendered until that is clear.
+    items: [filming, video editing, photography]
   transferable_physical: [working at height with fall-arrest PPE, hand tools, wall chasing and breaking, trenching and excavation, order packing and stock counting, standing shift work, entrance control and floor monitoring]
   transferable_people: [customer service, retail sales and upselling, direct client communication with US/Canada/UK/EU stakeholders, translating technical detail for non-technical audiences, teamwork in small crews and Agile teams]
 
@@ -521,9 +897,14 @@ portfolio_links:
   # BMO is a Canadian bank. Lead with pf.bmo on any Canadian application.
 
 referees:
-  - { id: ref.milton, name: Mr Milton Saaiman, relationship: PC Repair & Mobile App facilitator, org: Salesian Institute, phone: "+27828581836", email: milton.saaiman@salesianyouth.org.za, source: CVOLD, verify: true }
-  - { id: ref.rene,   name: Ms Rene Darling,   relationship: Job placement coach, org: Salesian Institute, phone: "+27214251431", email: rene.darling@salesianyouth.org.za, source: CVOLD, verify: true }
-  # Both referees are from 2018 and relate to youth programmes, not to any
-  # professional role. Canadian employers expect recent, work-related referees.
-  # Securing two current professional referees is a blocking gap — see
-  # profile/PROFILE-GAPS.md.
+  # REMOVED on Gedeon's instruction, 2026-08-02. The two Salesian Institute
+  # contacts previously listed here are NOT to be used or contacted, and their
+  # names and details have been deleted from this file. They still appear in
+  # CV-early-talentmarket.pdf — do NOT reinstate them from that source. Any
+  # future session re-reading the source documents must respect this.
+  #
+  # No referees are listed, and none are needed. Canadian CV convention is to
+  # omit a referees section entirely; even "References available upon request"
+  # is treated as filler. Employers ask at offer stage.
+  render_on_cv: false
+  entries: []

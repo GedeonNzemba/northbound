@@ -79,11 +79,29 @@ blocked by it.
 week.** No ingest automation, no send automation. Prove the document quality
 first, because everything downstream is worthless if the CVs aren't good.
 
-- `master-profile.yaml` finalised (gaps 1–4 closed).
-- CV engine: generation contract, claim audit, both tracks, HTML→PDF render.
-- CLI: `northbound generate --posting <url-or-file>` → CV + cover letter + the
-  claim-audit report.
-- Postgres schema and the `events` spine.
+Ordered so the **measurement exists before the thing being measured**. Building
+the generator first and the harness later is how a CV engine ends up quietly
+producing plausible documents nobody can tell are underperforming.
+
+1. **Golden set** — 20 real postings captured from the spikes: 15 LMIA-queue
+   (farm, greenhouse, food, caregiving, labouring), 5 international-queue
+   developer roles. Frozen and version-controlled.
+2. **Layer 1 deterministic checks** — claim audit, coursework rule, referee rule,
+   structure, length, banned phrases, specificity budget, screening questions,
+   Canadian English, date format. (`docs/07`)
+3. **Layer 2 ATS round-trip** — generate → parse with two independent résumé
+   parsers → diff against the structured object. 100% recovery of the six fields
+   from F-C or the document is rejected. **This is the highest-value test in the
+   system** and it must exist before the first document is sent.
+4. **Generator** — generation contract, claim audit, claim-level entailment pass,
+   both tracks.
+5. **Renderer** — native DOCX via `python-docx` (primary), PDF companion.
+6. **CLI** — `northbound generate --posting <url-or-file>` → DOCX + PDF + cover
+   letter + audit report.
+7. **Layer 3 LLM-as-judge** with the F-F bias mitigations; Layer 4 calibration
+   against Gedeon's own ratings.
+8. `master-profile.yaml` is already complete — no blocking gaps remain.
+9. Postgres schema and the `events` spine.
 
 **Exit criteria:** 10 applications generated across both tracks. Every one read
 end-to-end by Gedeon. Zero audit failures. He would send all ten without editing.
