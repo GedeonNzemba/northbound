@@ -29,7 +29,7 @@ from .generate.generator import (
     GenerationError, Posting, choose_track, finalise, generate_application,
     render_parked,
 )
-from .generate.llm import DEFAULT_MODEL, LLMError, default_client
+from .generate.llm import DEFAULT_MODEL, LLMError, RefusalError, default_client
 from .profile import ProfileError, load_profile
 
 EXIT_OK, EXIT_ERROR, EXIT_PARKED = 0, 1, 2
@@ -169,6 +169,12 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
         return args.func(args)
+    except RefusalError as exc:
+        print(f"error: {exc}\n"
+              "The request was declined by a safety classifier. Retrying the "
+              "same posting will fail the same way — check what in the posting "
+              "text triggered it before trying again.", file=sys.stderr)
+        return EXIT_ERROR
     except (GenerationError, ProfileError, LLMError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return EXIT_ERROR

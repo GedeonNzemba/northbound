@@ -31,7 +31,9 @@ from typing import Iterable, Literal
 from pydantic import BaseModel, Field
 
 from ..profile import Profile
-from .llm import DEFAULT_MODEL, Client, structured_call
+from .llm import (
+    DEFAULT_MODEL, VERIFY_MAX_TOKENS, Client, UsageTally, structured_call,
+)
 from .schemas import Application, CoverLetter, GeneratedCV
 
 Verdict = Literal["supported", "overstated", "unsupported"]
@@ -129,19 +131,23 @@ def collect_claims(app: Application) -> list[Claim]:
 
 
 def verify_claim(client: Client, claim: Claim, source_text: str, *,
-                 model: str = DEFAULT_MODEL) -> EntailmentResult:
+                 model: str = DEFAULT_MODEL,
+                 tally: UsageTally | None = None) -> EntailmentResult:
     """
     One isolated call. The verifier gets the source and the claim — nothing else.
 
     Low effort deliberately: this is a narrow, well-specified judgement, and
-    keeping it cheap is what makes per-bullet verification affordable.
+    keeping it cheap is what makes per-bullet verification affordable. The token
+    limit still has to cover thinking, which is on by default — the verdict
+    itself is three short fields.
     """
     v = structured_call(
         client,
         model=model,
-        max_tokens=2000,
+        max_tokens=VERIFY_MAX_TOKENS,
         system=VERIFIER_SYSTEM,
         effort="low",
+        tally=tally,
         messages=[{
             "role": "user",
             "content": f"SOURCE:\n{source_text}\n\nCLAIM:\n{claim.text}",
@@ -155,7 +161,8 @@ def verify_claim(client: Client, claim: Claim, source_text: str, *,
 
 
 def verify_application(client: Client, app: Application, profile: Profile, *,
-                       model: str = DEFAULT_MODEL) -> list[EntailmentResult]:
+                       model: str = DEFAULT_MODEL,
+                       tally: UsageTally | None = None) -> list[EntailmentResult]:
     """
     Verify every claim. Returns all results; the caller decides what blocks.
 
@@ -174,7 +181,7 @@ def verify_application(client: Client, app: Application, profile: Profile, *,
                 reason="evidence id does not exist", source_text=""))
             continue
 
-        res = verify_claim(client, claim, ev.text, model=model)
+        res = verify_claim(client, claim, ev.text, model=model, tally=tally)
         if claim.where in ("cv.summary", "letter.evidence", "letter.bridge"):
             grouped.setdefault((claim.where, claim.text), []).append(res)
         else:

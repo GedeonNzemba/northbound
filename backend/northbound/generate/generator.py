@@ -39,7 +39,9 @@ from ..profile import Profile
 from .audit import AuditResult, audit, screening_questions
 from .entailment import EntailmentResult, failures as entailment_failures
 from .entailment import verify_application
-from .llm import DEFAULT_MODEL, Client, structured_call
+from .llm import (
+    DEFAULT_MODEL, GENERATION_MAX_TOKENS, Client, UsageTally, structured_call,
+)
 from .prompts import TASK_DIRECTIVE, posting_block, retry_block, system_blocks
 from .schemas import Application, DocumentSet, Track
 
@@ -140,6 +142,7 @@ class GenerationOutcome:
     entailment: list[EntailmentResult] = field(default_factory=list)
     attempts: int = 0
     parked_reason: str = ""
+    usage: UsageTally = field(default_factory=UsageTally)
 
     @property
     def ready(self) -> bool:
@@ -160,6 +163,7 @@ class GenerationOutcome:
             lines += ["  " + line for r in bad for line in str(r).splitlines()]
         elif self.entailment:
             lines.append(f"  entailment: {len(self.entailment)}/{len(self.entailment)} supported")
+        lines += ["  " + line for line in self.usage.report().splitlines()]
         return "\n".join(lines)
 
 
@@ -168,7 +172,8 @@ class GenerationOutcome:
 # --------------------------------------------------------------------------- #
 
 def _draft(client: Client, posting: Posting, profile: Profile, track: Track, *,
-           model: str, max_tokens: int, repair: str | None) -> DocumentSet:
+           model: str, max_tokens: int, repair: str | None,
+           tally: UsageTally) -> DocumentSet:
     """One generation call. `repair` is the failure feedback on a retry."""
     user = "\n\n".join(filter(None, [
         posting_block(posting.body, posting.employer, posting.title, posting.questions),
@@ -182,6 +187,7 @@ def _draft(client: Client, posting: Posting, profile: Profile, track: Track, *,
         system=system_blocks(profile, track),
         messages=[{"role": "user", "content": user}],
         output_format=DocumentSet,
+        tally=tally,
     )
 
 
@@ -192,7 +198,7 @@ def generate_application(
     *,
     track: Track | None = None,
     model: str = DEFAULT_MODEL,
-    max_tokens: int = 8000,
+    max_tokens: int = GENERATION_MAX_TOKENS,
     max_attempts: int = 2,
     verify_entailment: bool = True,
     sources_path: Path | str | None = None,
@@ -219,10 +225,11 @@ def generate_application(
     last_ent: list[EntailmentResult] = []
     last_app: Application | None = None
     reason = ""
+    tally = UsageTally()
 
     for attempt in range(1, max_attempts + 1):
-        docs = _draft(client, posting, profile, track,
-                      model=model, max_tokens=max_tokens, repair=repair)
+        docs = _draft(client, posting, profile, track, model=model,
+                      max_tokens=max_tokens, repair=repair, tally=tally)
         app = Application(
             posting_id=posting.posting_id,
             posting_title=posting.title,
@@ -244,7 +251,7 @@ def generate_application(
             continue
 
         if verify_entailment:
-            last_ent = verify_application(client, app, profile, model=model)
+            last_ent = verify_application(client, app, profile, model=model, tally=tally)
             bad = entailment_failures(last_ent)
             if bad:
                 reason = f"{len(bad)} claim(s) not supported by cited evidence"
@@ -254,12 +261,12 @@ def generate_application(
 
         return GenerationOutcome(
             posting=posting, track=track, status="ready", application=app,
-            audit=last_audit, entailment=last_ent, attempts=attempt,
+            audit=last_audit, entailment=last_ent, attempts=attempt, usage=tally,
         )
 
     return GenerationOutcome(
         posting=posting, track=track, status="parked", application=last_app,
-        audit=last_audit, entailment=last_ent, attempts=max_attempts,
+        audit=last_audit, entailment=last_ent, attempts=max_attempts, usage=tally,
         parked_reason=f"{reason} after {max_attempts} attempt(s) — held for human review",
     )
 
