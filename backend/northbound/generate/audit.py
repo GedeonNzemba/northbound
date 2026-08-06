@@ -409,10 +409,30 @@ def _check_specificity(letter: CoverLetter, r: AuditResult) -> None:
                 "the definition of generic (docs/07 F-D)", f"letter.{name}"))
 
 
+SCREENING_QUESTION = re.compile(r"([^\n?]{10,160}\?)")
+
+
+def screening_questions(posting_text: str) -> list[str]:
+    """
+    Questions the posting puts to the applicant.
+
+    The generator feeds this same list into the prompt, so the model is asked to
+    answer exactly what the audit will demand answers to. Sharing one function
+    is the point — two similar regexes drifting apart would produce a document
+    that is blocked for not answering a question it was never shown.
+
+    Deliberately over-inclusive: marketing copy ("Looking for a rewarding
+    career?") is caught alongside real screening questions. Answering a
+    rhetorical question costs a sentence; missing a real one costs the
+    application.
+    """
+    return [" ".join(q.split()) for q in SCREENING_QUESTION.findall(posting_text or "")]
+
+
 def _check_screening_questions(letter: CoverLetter, posting_text: str, r: AuditResult) -> None:
     if not posting_text:
         return
-    qs = re.findall(r"([^\n?]{10,160}\?)", posting_text)
+    qs = screening_questions(posting_text)
     if qs and not letter.screening_answers:
         r.findings.append(Finding(
             "screening.unanswered", "block",
@@ -458,4 +478,4 @@ def _text_of(cv: GeneratedCV, letter: CoverLetter) -> str:
     return _cv_text(cv) + "\n" + _letter_text(letter)
 
 
-__all__ = ["audit", "AuditResult", "Finding"]
+__all__ = ["audit", "AuditResult", "Finding", "screening_questions"]

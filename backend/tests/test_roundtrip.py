@@ -12,84 +12,12 @@ from pathlib import Path
 
 import pytest
 from docx import Document
+from fixtures import PROFILE, full_cv as _track_b_cv
 
 from northbound.evaluate.ats_roundtrip import (
     extract_via_docx, extract_via_xml, roundtrip,
 )
 from northbound.generate.render_docx import render_cv
-from northbound.generate.schemas import (
-    Bullet, EducationEntry, ExperienceEntry, GeneratedCV,
-)
-from northbound.profile import load_profile
-
-PROFILE = load_profile()
-
-
-def _track_b_cv() -> GeneratedCV:
-    return GeneratedCV(
-        track="transferable",
-        target_noc="85101",
-        headline="General Farm Worker",
-        summary=("Physical worker with 18 months on estate construction sites in "
-                 "Paarl and a year in kitchen and food production."),
-        summary_evidence_ids=["gen.cumpsty.h1"],
-        skills={"Practical": ["working at height with fall-arrest harness",
-                              "hand tools", "trenching and excavation"]},
-        experience=[
-            ExperienceEntry(
-                role_id="gen.cumpsty",
-                display_title="Electrician's Helper / Construction Labourer (NOC 75110)",
-                employer="Cumpsty Electrical",
-                employer_context="residential estate electrical contractor, Paarl",
-                location="Paarl, Western Cape, South Africa",
-                dates=PROFILE.role("gen.cumpsty").display_dates,
-                employment_type=None,
-                bullets=[
-                    Bullet(text="Assisted qualified electricians on residential estate "
-                                "construction sites, including Val de Vie Estate.",
-                           evidence_id="gen.cumpsty.h1"),
-                    Bullet(text="Carried out wall chasing, trenching and excavation for "
-                                "cable and conduit runs.",
-                           evidence_id="gen.cumpsty.h2"),
-                ],
-            ),
-            ExperienceEntry(
-                role_id="gen.mcdonalds",
-                display_title="Food Service / Kitchen Helper (NOC 65201)",
-                employer="McDonald's",
-                employer_context="quick-service restaurant",
-                location="South Africa",
-                dates=PROFILE.role("gen.mcdonalds").display_dates,
-                employment_type=None,
-                bullets=[Bullet(
-                    text="Prepared food to standardised procedures under time pressure.",
-                    evidence_id="gen.mcdonalds.h1")],
-            ),
-        ],
-        additional_experience=[ExperienceEntry(
-            role_id="exp.kurtosys",
-            display_title="Front-End Developer (NOC 21234)",
-            employer="Kurtosys Systems",
-            employer_context="FinTech / asset-management technology",
-            location="Cape Town, South Africa",
-            dates=PROFILE.role("exp.kurtosys").display_dates,
-            employment_type="Full-time",
-            bullets=[Bullet(
-                text="Built and maintained financial websites for international clients.",
-                evidence_id="exp.kurtosys.h1")],
-        )],
-        education=[EducationEntry(
-            evidence_id="edu.matric",
-            credential="National Senior Certificate",
-            institution="Noorder Paarl High School, South Africa",
-            year="2016",
-            detail=("Assessed by ICAS (International Credential Assessment Service of "
-                    "Canada) as equivalent to Canadian Secondary School Graduation. "
-                    "File 24080341 IMM, March 2025."),
-        )],
-        languages=["French (native)", "English", "Lingala", "Kituba", "Afrikaans"],
-        availability="Available to relocate; can start on your timeline.",
-    )
 
 
 @pytest.fixture(scope="module")

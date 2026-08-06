@@ -13,9 +13,14 @@ dependencies = [
     "lxml>=5.0",
 ]
 
+[project.scripts]
+northbound = "northbound.cli:main"
+
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
 
 [tool.pytest.ini_options]
-pythonpath = ["."]
+# `tests` is on the path so the shared fixtures module is importable from every
+# test file without a package indirection.
+pythonpath = [".", "tests"]
 testpaths = ["tests"]

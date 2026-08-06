@@ -89,6 +89,22 @@ class CoverLetter(BaseModel):
     signoff: str = "Sincerely,"
 
 
+class DocumentSet(BaseModel):
+    """
+    What the model returns in one call.
+
+    CV and letter are generated together rather than in two calls, because the
+    letter must not repeat what the CV already says and must point at it — a
+    consistency the model can only maintain if it writes both at once. The
+    posting identifiers are attached in code afterwards; asking the model to
+    echo them back would spend tokens on facts we already hold and give it one
+    more thing to get wrong.
+    """
+
+    cv: GeneratedCV
+    letter: CoverLetter
+
+
 class Application(BaseModel):
     posting_id: str
     posting_title: str
@@ -100,5 +116,5 @@ class Application(BaseModel):
 
 __all__ = [
     "Bullet", "ExperienceEntry", "EducationEntry",
-    "GeneratedCV", "CoverLetter", "Application", "Track",
+    "GeneratedCV", "CoverLetter", "DocumentSet", "Application", "Track",
 ]

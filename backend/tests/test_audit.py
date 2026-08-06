@@ -8,74 +8,14 @@ reaches a real employer, so each one gets a case that proves it blocks.
 
 from __future__ import annotations
 
-import pytest
+from fixtures import PROFILE, app as _make_app, cv as _cv, letter as _letter
 
 from northbound.generate.audit import audit
-from northbound.generate.schemas import (
-    Application, Bullet, CoverLetter, EducationEntry, ExperienceEntry, GeneratedCV,
-)
-from northbound.profile import load_profile
-
-PROFILE = load_profile()
+from northbound.generate.schemas import Bullet
 
 
-def _letter(**over) -> CoverLetter:
-    base = dict(
-        greeting="Dear Hiring Manager,",
-        opening=("I am applying for the general farm worker role at Ridge Farms in "
-                 "Leamington, Ontario, advertised on Job Bank."),
-        evidence=("I worked about 18 months as a general electrical assistant with "
-                  "Cumpsty Electrical on estate construction sites in Paarl, and "
-                  "spent a year in kitchen and food production at McDonald's."),
-        evidence_ids=["gen.cumpsty.h1", "gen.mcdonalds.h1"],
-        bridge=("I have not worked on a farm, but the work at Cumpsty was outdoors "
-                "and physical, and I held a harness on multi-storey roofs in Paarl."),
-        bridge_evidence_ids=["gen.painter.h2"],
-        authorisation=("I am in Cape Town, South Africa and would need a work permit "
-                       "supported by an LMIA. I hold an ICAS assessment for Canada."),
-        screening_answers=["Yes, I am available for shift and on-call work."],
-    )
-    base.update(over)
-    return CoverLetter(**base)
-
-
-def _cv(**over) -> GeneratedCV:
-    base = dict(
-        track="transferable",
-        target_noc="85101",
-        headline="General Farm Worker",
-        summary=("Physical worker with 18 months on construction sites in Paarl and "
-                 "a year in food production at McDonald's."),
-        summary_evidence_ids=["gen.cumpsty.h1"],
-        skills={"Practical": ["working at height with fall-arrest harness", "hand tools"]},
-        experience=[ExperienceEntry(
-            role_id="gen.cumpsty",
-            display_title="Electrician's Helper / Construction Labourer (NOC 75110)",
-            employer="Cumpsty Electrical",
-            employer_context="residential estate electrical contractor, Paarl",
-            location="Paarl, Western Cape, South Africa",
-            dates=PROFILE.role("gen.cumpsty").display_dates,
-            employment_type=None,
-            bullets=[Bullet(
-                text="Assisted qualified electricians on residential estate construction sites.",
-                evidence_id="gen.cumpsty.h1")],
-        )],
-        education=[EducationEntry(
-            evidence_id="edu.matric", credential="National Senior Certificate",
-            institution="Noorder Paarl High School", year="2016",
-            detail="Assessed by ICAS as equivalent to Canadian Secondary School Graduation.")],
-        languages=["English", "French"],
-    )
-    base.update(over)
-    return GeneratedCV(**base)
-
-
-def _app(cv=None, letter=None) -> Application:
-    return Application(
-        posting_id="49816590", posting_title="general labourer - farm",
-        employer="Ridge Farms", track="transferable",
-        cv=cv or _cv(), letter=letter or _letter(),
-    )
+def _app(cv=None, letter=None):
+    return _make_app(cv_=cv, letter_=letter)
 
 
 def _rules(res) -> set[str]:

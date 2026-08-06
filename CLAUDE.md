@@ -19,11 +19,32 @@ work history (painting, warehouse, security, retail, electrical assistance) — 
 non-software applications are honest transferable-skills applications, never
 inflated claims.
 
-## ▶ RESUME HERE — state as of 2026-08-02
+## ▶ RESUME HERE — state as of 2026-08-06
 
-**Where things stand:** planning complete, decisions recorded, five spikes
-written **and run against the live site via GitHub Actions**, zero application
-code. `main` = working branch.
+**Where things stand:** planning complete, five spikes run against the live site
+via GitHub Actions, and **Phase 1's CV engine is built end to end** — profile
+loader, prompts, generator, both check layers, DOCX renderer, CLI. 62 tests
+passing, none of which need an API key. `main` = working branch.
+
+What exists in `backend/northbound/`:
+
+| Module | Job |
+|---|---|
+| `profile/loader.py` | The boundary. `verify: true` anywhere excludes it; standing instructions asserted at load. |
+| `generate/prompts.py` | Cached profile prefix, per-track guidance, the repair turn. |
+| `generate/generator.py` | The pipeline: draft → audit → entailment → ready, or **parked**. |
+| `generate/audit.py` | Layer 1, deterministic, blocking. |
+| `generate/entailment.py` | Layer 3, claim-level, context-isolated. |
+| `generate/render_docx.py` | Native DOCX. No tables/headers/images, ever. |
+| `evaluate/ats_roundtrip.py` | Layer 2. Generate → parse → diff. The hard gate. |
+| `cli.py` | `northbound generate --posting <file>`. Exit 0 ready, 2 parked, 1 error. |
+
+**The gate is closed by default.** `status` is `parked` unless every check
+passed; `finalise()` refuses to render a parked application to the send path.
+One draft, one repair, then parked for human review — never auto-sent.
+
+Try it without spending anything:
+`python3 -m northbound.cli generate --posting <file>.json --dry-run`
 
 ### The application rule (D6) — read this before touching the matcher
 
@@ -81,14 +102,24 @@ nothing to rank, because the answer is "all of them".
 
 ### Next step
 
-**Phase 1 — the CV engine**, per `docs/05-roadmap.md`. It touches Job Bank not at
-all: it needs `profile/master-profile.yaml` (complete) and the Claude API. Read
-`docs/07-cv-engine-research.md` first — it inverts the rendering design and adds
-the evaluation harness.
+The engine runs; what it has never done is run **against the real model on real
+postings**. Everything so far is verified with a fake client, which proves the
+gate works and proves nothing about document quality.
+
+1. **Golden set** — freeze 20 real postings from the spike output (15 LMIA-queue,
+   5 international developer) as JSON in `postings/`. Nothing can be measured
+   until the inputs stop moving.
+2. **First real runs.** `pip install anthropic`, set `ANTHROPIC_API_KEY`, run the
+   CLI over the golden set. Read what gets parked and why — the parked reasons
+   are the prompt's bug report.
+3. **Layer 4 human calibration** before Layer 3's judge: Gedeon rates ~20
+   documents, and the judge is only trusted once it agrees with him (Cohen's κ).
+   A judge built before that measures its own preferences.
+4. **PDF companion renderer** — DOCX stays canonical.
 
 Sequence matters: **golden set → deterministic checks → ATS round-trip →
 generator → renderer → judge.** The measurement is built before the thing being
-measured, because a CV engine fails quietly.
+measured, because a CV engine fails quietly. Steps 1–3 of that sequence are done.
 
 Exit test: **10 applications across both tracks that Gedeon would send unedited.**
 
