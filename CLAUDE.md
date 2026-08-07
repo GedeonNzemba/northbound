@@ -39,6 +39,7 @@ What exists in `backend/northbound/`:
 | `generate/render_pdf.py` | PDF companion, converted from the DOCX. Optional. |
 | `generate/llm.py` | The single seam onto the Anthropic SDK. Usage/cache tally. |
 | `evaluate/ats_roundtrip.py` | Layer 2. Generate → parse → diff. The hard gate. |
+| `generate/screen.py` | Apply or don't — the `exclusions_only` policy. Licensed professions, driver's licence, won't-sponsor. |
 | `cli.py` | `generate` (one posting) and `batch` (the golden set). Exit 0 ready, 2 parked, 1 error. |
 
 **The gate is closed by default.** `status` is `parked` unless every check
@@ -46,7 +47,15 @@ passed; `finalise()` refuses to render a parked application to the send path.
 One draft, one repair, then parked for human review — never auto-sent.
 
 Try it without spending anything:
-`python3 -m northbound.cli batch --dir postings/golden --dry-run`
+`northbound batch --dir postings/golden --dry-run`
+
+Local setup (Windows/macOS/Linux): **`docs/09-running-it-locally.md`**.
+
+**Measured, not assumed** (spike 6, n=16, 100% agreement): Job Bank does NOT
+publish schema.org JobPosting — JSON-LD never won a field. Extraction is
+`<h1>` for title, `[property=hiringOrganization]` for employer, a labelled
+"Location:" line, a regex for NOC, `.job-posting-details` for the body. 69%
+email-capable; every posting carried screening questions.
 
 **Facts about `claude-opus-5` this engine depends on** (verified against the
 current API reference, not remembered):
@@ -131,15 +140,17 @@ The engine runs; what it has never done is run **against the real model on real
 postings**. Everything so far is verified with a fake client, which proves the
 gate works and proves nothing about document quality.
 
-1. **Golden set** — `spikes/06_golden_set.py`, run from the Actions tab
-   (*spikes* → *Run workflow* → tick `harvest_golden_set` and
-   `skip_other_spikes`). Writes `postings/golden/`. It **refuses to overwrite**
-   an existing set: an evaluation input that re-harvests is a moving target,
-   and Job Bank postings expire, so two runs would silently measure different
-   things. Build a new set in a new directory instead.
-2. **Smoke test, free:** `northbound batch --dir postings/golden --dry-run`.
-   Every format bug in the harvested set surfaces here rather than a third of
-   the way through a paid run.
+1. ~~**Golden set**~~ — **DONE.** `postings/golden/` holds 20 real postings:
+   15 LMIA-queue (dairy, greenhouse, livestock, vegetables, farm supervisor,
+   butcher, caregiver, and the two physicians + physiotherapist the screen now
+   excludes) and 5 international web-developer roles. Frozen: a queue at its
+   target is refused; a short queue can be filled with `--only`, and the
+   manifest merges. Rebuild only via Actions → *spikes* → tick
+   `harvest_golden_set` + `skip_other_spikes` (`harvest_args` passes extra
+   flags).
+2. ~~**Smoke test**~~ — **DONE.** `northbound batch --dir postings/golden
+   --dry-run` → 17 PROMPT-OK, 3 EXCLUDED. Re-run it after any prompt change;
+   it costs nothing.
 3. **First real runs.** `pip install anthropic`, set `ANTHROPIC_API_KEY`, then
    `northbound batch --dir postings/golden --out out/`. Read what gets parked
    and why — the parked reasons are the prompt's bug report. Watch the cache
