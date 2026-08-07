@@ -17,7 +17,9 @@ dependencies = [
 northbound = "northbound.cli:main"
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0"]
+# pdfplumber gives per-word page coordinates — the only way to test that the
+# date column is actually right-aligned, which no text-layer check can see.
+dev = ["pytest>=8.0", "pdfplumber>=0.11"]
 
 [tool.pytest.ini_options]
 # `tests` is on the path so the shared fixtures module is importable from every

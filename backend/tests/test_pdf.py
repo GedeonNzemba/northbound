@@ -107,6 +107,34 @@ def test_concurrent_conversions_do_not_collide(tmp_path):
     assert all(p.exists() and p.stat().st_size > 1000 for p in outs)
 
 
+@needs_pdf
+def test_dates_are_actually_right_aligned_on_the_page(cv_pdf):
+    """
+    The reader's-eye check: measure where the date ends up on the rendered page.
+
+    Every other test in this repo reads the text layer, and the text layer is
+    blind to position — a date at 1.7cm and a date at the margin extract
+    identically. This one measures pixels, and it is the only test that would
+    have caught the tab-stop bug from the side that matters: what an employer
+    sees in the 7.4 seconds they spend on it.
+    """
+    import pdfplumber
+
+    cv = full_cv()
+    with pdfplumber.open(cv_pdf) as f:
+        page = f.pages[0]
+        right_margin_x = page.width - 48          # _configure sets 48pt margins
+        words = page.extract_words()
+
+        for entry in list(cv.experience) + list(cv.additional_experience):
+            last = entry.dates.split()[-1]        # e.g. "2019" of "Oct 2017 – 2019"
+            edges = [w["x1"] for w in words if w["text"] == last]
+            assert edges, f"date {entry.dates!r} not found on the page"
+            assert any(abs(x - right_margin_x) < 6 for x in edges), (
+                f"date {entry.dates!r} ends at {max(edges):.0f}pt; the right "
+                f"margin is {right_margin_x:.0f}pt — the column is not aligned")
+
+
 # ---- the capability probe: the bug this file was written against ---------- #
 
 def test_availability_is_probed_not_inferred_from_the_binary(monkeypatch):
