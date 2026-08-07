@@ -185,3 +185,65 @@ def _restore_probe_cache():
     saved = rp._CAPABILITY
     yield
     rp._CAPABILITY = saved
+
+
+# ---- docs/08 §1.5: length is a rule only rendering can settle -------------- #
+
+@needs_pdf
+def test_an_over_long_track_b_cv_is_refused(tmp_path):
+    """
+    "Track B: 1 page, firmly. A farm or warehouse employer scanning fifty
+    applications does not read page two."
+
+    No character count predicts where a page breaks, so this can only be caught
+    after rendering — which is exactly why it needs catching there rather than
+    being left to chance.
+    """
+    from northbound.generate.generator import (
+        GenerationOutcome, LayoutError, Posting, finalise,
+    )
+    from northbound.generate.schemas import Application, Bullet, ExperienceEntry
+
+    long_cv = full_cv()
+    padded = list(long_cv.experience)
+    for i in range(6):
+        padded.append(ExperienceEntry(
+            role_id="gen.cumpsty",
+            display_title=f"Electrician's Helper / Construction Labourer {i}",
+            employer="Cumpsty Electrical",
+            employer_context="residential estate electrical contractor, Paarl",
+            location="Paarl, Western Cape, South Africa",
+            dates=PROFILE.role("gen.cumpsty").display_dates,
+            employment_type=None,
+            bullets=[Bullet(text="Carried out wall chasing, trenching and "
+                                 "excavation for cable and conduit runs on "
+                                 "residential estate construction sites. " * 3,
+                            evidence_id="gen.cumpsty.h2") for _ in range(4)]))
+    long_cv.experience = padded
+
+    posting = Posting(posting_id="x", title="general labourer - farm",
+                      employer="Ridge Farms", body="body")
+    outcome = GenerationOutcome(
+        posting=posting, track="transferable", status="ready",
+        application=Application(posting_id="x", posting_title="t",
+                                employer="Ridge Farms", track="transferable",
+                                cv=long_cv, letter=letter()))
+
+    with pytest.raises(LayoutError, match="pages"):
+        finalise(outcome, PROFILE, tmp_path)
+
+
+@needs_pdf
+def test_a_normal_track_b_cv_passes_the_length_gate(tmp_path):
+    from northbound.generate.generator import GenerationOutcome, Posting, finalise
+    from northbound.generate.schemas import Application
+
+    posting = Posting(posting_id="x", title="general labourer - farm",
+                      employer="Ridge Farms", body="body")
+    outcome = GenerationOutcome(
+        posting=posting, track="transferable", status="ready",
+        application=Application(posting_id="x", posting_title="t",
+                                employer="Ridge Farms", track="transferable",
+                                cv=full_cv(), letter=letter()))
+    paths = finalise(outcome, PROFILE, tmp_path)
+    assert page_count(paths["cv_pdf"]) == 1

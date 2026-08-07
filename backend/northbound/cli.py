@@ -211,7 +211,16 @@ def _cmd_batch(args: argparse.Namespace) -> int:
             setattr(totals, field, getattr(totals, field) + getattr(outcome.usage, field))
 
         if outcome.ready:
-            finalise(outcome, profile, out_dir / "ready", pdf=not args.no_pdf)
+            try:
+                finalise(outcome, profile, out_dir / "ready", pdf=not args.no_pdf)
+            except (GenerationError, AssertionError) as exc:
+                # Rendering gates (ATS round-trip, page length) fail after every
+                # content check has passed. That is still a failure, and it must
+                # not take the rest of the batch with it.
+                rows.append((posting.posting_id, track, "RENDER-FAIL", str(exc)[:60]))
+                failures += 1
+                print(f"[{n:>2}/{len(files)}] {label}  RENDER FAILED — {exc}")
+                continue
             rows.append((posting.posting_id, track, "READY",
                          f"{outcome.attempts} attempt(s)"))
         else:

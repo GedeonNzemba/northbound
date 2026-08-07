@@ -154,6 +154,7 @@ def audit(app: Application, profile: Profile, *, posting_text: str = "") -> Audi
     _check_canadian_english(cv, letter, r)
     _check_specificity(letter, r)
     _check_screening_questions(letter, posting_text, r)
+    _check_units(cv, letter, posting_text, r)
     _check_employer_context(cv, r)
     return r
 
@@ -704,6 +705,28 @@ def _check_languages(cv: GeneratedCV, profile: Profile, r: AuditResult) -> None:
                 "languages.overstated", "block",
                 f"claims {name!r} as a native language; the profile records "
                 f"speak={record.get('speak')!r}", "cv.languages"))
+
+
+# docs/08 §1.4 — metric where measurements appear, "but mirror the employer":
+# lifting capacities get quoted in lb as often as kg, and matching the posting's
+# own unit reads better than correcting it. So an imperial unit is only odd when
+# the posting never used one.
+IMPERIAL = re.compile(
+    r"\b\d+\s?(lbs?|pounds?|ft|feet|foot|inch(?:es)?|miles?|°?F|fahrenheit)\b", re.I)
+
+
+def _check_units(cv: GeneratedCV, letter: CoverLetter, posting_text: str,
+                 r: AuditResult) -> None:
+    if not posting_text:
+        return
+    posting_uses_imperial = bool(IMPERIAL.search(posting_text))
+    if posting_uses_imperial:
+        return
+    for match in IMPERIAL.finditer(_text_of(cv, letter)):
+        r.findings.append(Finding(
+            "units.imperial", "warn",
+            f"{match.group(0)!r} — Canada is metric and this posting used metric "
+            "units (docs/08 §1.4)", "cv/letter"))
 
 
 def _check_employer_context(cv: GeneratedCV, r: AuditResult) -> None:
