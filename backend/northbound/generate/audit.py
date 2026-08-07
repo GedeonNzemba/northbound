@@ -133,6 +133,7 @@ def audit(app: Application, profile: Profile, *, posting_text: str = "") -> Audi
     cv, letter = app.cv, app.letter
 
     _check_evidence(cv, letter, profile, r)
+    _check_education(cv, profile, r)
     _check_standing_instructions(cv, letter, profile, r)
     _check_prohibited_content(cv, letter, r)
     _check_work_permit_placement(cv, letter, r)
@@ -439,6 +440,115 @@ def _check_screening_questions(letter: CoverLetter, posting_text: str, r: AuditR
             f"posting asks {len(qs)} screening question(s) and the letter answers "
             "none — ~30% of LMIA postings ask, and most applicants ignore them",
             "letter.screening_answers"))
+
+
+_TOKEN = re.compile(r"[A-Za-z0-9]+")
+_YEAR = re.compile(r"\b(?:19|20)\d{2}\b")
+# Words that carry no identifying weight when matching a credential or school.
+_WEAK_TOKENS = {"of", "the", "and", "in", "a", "at", "for", "de", "pty", "ltd",
+                "division", "school", "college", "institute", "academy", "certificate"}
+
+
+def _core_tokens(text: str) -> set[str]:
+    return {t.lower() for t in _TOKEN.findall(text)
+            if t.lower() not in _WEAK_TOKENS and len(t) > 1}
+
+
+def _same_thing(rendered: str, recorded: str, *, threshold: float = 0.6) -> bool:
+    """
+    Whether two names refer to the same credential or institution.
+
+    Not equality: a CV legitimately shortens ("National Senior Certificate" for
+    "National Senior Certificate (Matric)") and legitimately extends ("Noorder
+    Paarl High School, South Africa"). What it may not do is name a different
+    school. So the test is overlap of identifying tokens, measured against
+    whichever name is shorter — which tolerates both edits and still fails on a
+    substitution.
+    """
+    a, b = _core_tokens(rendered), _core_tokens(recorded)
+    if not a or not b:
+        return True                     # nothing identifying to compare
+    shared = a & b
+    return len(shared) / min(len(a), len(b)) >= threshold
+
+
+def _check_education(cv: GeneratedCV, profile: Profile, r: AuditResult) -> None:
+    """
+    docs/04 Rule 1, applied to the section it was missing from.
+
+    Education entries carry an `evidence_id`, and until now that was the whole
+    check — the id had to exist and be usable, and the credential name,
+    institution, year and ECA file number beside it were free text nobody
+    verified. The entailment pass does not cover them either: it reads bullets
+    and paragraphs, not education records.
+
+    That is the worst place in the document to leave unguarded. A wrong
+    graduation year or an invented credential on an application supporting a
+    work permit is misrepresentation, and the ICAS file number is a real
+    reference an officer can look up.
+    """
+    for ed in cv.education:
+        entry = profile.education_entry(ed.evidence_id)
+        if entry is None:
+            continue                    # _check_evidence already blocked the id
+
+        if not _same_thing(ed.credential, str(entry.get("credential", ""))):
+            r.findings.append(Finding(
+                "education.credential_mismatch", "block",
+                f"renders credential {ed.credential!r}; the profile records "
+                f"{entry.get('credential')!r}", ed.evidence_id))
+
+        if not _same_thing(ed.institution, str(entry.get("institution", ""))):
+            r.findings.append(Finding(
+                "education.institution_mismatch", "block",
+                f"renders institution {ed.institution!r}; the profile records "
+                f"{entry.get('institution')!r}", ed.evidence_id))
+
+        known = profile.education_years(ed.evidence_id)
+        claimed = set(_YEAR.findall(ed.year or ""))
+        if invented := claimed - known:
+            r.findings.append(Finding(
+                "education.year_mismatch", "block",
+                f"claims year(s) {sorted(invented)}; the profile records "
+                f"{sorted(known) or 'no year'}", ed.evidence_id))
+
+        _check_eca(ed, entry, r)
+
+
+def _check_eca(ed, entry: dict, r: AuditResult) -> None:
+    """
+    docs/08 §3.1 — the equivalency line, with its file number.
+
+    Stating it is a genuine advantage most overseas applicants never take.
+    Getting the number wrong turns that advantage into a discrepancy on a
+    document an officer can check against ICAS's own records.
+    """
+    detail = ed.detail or ""
+    eca = entry.get("eca")
+    if not isinstance(eca, dict):
+        if re.search(r"\b(ICAS|WES|IQAS|ICES|educational credential assessment)\b",
+                     detail, re.I):
+            r.findings.append(Finding(
+                "education.eca_invented", "block",
+                f"claims a credential assessment for {ed.evidence_id}, which has "
+                "none on record", ed.evidence_id))
+        return
+
+    recorded = str(eca.get("file_no", "")).strip()
+    for found in re.findall(r"\b\d{6,}(?:\s*[A-Z]{2,4})?\b", detail):
+        if recorded and found.strip() not in recorded:
+            r.findings.append(Finding(
+                "education.eca_file_number", "block",
+                f"cites assessment file {found.strip()!r}; the profile records "
+                f"{recorded!r}", ed.evidence_id))
+
+    equivalency = str(eca.get("canadian_equivalency", "")).strip()
+    if equivalency and re.search(r"\bequivalent to\b", detail, re.I):
+        if not _same_thing(detail, equivalency, threshold=0.5):
+            r.findings.append(Finding(
+                "education.eca_equivalency", "warn",
+                f"the equivalency line does not state {equivalency!r}",
+                ed.evidence_id))
 
 
 def _check_employer_context(cv: GeneratedCV, r: AuditResult) -> None:

@@ -144,6 +144,94 @@ def test_missing_employer_context_warns_but_does_not_block():
     assert not res.blocked, "a missing context clause should warn, not block"
 
 
+# --------------------------------------------------------------------------- #
+# Education — the section that carried an evidence id and nothing else
+# --------------------------------------------------------------------------- #
+
+from northbound.generate.schemas import EducationEntry  # noqa: E402
+
+
+def _edu(**over) -> EducationEntry:
+    base = dict(
+        evidence_id="edu.matric",
+        credential="National Senior Certificate",
+        institution="Noorder Paarl High School",
+        year="2016",
+        detail=("Assessed by ICAS as equivalent to Canadian Secondary School "
+                "Graduation. File 24080341 IMM."),
+    )
+    base.update(over)
+    return EducationEntry(**base)
+
+
+def _with_edu(**over):
+    return _app(cv=_cv(education=[_edu(**over)]))
+
+
+def test_an_invented_graduation_year_blocks():
+    """The matric is 2016. A wrong year is misrepresentation, not a typo."""
+    res = audit(_with_edu(year="2018"), PROFILE)
+    assert res.blocked and "education.year_mismatch" in _rules(res)
+
+
+def test_an_invented_institution_blocks():
+    res = audit(_with_edu(institution="Cape Town Technical College"), PROFILE)
+    assert res.blocked and "education.institution_mismatch" in _rules(res)
+
+
+def test_an_invented_credential_blocks():
+    res = audit(_with_edu(credential="Bachelor of Computer Science"), PROFILE)
+    assert res.blocked and "education.credential_mismatch" in _rules(res)
+
+
+def test_a_shortened_credential_is_allowed():
+    """The profile says 'National Senior Certificate (Matric)'; dropping the
+    parenthetical is normal CV editing, not a different qualification."""
+    res = audit(_with_edu(credential="National Senior Certificate"), PROFILE)
+    assert "education.credential_mismatch" not in _rules(res)
+
+
+def test_an_extended_institution_is_allowed():
+    """docs/08 §3.2 — naming the country for a Canadian reader is expected."""
+    res = audit(_with_edu(institution="Noorder Paarl High School, South Africa"),
+                PROFILE)
+    assert "education.institution_mismatch" not in _rules(res)
+
+
+def test_either_year_of_a_study_range_is_allowed():
+    """IT Academy ran 2020–2021; a CV may render either end or both."""
+    for year in ("2020", "2021", "2020 – 2021"):
+        res = audit(_app(cv=_cv(education=[_edu(
+            evidence_id="edu.itacademy",
+            credential="Certificate of IEP completion (Software Development programme)",
+            institution="IT Academy",
+            year=year, detail=None)])), PROFILE)
+        assert "education.year_mismatch" not in _rules(res), year
+
+
+def test_a_wrong_icas_file_number_blocks():
+    """An officer can check this against ICAS's own records."""
+    res = audit(_with_edu(detail=(
+        "Assessed by ICAS as equivalent to Canadian Secondary School "
+        "Graduation. File 99999999 IMM.")), PROFILE)
+    assert res.blocked and "education.eca_file_number" in _rules(res)
+
+
+def test_the_real_icas_file_number_passes():
+    res = audit(_with_edu(), PROFILE)
+    assert "education.eca_file_number" not in _rules(res)
+
+
+def test_claiming_an_assessment_that_does_not_exist_blocks():
+    """Only the matric has an ECA on record."""
+    res = audit(_app(cv=_cv(education=[_edu(
+        evidence_id="edu.shaw",
+        credential="Professional Diploma in Web Development",
+        institution="Shaw Academy", year="2019",
+        detail="Assessed by ICAS as equivalent to a Canadian diploma.")])), PROFILE)
+    assert res.blocked and "education.eca_invented" in _rules(res)
+
+
 def test_referees_never_render():
     assert PROFILE.render_referees is False
     assert PROFILE.raw["referees"]["entries"] == []
