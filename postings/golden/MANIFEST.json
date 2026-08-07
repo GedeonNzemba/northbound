@@ -1,10 +1,11 @@
 {
-  "captured_at": "2026-08-07T19:20:59.292020+00:00",
+  "first_captured_at": "2026-08-07T19:20:59.292020+00:00",
+  "last_captured_at": "2026-08-07T19:30:44.210638+00:00",
   "frozen": true,
-  "note": "Immutable. Job Bank postings expire; re-harvesting would make two evaluation runs incomparable. Build a NEW set instead.",
+  "note": "Frozen. Job Bank postings expire, so re-harvesting a queue would make two evaluation runs incomparable. A queue that is short can be filled with --only; a queue that already has entries is refused.",
   "counts": {
     "lmia_approved": 15,
-    "international_candidates": 1
+    "international_candidates": 5
   },
   "entries": [
     {
@@ -300,6 +301,86 @@
       "noc": "21234",
       "sha256": "268ce7764b8c9cf43f8a3c64bd50400a79446555e57d1b05c67c8505c9f1c791",
       "body_chars": 6094,
+      "screening_questions": 1,
+      "email_capable": true,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "50012572",
+      "queue": "international_candidates",
+      "captured_at": "2026-08-07T19:30:44.210638+00:00",
+      "title": "Web developer",
+      "employer": "EXPRESS LARS T. INC.",
+      "noc": "21234",
+      "sha256": "0ada5bb5b0bc9073778edca4bb21f1a7357ffaaa12f5c80ae08e39640bd17aee",
+      "body_chars": 2636,
+      "screening_questions": 1,
+      "email_capable": false,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "50012570",
+      "queue": "international_candidates",
+      "captured_at": "2026-08-07T19:30:44.210638+00:00",
+      "title": "Web developer",
+      "employer": "EXPRESS LARS T. INC.",
+      "noc": "21234",
+      "sha256": "253ec6f33a94f8b1b27d6d9429fc179098781960b29f8bdf39a9398d7c37ac78",
+      "body_chars": 2636,
+      "screening_questions": 1,
+      "email_capable": false,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "50006569",
+      "queue": "international_candidates",
+      "captured_at": "2026-08-07T19:30:44.210638+00:00",
+      "title": "Web developer",
+      "employer": "Westview Investment Inc.",
+      "noc": "21234",
+      "sha256": "62bc2b68bd8d2ef01c8dc6c7484b19c418cdc63d6512bd454b9ee7e80e9ff1eb",
+      "body_chars": 3872,
+      "screening_questions": 1,
+      "email_capable": false,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "50006147",
+      "queue": "international_candidates",
+      "captured_at": "2026-08-07T19:30:44.210638+00:00",
+      "title": "Web developer",
+      "employer": "Arora Enterprise Inc",
+      "noc": "21234",
+      "sha256": "b0893e452aeb093c9a4e12a928bc8c43328719a87020a54f2228f2a5165740ad",
+      "body_chars": 5034,
       "screening_questions": 1,
       "email_capable": true,
       "revealed_additional": true,
