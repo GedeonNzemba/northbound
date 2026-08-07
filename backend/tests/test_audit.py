@@ -258,6 +258,30 @@ def test_a_ticket_he_does_hold_is_allowed():
     assert "skills.unheld_credential" not in _rules(res)
 
 
+def test_an_unheld_ticket_in_the_cover_letter_blocks_too():
+    """The bridge paragraph is exactly where the temptation lives."""
+    res = audit(_app(letter=_letter(bridge=(
+        "I have not worked on a farm, but I hold a valid forklift ticket and "
+        "worked at height in Paarl for 18 months."))), PROFILE)
+    assert res.blocked and "skills.unheld_credential" in _rules(res)
+
+
+@pytest.mark.parametrize("bridge", [
+    "I have not worked on a farm, but I am willing to complete WHMIS training "
+    "before starting at Ridge Farms in Leamington.",
+    "I do not hold a forklift ticket and would obtain one if required for the "
+    "greenhouse work at Ridge Farms.",
+])
+def test_offering_to_obtain_a_ticket_is_allowed(bridge):
+    """
+    docs/08 §4 — stating willingness is honest and expected; it is the
+    recommended bridge sentence. A rule that banned the vocabulary outright
+    would block the correct document.
+    """
+    res = audit(_app(letter=_letter(bridge=bridge)), PROFILE)
+    assert "skills.unheld_credential" not in _rules(res), bridge
+
+
 def test_a_generic_descriptor_warns_rather_than_blocks():
     """
     Forcing a retry over "physical stamina" spends a generation on language

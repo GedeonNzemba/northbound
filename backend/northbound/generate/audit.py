@@ -134,7 +134,7 @@ def audit(app: Application, profile: Profile, *, posting_text: str = "") -> Audi
 
     _check_evidence(cv, letter, profile, r)
     _check_education(cv, profile, r)
-    _check_skill_claims(cv, profile, r)
+    _check_skill_claims(cv, letter, profile, r)
     _check_languages(cv, profile, r)
     _check_standing_instructions(cv, letter, profile, r)
     _check_prohibited_content(cv, letter, r)
@@ -601,23 +601,61 @@ def _grounding_corpus(profile: Profile) -> set[str]:
     return _core_tokens(_supported_text(profile))
 
 
-def _check_skill_claims(cv: GeneratedCV, profile: Profile, r: AuditResult) -> None:
-    text = _cv_text(cv)
+# docs/08 §4 and TRACK_B_GUIDANCE: *stating willingness to obtain* a ticket is
+# honest and expected — it is the recommended bridge sentence. Only claiming to
+# hold one is the problem, so the rule needs to tell the two apart rather than
+# banning the vocabulary outright.
+WILLINGNESS = re.compile(
+    r"\b(willing|prepared|happy|ready) to\b"
+    r"|\bwould (complete|obtain|take|get|do)\b"
+    r"|\b(can|could) (obtain|complete|get|take)\b"
+    r"|\bbefore (starting|I start|my start)\b"
+    r"|\bif required\b|\bas required\b"
+    r"|\bdo(?:es)? not (?:yet )?hold\b", re.I)
+
+# An affirmative claim to hold the thing. Checked in a tighter window and
+# checked FIRST, because willingness language elsewhere in the paragraph must
+# not launder it: "I have not worked on a farm, but I hold a forklift ticket"
+# contains a negation and a held claim, and only the second one matters.
+# The lookbehind is what keeps "do not hold" out.
+HELD_CLAIM = re.compile(
+    r"(?<!not )\b(holds?|holding|possess(?:es)?)\b"
+    r"|\b(?:am|is|are|was|were) (?:certified|licen[cs]ed|ticketed|qualified|accredited)\b"
+    r"|\bcertified in\b"
+    r"|\bhave (?:a|an|my|valid|current)\b", re.I)
+
+HELD_WINDOW = 80
+WILLINGNESS_WINDOW = 160
+
+
+def _check_skill_claims(cv: GeneratedCV, letter: CoverLetter, profile: Profile,
+                        r: AuditResult) -> None:
     recorded = _supported_text(profile)
     supported = _core_tokens(recorded)
 
-    for match in CREDENTIAL_CLAIMS.finditer(text):
-        term = match.group(0)
-        # The whole phrase must be on record, not merely its words. "food" and
-        # "first" both appear in this profile in innocent contexts, and a
-        # token-level test would let "food handler certificate" and "first aid"
-        # through on the strength of them.
-        if re.sub(r"[\s\-–—]+", " ", term).lower() not in recorded:
+    # The letter is scanned too: "I hold a forklift ticket" in paragraph 2 is
+    # the same misrepresentation as a skills bullet, and the bridge paragraph
+    # is exactly where the temptation lives.
+    for where, text in (("cv", _cv_text(cv)), ("letter", _letter_text(letter))):
+        for match in CREDENTIAL_CLAIMS.finditer(text):
+            term = match.group(0)
+            # The whole phrase must be on record, not merely its words. "food"
+            # and "first" both appear in this profile in innocent contexts, and
+            # a token-level test would let "food handler certificate" and
+            # "first aid" through on the strength of them.
+            if re.sub(r"[\s\-–—]+", " ", term).lower() in recorded:
+                continue
+            near = text[max(0, match.start() - HELD_WINDOW):
+                        match.end() + HELD_WINDOW]
+            wide = text[max(0, match.start() - WILLINGNESS_WINDOW):
+                        match.end() + WILLINGNESS_WINDOW]
+            if not HELD_CLAIM.search(near) and WILLINGNESS.search(wide):
+                continue                # offering to obtain it — honest, expected
             r.findings.append(Finding(
                 "skills.unheld_credential", "block",
-                f"claims {term!r}, which appears nowhere in the profile. An "
-                "employer reads this as a ticket he holds (docs/08 §4)",
-                "cv.skills"))
+                f"claims {term!r}, which appears nowhere in the profile, and not "
+                "as something he would obtain. An employer reads this as a "
+                "ticket he already holds (docs/08 §4)", where))
 
     # Everything else gets a warning, not a block: a line that reads oddly is
     # worth a human glance, but forcing a retry over "physical stamina" spends

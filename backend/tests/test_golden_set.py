@@ -143,6 +143,56 @@ def test_blank_line_runs_are_collapsed():
     assert "\n\n\n" not in gs._clean("a\n\n\n\n\nb")
 
 
+# ---- the listing walk: filter before fetching ----------------------------- #
+
+LISTING_HTML = """
+<ul>
+ <li><a href="/jobsearch/jobposting/1001?x=1">web developer</a><span>Acme</span></li>
+ <li><a href="/jobsearch/jobposting/1002?x=1">general labourer - farm</a><span>Ridge</span></li>
+ <li><a href="/jobsearch/jobposting/1003?x=1">Full Stack Developer</a><span>North</span></li>
+ <li><a href="/jobsearch/jobposting/1004?x=1">long haul truck driver</a><span>Transp</span></li>
+ <li><a href="/jobsearch/jobposting/1005?x=1">programmer analyst</a><span>Data Co</span></li>
+ <li><a href="/jobsearch/jobposting/1006?x=1">kitchen helper</a><span>Cafe</span></li>
+</ul>"""
+
+
+class _Resp:
+    status_code = 200
+    text = LISTING_HTML
+
+
+class _Session:
+    def get(self, url, timeout=None):
+        return _Resp()
+
+
+@pytest.fixture(autouse=True)
+def _no_politeness_delay(monkeypatch):
+    monkeypatch.setattr(gs.time, "sleep", lambda *a: None)
+
+
+@pytest.mark.skipif(gs.BeautifulSoup is None, reason="beautifulsoup4 not installed")
+def test_the_lmia_walk_takes_every_occupation():
+    """D6: sponsorship is proven, so occupation is not a filter here."""
+    assert gs.collect(_Session(), "u{page}", 1) == [
+        "1001", "1002", "1003", "1004", "1005", "1006"]
+
+
+@pytest.mark.skipif(gs.BeautifulSoup is None, reason="beautifulsoup4 not installed")
+def test_the_international_walk_filters_titles_before_fetching_anything():
+    """
+    D6 the other way — and the reason it happens at the listing stage.
+
+    Developer roles are ~0.4% of the international queue. Loading each posting
+    and deciding afterwards means hundreds of browser navigations, each with two
+    disclosure clicks, to find five. The title is already in the result card, so
+    one cheap HTML fetch covers 25 postings.
+    """
+    got = gs.collect(_Session(), "u{page}", 1, title_filter=gs.TECH_TITLE)
+    assert got == ["1001", "1003", "1005"]
+    assert "1002" not in got and "1006" not in got, "general work is out of scope here"
+
+
 # ---- extraction path reporting -------------------------------------------- #
 
 def test_first_reports_which_path_won():
