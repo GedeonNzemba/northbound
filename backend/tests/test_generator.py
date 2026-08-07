@@ -251,6 +251,37 @@ def test_every_bullet_is_verified_in_isolation():
         assert "PROFILE" not in content, "the whole profile must not leak into the verifier"
 
 
+def test_a_multi_cited_paragraph_stops_at_the_first_supporting_source():
+    """
+    The letter's evidence paragraph cites two entries. Once one supports it, the
+    second cannot change the outcome — and this loop is the one that costs
+    money, a call per bullet per attempt across a whole batch.
+    """
+    client = FakeClient([docset()])
+    generate_application(client, FARM, PROFILE)
+
+    sources = [re.search(r"SOURCE:\n(.*?)\n\nCLAIM:", c["messages"][0]["content"], re.S).group(1)
+               for c in client.messages.verify_calls]
+    # gen.mcdonalds.h1 is the letter paragraph's second citation; the first
+    # supports it, so the second is never fetched.
+    assert not any("standardised procedures" in s and "McDonald" in s
+                   for s in sources), "verified a citation it no longer needed"
+
+
+def test_a_paragraph_with_no_supporting_source_tries_every_one():
+    """Short-circuiting must not weaken the failure path."""
+    def all_overstated(claim, source):
+        return EntailmentVerdict(verdict="overstated", offending_span="x",
+                                 reason="no")
+
+    client = FakeClient([docset(), docset()], verdict_for=all_overstated)
+    out = generate_application(client, FARM, PROFILE, max_attempts=1)
+    assert out.status == "parked"
+    letter_claims = [c for c in client.messages.verify_calls
+                     if "18 months" in c["messages"][0]["content"]]
+    assert len(letter_claims) >= 2, "both citations must be tried before failing"
+
+
 def test_skipping_entailment_makes_no_verifier_calls():
     client = FakeClient([docset()])
     out = generate_application(client, FARM, PROFILE, verify_entailment=False)

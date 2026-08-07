@@ -169,29 +169,41 @@ def verify_application(client: Client, app: Application, profile: Profile, *,
     Multi-cited text (summary, letter paragraphs) is grouped: it passes if ANY
     of its cited sources supports it, because a paragraph drawing on three
     entries is not overstating merely because one of them alone doesn't cover it.
+
+    Grouped text stops at the first source that supports it. Once a paragraph
+    has passed, the remaining citations cannot change the outcome, and this is
+    the loop that costs money — a call per bullet per attempt, across a whole
+    batch. Nothing about strictness changes: a group with no supporting source
+    still runs every one of them and still fails.
     """
     results: list[EntailmentResult] = []
-    grouped: dict[tuple[str, str], list[EntailmentResult]] = {}
+    plan: dict[tuple[str, str], list[Claim]] = {}
 
     for claim in collect_claims(app):
-        ev = profile.evidence.get(claim.evidence_id)
-        if ev is None:
-            results.append(EntailmentResult(
-                claim=claim, verdict="unsupported",
-                reason="evidence id does not exist", source_text=""))
-            continue
-
-        res = verify_claim(client, claim, ev.text, model=model, tally=tally)
         if claim.where in ("cv.summary", "letter.evidence", "letter.bridge"):
-            grouped.setdefault((claim.where, claim.text), []).append(res)
+            plan.setdefault((claim.where, claim.text), []).append(claim)
         else:
-            results.append(res)
+            results.append(_verify_one(client, claim, profile, model, tally))
 
-    for (_where, _text), group in grouped.items():
-        best = next((g for g in group if g.ok), None)
-        results.append(best or group[0])
+    for group in plan.values():
+        attempts: list[EntailmentResult] = []
+        for claim in group:
+            res = _verify_one(client, claim, profile, model, tally)
+            attempts.append(res)
+            if res.ok:
+                break                   # any one source is enough
+        results.append(next((a for a in attempts if a.ok), attempts[0]))
 
     return results
+
+
+def _verify_one(client: Client, claim: Claim, profile: Profile,
+                model: str, tally: UsageTally | None) -> EntailmentResult:
+    ev = profile.evidence.get(claim.evidence_id)
+    if ev is None:
+        return EntailmentResult(claim=claim, verdict="unsupported",
+                                reason="evidence id does not exist", source_text="")
+    return verify_claim(client, claim, ev.text, model=model, tally=tally)
 
 
 def failures(results: Iterable[EntailmentResult]) -> list[EntailmentResult]:
