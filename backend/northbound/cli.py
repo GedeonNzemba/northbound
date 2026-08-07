@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from pathlib import Path
 
@@ -34,6 +33,7 @@ from .generate.llm import (
 )
 from .generate.prompts import TASK_DIRECTIVE, posting_block, system_blocks
 from .generate.screen import screen_posting
+from .env import api_key, missing_key_message
 from .profile import ProfileError, load_profile
 
 EXIT_OK, EXIT_ERROR, EXIT_PARKED = 0, 1, 2
@@ -99,6 +99,22 @@ def _load_posting(args: argparse.Namespace) -> Posting:
     return Posting(**{**posting.__dict__, **over}) if over else posting
 
 
+def _client():
+    """
+    Build a client, or explain precisely why we cannot.
+
+    The key is looked up in the environment first and a `.env` second, and the
+    source is printed — with several possible locations, "found a key" is much
+    less useful than "found a key in this file", especially when two of them
+    exist and one is stale.
+    """
+    key, source = api_key()
+    if not key:
+        raise GenerationError(missing_key_message())
+    print(f"api key : loaded from {source}")
+    return default_client(key)
+
+
 def _cmd_generate(args: argparse.Namespace) -> int:
     profile = load_profile(args.profile)
     posting = _load_posting(args)
@@ -127,7 +143,7 @@ def _cmd_generate(args: argparse.Namespace) -> int:
         print(TASK_DIRECTIVE)
         return EXIT_OK
 
-    client = default_client(os.environ.get("ANTHROPIC_API_KEY"))
+    client = _client()
     outcome = generate_application(
         client, posting, profile,
         track=track, model=args.model, max_attempts=args.max_attempts,
@@ -171,7 +187,7 @@ def _cmd_batch(args: argparse.Namespace) -> int:
     if not files:
         raise GenerationError(f"no posting files in {directory}")
 
-    client = None if args.dry_run else default_client(os.environ.get("ANTHROPIC_API_KEY"))
+    client = None if args.dry_run else _client()
     out_dir = Path(args.out)
     rows: list[tuple[str, str, str, str]] = []
     totals = UsageTally()

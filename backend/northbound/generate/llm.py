@@ -50,6 +50,22 @@ class RefusalError(LLMError):
     """
 
 
+# USD per million tokens, claude-opus-5. Cache reads bill at 0.1x input and cache
+# writes at 1.25x, which is why the cached profile prefix is worth the trouble:
+# it is the difference between paying full price for ~5,000 tokens of profile on
+# every posting and paying a tenth of it.
+#
+# Prices are per model and do change. They are here to turn "how much did that
+# cost?" into a printed line rather than a question — treat the number as a good
+# estimate, and the invoice as the truth.
+PRICE_PER_MTOK = {
+    "input": 5.00,
+    "output": 25.00,
+    "cache_read": 0.50,
+    "cache_write": 6.25,
+}
+
+
 @dataclass
 class UsageTally:
     """
@@ -83,15 +99,34 @@ class UsageTally:
         return (self.input_tokens + self.cache_creation_input_tokens
                 + self.cache_read_input_tokens)
 
+    @property
+    def cost_usd(self) -> float:
+        p = PRICE_PER_MTOK
+        return (self.input_tokens * p["input"]
+                + self.output_tokens * p["output"]
+                + self.cache_read_input_tokens * p["cache_read"]
+                + self.cache_creation_input_tokens * p["cache_write"]) / 1_000_000
+
+    @property
+    def cost_without_caching_usd(self) -> float:
+        """What the same tokens would have cost billed at full input price."""
+        p = PRICE_PER_MTOK
+        return (self.total_prompt_tokens * p["input"]
+                + self.output_tokens * p["output"]) / 1_000_000
+
     def report(self) -> str:
         if not self.calls:
             return "usage: no model calls"
         cached = self.cache_read_input_tokens
         pct = (100 * cached / self.total_prompt_tokens) if self.total_prompt_tokens else 0
+        saved = self.cost_without_caching_usd - self.cost_usd
         line = (f"usage: {self.calls} call(s)  "
                 f"prompt {self.total_prompt_tokens:,} "
                 f"({cached:,} cached = {pct:.0f}%)  "
-                f"output {self.output_tokens:,}")
+                f"output {self.output_tokens:,}  "
+                f"≈ ${self.cost_usd:,.2f}")
+        if saved > 0.005:
+            line += f" (caching saved ${saved:,.2f})"
         if self.calls > 1 and cached == 0:
             line += "\n  WARNING: zero cache reads across multiple calls — the "
             line += "profile prefix is being invalidated somewhere"

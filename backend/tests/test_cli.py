@@ -37,6 +37,9 @@ def posting_file(tmp_path):
 def _patch_client(monkeypatch, drafts, verdict_for=None):
     client = FakeClient(drafts, verdict_for)
     monkeypatch.setattr(cli, "default_client", lambda *a, **k: client)
+    # A real run has a key; the CLI now refuses without one and says where it
+    # looked, so the tests have to supply it like a real run would.
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")
     return client
 
 
