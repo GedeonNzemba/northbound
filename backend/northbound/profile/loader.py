@@ -202,6 +202,23 @@ class Profile:
         want = set(tags)
         return [e for e in self.evidence.values() if e.usable and want & set(e.tags)]
 
+    @property
+    def has_drivers_licence(self) -> bool:
+        """
+        PROFILE-GAPS item 8. The old CV records "Driving Permits: None", and a
+        large share of LMIA general and trades roles require one — so the
+        posting screen excludes those rather than spending a slot on them.
+
+        Reading it from the profile rather than hardcoding the answer means
+        recording a licence here turns the exclusion off, which is what should
+        happen the day item 8 is resolved.
+        """
+        ident = self.raw.get("identity") or {}
+        value = ident.get("drivers_licence", ident.get("driving_licence"))
+        if isinstance(value, dict):
+            return bool(value.get("held"))
+        return bool(value) and str(value).strip().lower() not in {"none", "no", "false"}
+
     def education_entry(self, entry_id: str) -> dict[str, Any] | None:
         """The raw education record, so the audit can check what was rendered."""
         for e in self.raw.get("education", []) or []:
