@@ -8,6 +8,7 @@ reaches a real employer, so each one gets a case that proves it blocks.
 
 from __future__ import annotations
 
+import pytest
 from fixtures import PROFILE, app as _make_app, cv as _cv, letter as _letter
 
 from northbound.generate.audit import audit
@@ -230,6 +231,66 @@ def test_claiming_an_assessment_that_does_not_exist_blocks():
         institution="Shaw Academy", year="2019",
         detail="Assessed by ICAS as equivalent to a Canadian diploma.")])), PROFILE)
     assert res.blocked and "education.eca_invented" in _rules(res)
+
+
+# --------------------------------------------------------------------------- #
+# Skills and languages — the other two free-text sections
+# --------------------------------------------------------------------------- #
+
+@pytest.mark.parametrize("claim", [
+    "forklift operation", "WHMIS certified", "welding (MIG/TIG)",
+    "tractor operation", "pesticide application", "first aid",
+    "class 1 licence", "food handler certificate",
+])
+def test_an_unheld_ticket_blocks(claim):
+    """
+    docs/08 §4 — an employer reads these as a qualification he holds and puts
+    him on the machine. Claiming one he lacks is a statement they act on.
+    """
+    res = audit(_app(cv=_cv(skills={"Practical": [claim, "hand tools"]})), PROFILE)
+    assert res.blocked and "skills.unheld_credential" in _rules(res), claim
+
+
+def test_a_ticket_he_does_hold_is_allowed():
+    """Fall-arrest work IS on record — the check must not block the real one."""
+    res = audit(_app(cv=_cv(skills={
+        "Practical": ["working at height with fall-arrest harness"]})), PROFILE)
+    assert "skills.unheld_credential" not in _rules(res)
+
+
+def test_a_generic_descriptor_warns_rather_than_blocks():
+    """
+    Forcing a retry over "physical stamina" spends a generation on language
+    that harms nobody. It still surfaces for a human.
+    """
+    res = audit(_app(cv=_cv(skills={"Practical": ["physical stamina"]})), PROFILE)
+    assert not res.blocked
+    assert "skills.thinly_grounded" in _rules(res)
+
+
+def test_profile_skills_are_not_flagged_as_thin():
+    res = audit(_app(cv=_cv(skills={
+        "Practical": ["trenching and excavation", "hand tools", "wall chasing"],
+        "Technical": ["React.js", "TypeScript"]})), PROFILE)
+    assert "skills.thinly_grounded" not in _rules(res)
+
+
+def test_an_invented_language_blocks():
+    res = audit(_app(cv=_cv(languages=["English", "French", "Spanish"])), PROFILE)
+    assert res.blocked and "languages.unknown" in _rules(res)
+
+
+def test_the_five_recorded_languages_pass():
+    res = audit(_app(cv=_cv(languages=[
+        "French (native)", "English", "Lingala", "Kituba", "Afrikaans"])), PROFILE)
+    assert "languages.unknown" not in _rules(res)
+    assert "languages.overstated" not in _rules(res)
+
+
+def test_claiming_a_non_native_language_as_native_blocks():
+    """He speaks Afrikaans well. That is not the same claim."""
+    res = audit(_app(cv=_cv(languages=["Afrikaans (native)"])), PROFILE)
+    assert res.blocked and "languages.overstated" in _rules(res)
 
 
 def test_referees_never_render():

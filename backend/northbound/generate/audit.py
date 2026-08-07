@@ -134,6 +134,8 @@ def audit(app: Application, profile: Profile, *, posting_text: str = "") -> Audi
 
     _check_evidence(cv, letter, profile, r)
     _check_education(cv, profile, r)
+    _check_skill_claims(cv, profile, r)
+    _check_languages(cv, profile, r)
     _check_standing_instructions(cv, letter, profile, r)
     _check_prohibited_content(cv, letter, r)
     _check_work_permit_placement(cv, letter, r)
@@ -549,6 +551,112 @@ def _check_eca(ed, entry: dict, r: AuditResult) -> None:
                 "education.eca_equivalency", "warn",
                 f"the equivalency line does not state {equivalency!r}",
                 ed.evidence_id))
+
+
+# docs/08 §4, and the standing rule in TRACK_B_GUIDANCE: never claim a ticket he
+# does not hold. These are the terms an agricultural, warehouse or trades
+# employer reads as a specific qualification — machinery he would be put on, or
+# a certificate with an issuing body behind it. Claiming one he lacks is not
+# padding, it is a statement an employer can act on and be wrong about.
+#
+# Deliberately a closed list rather than a general "is this grounded" score.
+# Generic descriptors ("physical stamina", "punctuality") score identically to
+# invented machinery under any similarity measure, and blocking those would burn
+# retries on language that harms nobody.
+CREDENTIAL_CLAIMS = re.compile(
+    r"\b(fall[- ]arrest|forklift|pallet jack|order picker truck|scissor lift|boom lift|"
+    r"skid[- ]steer|backhoe|excavator|bobcat|telehandler|crane|rigging|"
+    r"chainsaw|welding|MIG|TIG|arc weld|"
+    r"tractor|combine harvester|sprayer|"
+    r"WHMIS|TDG|HACCP|first aid|CPR|confined space|fall protection ticket|"
+    r"working at heights ticket|scaffold(?:ing)? ticket|H2S|"
+    r"pesticide|herbicide|fumigation|"
+    r"food handler|food safety certificate|"
+    r"class [1-5] licence|class [1-5] license|air brake|"
+    r"red seal|journeyman|apprenticeship|trade certificate)\b", re.I)
+
+
+def _supported_text(profile: Profile) -> str:
+    """
+    Everything the profile actually says, normalised for phrase matching.
+
+    Hyphens collapse to spaces so "fall-arrest" and "fall arrest" are the same
+    claim — the check is about the qualification, not the typography.
+    """
+    parts: list[str] = []
+    for _group, items in (profile.raw.get("skills") or {}).items():
+        if isinstance(items, dict):
+            if items.get("verify"):
+                continue
+            items = items.get("items", [])
+        parts += [str(i) for i in items or []]
+    parts += [ev.text for ev in profile.evidence.values() if ev.usable]
+    parts += [r.title_as_held for r in profile.roles if not r.excluded]
+    parts += [r.canadian_title for r in profile.roles if not r.excluded]
+    return re.sub(r"[\s\-–—]+", " ", " ".join(parts)).lower()
+
+
+def _grounding_corpus(profile: Profile) -> set[str]:
+    """Every word the profile supports, for the warn-level check."""
+    return _core_tokens(_supported_text(profile))
+
+
+def _check_skill_claims(cv: GeneratedCV, profile: Profile, r: AuditResult) -> None:
+    text = _cv_text(cv)
+    recorded = _supported_text(profile)
+    supported = _core_tokens(recorded)
+
+    for match in CREDENTIAL_CLAIMS.finditer(text):
+        term = match.group(0)
+        # The whole phrase must be on record, not merely its words. "food" and
+        # "first" both appear in this profile in innocent contexts, and a
+        # token-level test would let "food handler certificate" and "first aid"
+        # through on the strength of them.
+        if re.sub(r"[\s\-–—]+", " ", term).lower() not in recorded:
+            r.findings.append(Finding(
+                "skills.unheld_credential", "block",
+                f"claims {term!r}, which appears nowhere in the profile. An "
+                "employer reads this as a ticket he holds (docs/08 §4)",
+                "cv.skills"))
+
+    # Everything else gets a warning, not a block: a line that reads oddly is
+    # worth a human glance, but forcing a retry over "physical stamina" spends
+    # a generation on nothing.
+    for group, items in cv.skills.items():
+        for item in items:
+            tokens = _core_tokens(item)
+            if tokens and len(tokens & supported) / len(tokens) < 0.5:
+                r.findings.append(Finding(
+                    "skills.thinly_grounded", "warn",
+                    f"{item!r} has little support in the profile", f"skills[{group}]"))
+
+
+def _check_languages(cv: GeneratedCV, profile: Profile, r: AuditResult) -> None:
+    """
+    Five languages are on record. A sixth is an invention, and a language claim
+    is one an employer or an officer can test in about a minute.
+    """
+    known = {str(l["language"]).lower(): l
+             for l in profile.raw.get("languages", []) or []}
+
+    for entry in cv.languages:
+        name = re.split(r"[(\[\-–—:,]", entry)[0].strip()
+        if not name:
+            continue
+        record = known.get(name.lower())
+        if record is None:
+            r.findings.append(Finding(
+                "languages.unknown", "block",
+                f"claims {name!r}; the profile records {sorted(known)}",
+                "cv.languages"))
+            continue
+        claims_native = re.search(r"\b(native|mother tongue|first language)\b",
+                                  entry, re.I)
+        if claims_native and str(record.get("speak", "")).lower() != "native":
+            r.findings.append(Finding(
+                "languages.overstated", "block",
+                f"claims {name!r} as a native language; the profile records "
+                f"speak={record.get('speak')!r}", "cv.languages"))
 
 
 def _check_employer_context(cv: GeneratedCV, r: AuditResult) -> None:
