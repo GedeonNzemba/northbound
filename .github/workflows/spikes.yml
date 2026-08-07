@@ -36,6 +36,11 @@ on:
         required: false
         default: false
         type: boolean
+      harvest_args:
+        description: "Extra args for spike 6, e.g. '--only international' to fill a short queue"
+        required: false
+        default: ""
+        type: string
   schedule:
     # Weekly re-check. The site changes; the parsers should not silently rot.
     - cron: "17 6 * * 1"
@@ -96,7 +101,7 @@ jobs:
         id: golden
         if: inputs.harvest_golden_set == true
         continue-on-error: true
-        run: python spikes/06_golden_set.py --lmia 15 --intl 5
+        run: python spikes/06_golden_set.py --lmia 15 --intl 5 ${{ inputs.harvest_args }}
 
       - name: Summarise into the job log
         if: always()
