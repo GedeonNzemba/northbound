@@ -19,12 +19,17 @@ work history (painting, warehouse, security, retail, electrical assistance) — 
 non-software applications are honest transferable-skills applications, never
 inflated claims.
 
-## ▶ RESUME HERE — state as of 2026-08-06
+## ▶ RESUME HERE — state as of 2026-08-07
 
-**Where things stand:** planning complete, five spikes run against the live site
-via GitHub Actions, and **Phase 1's CV engine is built end to end** — profile
-loader, prompts, generator, both check layers, DOCX renderer, CLI. 62 tests
-passing, none of which need an API key. `main` = working branch.
+**Where things stand:** planning complete, six spikes run against the live site
+via GitHub Actions, the **golden set harvested and frozen**, and **Phase 1's CV
+engine built end to end** — profile loader, prompts, generator, both check
+layers, DOCX + PDF renderers, exclusion screen, CLI. **192 tests passing, none
+of which need an API key or a network.** `main` = working branch.
+
+What it has NOT done: run against the real model. Everything is verified with a
+fake client, which proves the gate works and says nothing about document
+quality.
 
 What exists in `backend/northbound/`:
 
