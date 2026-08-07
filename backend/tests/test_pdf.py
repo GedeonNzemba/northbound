@@ -107,6 +107,34 @@ def test_concurrent_conversions_do_not_collide(tmp_path):
     assert all(p.exists() and p.stat().st_size > 1000 for p in outs)
 
 
+@needs_pdf
+def test_dates_are_actually_right_aligned_on_the_page(cv_pdf):
+    """
+    The reader's-eye check: measure where the date ends up on the rendered page.
+
+    Every other test in this repo reads the text layer, and the text layer is
+    blind to position — a date at 1.7cm and a date at the margin extract
+    identically. This one measures pixels, and it is the only test that would
+    have caught the tab-stop bug from the side that matters: what an employer
+    sees in the 7.4 seconds they spend on it.
+    """
+    import pdfplumber
+
+    cv = full_cv()
+    with pdfplumber.open(cv_pdf) as f:
+        page = f.pages[0]
+        right_margin_x = page.width - 48          # _configure sets 48pt margins
+        words = page.extract_words()
+
+        for entry in list(cv.experience) + list(cv.additional_experience):
+            last = entry.dates.split()[-1]        # e.g. "2019" of "Oct 2017 – 2019"
+            edges = [w["x1"] for w in words if w["text"] == last]
+            assert edges, f"date {entry.dates!r} not found on the page"
+            assert any(abs(x - right_margin_x) < 6 for x in edges), (
+                f"date {entry.dates!r} ends at {max(edges):.0f}pt; the right "
+                f"margin is {right_margin_x:.0f}pt — the column is not aligned")
+
+
 # ---- the capability probe: the bug this file was written against ---------- #
 
 def test_availability_is_probed_not_inferred_from_the_binary(monkeypatch):
@@ -157,3 +185,65 @@ def _restore_probe_cache():
     saved = rp._CAPABILITY
     yield
     rp._CAPABILITY = saved
+
+
+# ---- docs/08 §1.5: length is a rule only rendering can settle -------------- #
+
+@needs_pdf
+def test_an_over_long_track_b_cv_is_refused(tmp_path):
+    """
+    "Track B: 1 page, firmly. A farm or warehouse employer scanning fifty
+    applications does not read page two."
+
+    No character count predicts where a page breaks, so this can only be caught
+    after rendering — which is exactly why it needs catching there rather than
+    being left to chance.
+    """
+    from northbound.generate.generator import (
+        GenerationOutcome, LayoutError, Posting, finalise,
+    )
+    from northbound.generate.schemas import Application, Bullet, ExperienceEntry
+
+    long_cv = full_cv()
+    padded = list(long_cv.experience)
+    for i in range(6):
+        padded.append(ExperienceEntry(
+            role_id="gen.cumpsty",
+            display_title=f"Electrician's Helper / Construction Labourer {i}",
+            employer="Cumpsty Electrical",
+            employer_context="residential estate electrical contractor, Paarl",
+            location="Paarl, Western Cape, South Africa",
+            dates=PROFILE.role("gen.cumpsty").display_dates,
+            employment_type=None,
+            bullets=[Bullet(text="Carried out wall chasing, trenching and "
+                                 "excavation for cable and conduit runs on "
+                                 "residential estate construction sites. " * 3,
+                            evidence_id="gen.cumpsty.h2") for _ in range(4)]))
+    long_cv.experience = padded
+
+    posting = Posting(posting_id="x", title="general labourer - farm",
+                      employer="Ridge Farms", body="body")
+    outcome = GenerationOutcome(
+        posting=posting, track="transferable", status="ready",
+        application=Application(posting_id="x", posting_title="t",
+                                employer="Ridge Farms", track="transferable",
+                                cv=long_cv, letter=letter()))
+
+    with pytest.raises(LayoutError, match="pages"):
+        finalise(outcome, PROFILE, tmp_path)
+
+
+@needs_pdf
+def test_a_normal_track_b_cv_passes_the_length_gate(tmp_path):
+    from northbound.generate.generator import GenerationOutcome, Posting, finalise
+    from northbound.generate.schemas import Application
+
+    posting = Posting(posting_id="x", title="general labourer - farm",
+                      employer="Ridge Farms", body="body")
+    outcome = GenerationOutcome(
+        posting=posting, track="transferable", status="ready",
+        application=Application(posting_id="x", posting_title="t",
+                                employer="Ridge Farms", track="transferable",
+                                cv=full_cv(), letter=letter()))
+    paths = finalise(outcome, PROFILE, tmp_path)
+    assert page_count(paths["cv_pdf"]) == 1

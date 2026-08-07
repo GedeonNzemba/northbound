@@ -50,7 +50,10 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    # The golden-set harvest walks listings and loads ~20 posting pages with a
+    # browser, at a deliberately polite 2-4s between requests. 25 minutes was
+    # tight enough that one slow sweep lost the whole run and wrote nothing.
+    timeout-minutes: 45
 
     steps:
       - uses: actions/checkout@v4
@@ -108,12 +111,18 @@ jobs:
             echo '```' >> $GITHUB_STEP_SUMMARY
           done
 
-      - name: Upload raw HTML as an artifact
+      # Everything the run produced, including the golden set. The artifact is
+      # the safety net for exactly the case that happened on run 4: the harvest
+      # succeeded and the commit lost a push race, and the postings were only
+      # recoverable because they were somewhere other than the repo.
+      - name: Upload results as an artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: spike-output
-          path: spikes/out/
+          path: |
+            spikes/out/
+            postings/golden/
           retention-days: 30
           if-no-files-found: warn
 
@@ -130,10 +139,23 @@ jobs:
           git add -f postings/golden/*.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "no changes to commit"
-          else
-            git commit -m "spikes: results from run ${{ github.run_number }}
+            exit 0
+          fi
+          git commit -m "spikes: results from run ${{ github.run_number }}
 
           Automated run on a GitHub-hosted runner, which can reach gc.ca where the
           development environment cannot. Raw HTML is in the run artifact."
-            git push
-          fi
+          # A harvest takes minutes, and anyone working on the repo during that
+          # window moves the branch underneath it. Rebase and retry rather than
+          # throwing away a run's worth of scraping over a push race.
+          for attempt in 1 2 3 4; do
+            if git push; then
+              echo "pushed on attempt $attempt"
+              exit 0
+            fi
+            echo "push rejected — rebasing onto the current branch tip"
+            git pull --rebase origin "${GITHUB_REF_NAME}" || exit 1
+            sleep $((attempt * 4))
+          done
+          echo "::error::could not push after 4 attempts; results are in the artifact"
+          exit 1

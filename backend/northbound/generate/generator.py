@@ -55,6 +55,17 @@ class GenerationError(RuntimeError):
     """The pipeline could not run — distinct from a document that failed a check."""
 
 
+class LayoutError(GenerationError):
+    """The rendered document breaks a layout rule that only rendering reveals."""
+
+
+# docs/08 §1.5. Track B is "1 page, firmly" — a farm employer scanning fifty
+# applications does not read page two — and Track A is 2, because one under-sells
+# seven years of work. Three is a European convention and reads as not knowing
+# the market.
+MAX_PAGES = {"transferable": 1, "direct": 2}
+
+
 # --------------------------------------------------------------------------- #
 # Input
 # --------------------------------------------------------------------------- #
@@ -314,11 +325,23 @@ def finalise(outcome: GenerationOutcome, profile: Profile, out_dir: Path | str,
 
     paths = {"cv": cv_path, "letter": letter_path}
     if pdf:
-        from .render_pdf import pdf_available, render_pdf  # noqa: PLC0415
+        from .render_pdf import page_count, pdf_available, render_pdf  # noqa: PLC0415
 
         if pdf_available():
             paths["cv_pdf"] = render_pdf(cv_path)
             paths["letter_pdf"] = render_pdf(letter_path)
+
+            # Length is the one docs/08 rule that only rendering can settle —
+            # no count of characters predicts where the page breaks. Checked
+            # here because here is where a real page exists.
+            pages = page_count(paths["cv_pdf"])
+            limit = MAX_PAGES[outcome.track]
+            if pages > limit:
+                raise LayoutError(
+                    f"CV is {pages} pages; {outcome.track} allows {limit} "
+                    f"(docs/08 §1.5). The documents are on disk at "
+                    f"{cv_path.parent} — shorten and regenerate rather than "
+                    f"sending page two, which this employer will not read.")
     return paths
 
 

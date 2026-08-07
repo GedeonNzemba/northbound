@@ -8,7 +8,11 @@ reaches a real employer, so each one gets a case that proves it blocks.
 
 from __future__ import annotations
 
-from fixtures import PROFILE, app as _make_app, cv as _cv, letter as _letter
+import pytest
+from fixtures import (
+    PROFILE, app as _make_app, cv as _cv, letter as _letter,
+    track_a_app, track_a_cv, track_a_letter,
+)
 
 from northbound.generate.audit import audit
 from northbound.generate.schemas import Bullet
@@ -142,6 +146,247 @@ def test_missing_employer_context_warns_but_does_not_block():
     res = audit(_app(cv=cv), PROFILE)
     assert "context.missing" in _rules(res)
     assert not res.blocked, "a missing context clause should warn, not block"
+
+
+# --------------------------------------------------------------------------- #
+# Education — the section that carried an evidence id and nothing else
+# --------------------------------------------------------------------------- #
+
+from northbound.generate.schemas import EducationEntry  # noqa: E402
+
+
+def _edu(**over) -> EducationEntry:
+    base = dict(
+        evidence_id="edu.matric",
+        credential="National Senior Certificate",
+        institution="Noorder Paarl High School",
+        year="2016",
+        detail=("Assessed by ICAS as equivalent to Canadian Secondary School "
+                "Graduation. File 24080341 IMM."),
+    )
+    base.update(over)
+    return EducationEntry(**base)
+
+
+def _with_edu(**over):
+    return _app(cv=_cv(education=[_edu(**over)]))
+
+
+def test_an_invented_graduation_year_blocks():
+    """The matric is 2016. A wrong year is misrepresentation, not a typo."""
+    res = audit(_with_edu(year="2018"), PROFILE)
+    assert res.blocked and "education.year_mismatch" in _rules(res)
+
+
+def test_an_invented_institution_blocks():
+    res = audit(_with_edu(institution="Cape Town Technical College"), PROFILE)
+    assert res.blocked and "education.institution_mismatch" in _rules(res)
+
+
+def test_an_invented_credential_blocks():
+    res = audit(_with_edu(credential="Bachelor of Computer Science"), PROFILE)
+    assert res.blocked and "education.credential_mismatch" in _rules(res)
+
+
+def test_a_shortened_credential_is_allowed():
+    """The profile says 'National Senior Certificate (Matric)'; dropping the
+    parenthetical is normal CV editing, not a different qualification."""
+    res = audit(_with_edu(credential="National Senior Certificate"), PROFILE)
+    assert "education.credential_mismatch" not in _rules(res)
+
+
+def test_an_extended_institution_is_allowed():
+    """docs/08 §3.2 — naming the country for a Canadian reader is expected."""
+    res = audit(_with_edu(institution="Noorder Paarl High School, South Africa"),
+                PROFILE)
+    assert "education.institution_mismatch" not in _rules(res)
+
+
+def test_either_year_of_a_study_range_is_allowed():
+    """IT Academy ran 2020–2021; a CV may render either end or both."""
+    for year in ("2020", "2021", "2020 – 2021"):
+        res = audit(_app(cv=_cv(education=[_edu(
+            evidence_id="edu.itacademy",
+            credential="Certificate of IEP completion (Software Development programme)",
+            institution="IT Academy",
+            year=year, detail=None)])), PROFILE)
+        assert "education.year_mismatch" not in _rules(res), year
+
+
+def test_a_wrong_icas_file_number_blocks():
+    """An officer can check this against ICAS's own records."""
+    res = audit(_with_edu(detail=(
+        "Assessed by ICAS as equivalent to Canadian Secondary School "
+        "Graduation. File 99999999 IMM.")), PROFILE)
+    assert res.blocked and "education.eca_file_number" in _rules(res)
+
+
+def test_the_real_icas_file_number_passes():
+    res = audit(_with_edu(), PROFILE)
+    assert "education.eca_file_number" not in _rules(res)
+
+
+def test_claiming_an_assessment_that_does_not_exist_blocks():
+    """Only the matric has an ECA on record."""
+    res = audit(_app(cv=_cv(education=[_edu(
+        evidence_id="edu.shaw",
+        credential="Professional Diploma in Web Development",
+        institution="Shaw Academy", year="2019",
+        detail="Assessed by ICAS as equivalent to a Canadian diploma.")])), PROFILE)
+    assert res.blocked and "education.eca_invented" in _rules(res)
+
+
+# --------------------------------------------------------------------------- #
+# Skills and languages — the other two free-text sections
+# --------------------------------------------------------------------------- #
+
+@pytest.mark.parametrize("claim", [
+    "forklift operation", "WHMIS certified", "welding (MIG/TIG)",
+    "tractor operation", "pesticide application", "first aid",
+    "class 1 licence", "food handler certificate",
+])
+def test_an_unheld_ticket_blocks(claim):
+    """
+    docs/08 §4 — an employer reads these as a qualification he holds and puts
+    him on the machine. Claiming one he lacks is a statement they act on.
+    """
+    res = audit(_app(cv=_cv(skills={"Practical": [claim, "hand tools"]})), PROFILE)
+    assert res.blocked and "skills.unheld_credential" in _rules(res), claim
+
+
+def test_a_ticket_he_does_hold_is_allowed():
+    """Fall-arrest work IS on record — the check must not block the real one."""
+    res = audit(_app(cv=_cv(skills={
+        "Practical": ["working at height with fall-arrest harness"]})), PROFILE)
+    assert "skills.unheld_credential" not in _rules(res)
+
+
+def test_an_unheld_ticket_in_the_cover_letter_blocks_too():
+    """The bridge paragraph is exactly where the temptation lives."""
+    res = audit(_app(letter=_letter(bridge=(
+        "I have not worked on a farm, but I hold a valid forklift ticket and "
+        "worked at height in Paarl for 18 months."))), PROFILE)
+    assert res.blocked and "skills.unheld_credential" in _rules(res)
+
+
+@pytest.mark.parametrize("bridge", [
+    "I have not worked on a farm, but I am willing to complete WHMIS training "
+    "before starting at Ridge Farms in Leamington.",
+    "I do not hold a forklift ticket and would obtain one if required for the "
+    "greenhouse work at Ridge Farms.",
+])
+def test_offering_to_obtain_a_ticket_is_allowed(bridge):
+    """
+    docs/08 §4 — stating willingness is honest and expected; it is the
+    recommended bridge sentence. A rule that banned the vocabulary outright
+    would block the correct document.
+    """
+    res = audit(_app(letter=_letter(bridge=bridge)), PROFILE)
+    assert "skills.unheld_credential" not in _rules(res), bridge
+
+
+def test_a_generic_descriptor_warns_rather_than_blocks():
+    """
+    Forcing a retry over "physical stamina" spends a generation on language
+    that harms nobody. It still surfaces for a human.
+    """
+    res = audit(_app(cv=_cv(skills={"Practical": ["physical stamina"]})), PROFILE)
+    assert not res.blocked
+    assert "skills.thinly_grounded" in _rules(res)
+
+
+def test_profile_skills_are_not_flagged_as_thin():
+    res = audit(_app(cv=_cv(skills={
+        "Practical": ["trenching and excavation", "hand tools", "wall chasing"],
+        "Technical": ["React.js", "TypeScript"]})), PROFILE)
+    assert "skills.thinly_grounded" not in _rules(res)
+
+
+def test_an_invented_language_blocks():
+    res = audit(_app(cv=_cv(languages=["English", "French", "Spanish"])), PROFILE)
+    assert res.blocked and "languages.unknown" in _rules(res)
+
+
+def test_the_five_recorded_languages_pass():
+    res = audit(_app(cv=_cv(languages=[
+        "French (native)", "English", "Lingala", "Kituba", "Afrikaans"])), PROFILE)
+    assert "languages.unknown" not in _rules(res)
+    assert "languages.overstated" not in _rules(res)
+
+
+def test_claiming_a_non_native_language_as_native_blocks():
+    """He speaks Afrikaans well. That is not the same claim."""
+    res = audit(_app(cv=_cv(languages=["Afrikaans (native)"])), PROFILE)
+    assert res.blocked and "languages.overstated" in _rules(res)
+
+
+# --------------------------------------------------------------------------- #
+# Track A — the developer CV, which had no coverage at all until a
+# Track-A-only false positive went unnoticed
+# --------------------------------------------------------------------------- #
+
+def test_a_clean_track_a_application_passes():
+    res = audit(track_a_app(), PROFILE)
+    assert not res.blocked, res.report()
+
+
+@pytest.mark.parametrize("term", [
+    "single-page applications", "single page app architecture",
+    "single sign-on integration",
+])
+def test_ordinary_front_end_vocabulary_is_not_marital_status(term):
+    """
+    A shipped false positive. `\\bsingle\\b` was in the marital-status pattern,
+    so every Track A CV mentioning single-page applications was blocked — and
+    the retry note said "contains prohibited personal information: marital
+    status", which the model cannot act on. The label 'marital status' already
+    catches the real case.
+    """
+    res = audit(track_a_app(cv_=track_a_cv(skills={"Frontend": [term]})), PROFILE)
+    assert "prohibited.personal" not in _rules(res), term
+
+
+def test_an_actual_marital_status_line_still_blocks():
+    res = audit(track_a_app(cv_=track_a_cv(
+        summary="Marital status: single. Front-end developer.")), PROFILE)
+    assert res.blocked and "prohibited.personal" in _rules(res)
+
+
+def test_married_still_blocks():
+    res = audit(track_a_app(cv_=track_a_cv(
+        summary="Married front-end developer based in Cape Town.")), PROFILE)
+    assert res.blocked and "prohibited.personal" in _rules(res)
+
+
+def test_lowercase_sin_is_not_a_social_insurance_number():
+    """The blob is searched case-insensitively; 'sin' is an ordinary word."""
+    res = audit(track_a_app(cv_=track_a_cv(
+        summary="Built trigonometric chart helpers using sin and cos curves.")),
+        PROFILE)
+    assert "prohibited.personal" not in _rules(res)
+
+
+def test_an_actual_sin_still_blocks():
+    res = audit(track_a_app(cv_=track_a_cv(
+        summary="SIN available on request. Front-end developer.")), PROFILE)
+    assert res.blocked and "prohibited.personal" in _rules(res)
+
+
+def test_track_a_portfolio_ids_must_exist():
+    res = audit(track_a_app(cv_=track_a_cv(portfolio_ids=["pf.nope"])), PROFILE)
+    assert res.blocked and "evidence.unknown" in _rules(res)
+
+
+def test_track_a_does_not_trigger_the_track_b_software_rule():
+    """Software in the primary section is the whole point of Track A."""
+    res = audit(track_a_app(), PROFILE)
+    assert "track_b.software_above_fold" not in _rules(res)
+
+
+def test_work_permit_on_a_track_a_cv_still_blocks():
+    res = audit(track_a_app(cv_=track_a_cv(
+        summary="Front-end developer seeking visa sponsorship in Canada.")), PROFILE)
+    assert res.blocked and "work_permit.on_cv" in _rules(res)
 
 
 def test_referees_never_render():

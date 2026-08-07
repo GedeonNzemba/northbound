@@ -98,6 +98,54 @@ def test_icas_equivalency_survives_rendering(rendered):
     assert "24080341" in text
 
 
+# ---- layout geometry: what no text check can see -------------------------- #
+
+def test_date_tab_stops_sit_at_the_usable_text_width(rendered):
+    """
+    The dates column right-aligns at the margin, and nothing in the text layer
+    can tell you whether it does.
+
+    This is a regression test for a shipped bug: the tab stop was computed from
+    a hardcoded 17cm constant divided by ten, putting it at 1.7cm. Every title
+    is longer than that, so the tab fell through to a default stop and the date
+    landed just after the title with an arbitrary gap. The text extracted
+    identically, every round-trip check passed, and the document a human opened
+    had no aligned date column — in one of the six fields the 7.4-second scan
+    actually lands on (docs/07 F-C).
+
+    Measuring the section makes it self-correcting; asserting the measurement
+    keeps it that way.
+    """
+    import re
+    import zipfile
+
+    doc = Document(str(rendered))
+    s = doc.sections[0]
+    usable_emu = int(s.page_width) - int(s.left_margin) - int(s.right_margin)
+    expected_twips = round(usable_emu / 635)
+
+    xml = zipfile.ZipFile(rendered).read("word/document.xml").decode()
+    stops = [int(t) for t in re.findall(r'<w:tab w:pos="(\d+)" w:val="right"', xml)]
+
+    assert stops, "no right tab stops — the date column is not aligned at all"
+    for pos in stops:
+        assert abs(pos - expected_twips) <= 2, (
+            f"right tab at {pos} twips ({pos / 20 / 28.35:.2f} cm), expected "
+            f"{expected_twips} ({expected_twips / 20 / 28.35:.2f} cm — the margin)")
+
+
+def test_every_dated_line_has_a_tab_stop(rendered):
+    """One per experience entry and one per education entry, or a date is adrift."""
+    import re
+    import zipfile
+
+    xml = zipfile.ZipFile(rendered).read("word/document.xml").decode()
+    stops = len(re.findall(r'<w:tab w:pos="\d+" w:val="right"', xml))
+    cv = _track_b_cv()
+    expected = len(cv.experience) + len(cv.additional_experience) + len(cv.education)
+    assert stops == expected, f"{stops} tab stops for {expected} dated lines"
+
+
 # ---- negative tests: prove the check would catch a regression ------------- #
 
 def test_roundtrip_detects_a_table(tmp_path):

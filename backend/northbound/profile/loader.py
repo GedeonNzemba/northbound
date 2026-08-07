@@ -202,6 +202,32 @@ class Profile:
         want = set(tags)
         return [e for e in self.evidence.values() if e.usable and want & set(e.tags)]
 
+    def education_entry(self, entry_id: str) -> dict[str, Any] | None:
+        """The raw education record, so the audit can check what was rendered."""
+        for e in self.raw.get("education", []) or []:
+            if e.get("id") == entry_id:
+                return e
+        return None
+
+    def education_years(self, entry_id: str) -> set[str]:
+        """
+        Every year this credential could legitimately carry.
+
+        Entries record dates three ways — `completed` as a bare year, `completed`
+        as a full date, or a `start`/`end` pair — and a CV may render any of
+        them. Collecting all of them keeps the check about *invented* years
+        rather than about formatting.
+        """
+        entry = self.education_entry(entry_id) or {}
+        years: set[str] = set()
+        for key in ("completed", "start", "end"):
+            value = entry.get(key)
+            if isinstance(value, date):
+                years.add(str(value.year))
+            elif value is not None and re.fullmatch(r"\d{4}", str(value).strip()):
+                years.add(str(value).strip())
+        return years
+
     # ---- standing instructions (docs/06) ---------------------------------- #
     @property
     def render_referees(self) -> bool:

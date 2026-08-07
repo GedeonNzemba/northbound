@@ -84,13 +84,22 @@ BANNED_GENERIC = [
 ]
 
 # docs/08 §1.1 — must never appear anywhere.
+#
+# Every pattern here has to be specific enough that ordinary CV vocabulary
+# cannot trip it. "single" was originally in the marital-status list and blocked
+# every Track A CV that mentioned single-page applications — a false positive
+# that costs a generation and hands the model a retry note it cannot act on.
+# "marital status" as a label already catches the real case, so the bare word is
+# gone; "married"/"divorced"/"widowed" have no other CV use and stay.
 PROHIBITED_PERSONAL = {
     "date of birth": r"\b(date of birth|d\.?o\.?b\.?)\b",
     "age": r"\b(?:I am |aged )\d{2} years old\b",
-    "marital status": r"\b(marital status|married|single|divorced)\b",
+    "marital status": r"\bmarital status\b|\b(married|divorced|widowed)\b",
     "nationality": r"\b(nationality|citizenship)\s*[:=]",
     "gender": r"\b(gender|sex)\s*[:=]",
-    "SIN": r"\b(social insurance number|\bSIN\b)",
+    # Case-sensitive for the acronym: the whole blob is searched with re.I, and
+    # a lowercase "sin" is an ordinary English word.
+    "SIN": r"\bsocial insurance number\b|(?-i:\bSIN\b)",
     "photo": r"\b(photograph attached|photo attached)\b",
     "religion": r"\breligion\s*[:=]",
     "references-on-cv": r"\breferences (are )?available (up)?on request\b",
@@ -133,6 +142,9 @@ def audit(app: Application, profile: Profile, *, posting_text: str = "") -> Audi
     cv, letter = app.cv, app.letter
 
     _check_evidence(cv, letter, profile, r)
+    _check_education(cv, profile, r)
+    _check_skill_claims(cv, letter, profile, r)
+    _check_languages(cv, profile, r)
     _check_standing_instructions(cv, letter, profile, r)
     _check_prohibited_content(cv, letter, r)
     _check_work_permit_placement(cv, letter, r)
@@ -142,6 +154,7 @@ def audit(app: Application, profile: Profile, *, posting_text: str = "") -> Audi
     _check_canadian_english(cv, letter, r)
     _check_specificity(letter, r)
     _check_screening_questions(letter, posting_text, r)
+    _check_units(cv, letter, posting_text, r)
     _check_employer_context(cv, r)
     return r
 
@@ -439,6 +452,281 @@ def _check_screening_questions(letter: CoverLetter, posting_text: str, r: AuditR
             f"posting asks {len(qs)} screening question(s) and the letter answers "
             "none — ~30% of LMIA postings ask, and most applicants ignore them",
             "letter.screening_answers"))
+
+
+_TOKEN = re.compile(r"[A-Za-z0-9]+")
+_YEAR = re.compile(r"\b(?:19|20)\d{2}\b")
+# Words that carry no identifying weight when matching a credential or school.
+_WEAK_TOKENS = {"of", "the", "and", "in", "a", "at", "for", "de", "pty", "ltd",
+                "division", "school", "college", "institute", "academy", "certificate"}
+
+
+def _core_tokens(text: str) -> set[str]:
+    return {t.lower() for t in _TOKEN.findall(text)
+            if t.lower() not in _WEAK_TOKENS and len(t) > 1}
+
+
+def _same_thing(rendered: str, recorded: str, *, threshold: float = 0.6) -> bool:
+    """
+    Whether two names refer to the same credential or institution.
+
+    Not equality: a CV legitimately shortens ("National Senior Certificate" for
+    "National Senior Certificate (Matric)") and legitimately extends ("Noorder
+    Paarl High School, South Africa"). What it may not do is name a different
+    school. So the test is overlap of identifying tokens, measured against
+    whichever name is shorter — which tolerates both edits and still fails on a
+    substitution.
+    """
+    a, b = _core_tokens(rendered), _core_tokens(recorded)
+    if not a or not b:
+        return True                     # nothing identifying to compare
+    shared = a & b
+    return len(shared) / min(len(a), len(b)) >= threshold
+
+
+def _check_education(cv: GeneratedCV, profile: Profile, r: AuditResult) -> None:
+    """
+    docs/04 Rule 1, applied to the section it was missing from.
+
+    Education entries carry an `evidence_id`, and until now that was the whole
+    check — the id had to exist and be usable, and the credential name,
+    institution, year and ECA file number beside it were free text nobody
+    verified. The entailment pass does not cover them either: it reads bullets
+    and paragraphs, not education records.
+
+    That is the worst place in the document to leave unguarded. A wrong
+    graduation year or an invented credential on an application supporting a
+    work permit is misrepresentation, and the ICAS file number is a real
+    reference an officer can look up.
+    """
+    for ed in cv.education:
+        entry = profile.education_entry(ed.evidence_id)
+        if entry is None:
+            continue                    # _check_evidence already blocked the id
+
+        if not _same_thing(ed.credential, str(entry.get("credential", ""))):
+            r.findings.append(Finding(
+                "education.credential_mismatch", "block",
+                f"renders credential {ed.credential!r}; the profile records "
+                f"{entry.get('credential')!r}", ed.evidence_id))
+
+        if not _same_thing(ed.institution, str(entry.get("institution", ""))):
+            r.findings.append(Finding(
+                "education.institution_mismatch", "block",
+                f"renders institution {ed.institution!r}; the profile records "
+                f"{entry.get('institution')!r}", ed.evidence_id))
+
+        known = profile.education_years(ed.evidence_id)
+        claimed = set(_YEAR.findall(ed.year or ""))
+        if invented := claimed - known:
+            r.findings.append(Finding(
+                "education.year_mismatch", "block",
+                f"claims year(s) {sorted(invented)}; the profile records "
+                f"{sorted(known) or 'no year'}", ed.evidence_id))
+
+        _check_eca(ed, entry, r)
+
+
+def _check_eca(ed, entry: dict, r: AuditResult) -> None:
+    """
+    docs/08 §3.1 — the equivalency line, with its file number.
+
+    Stating it is a genuine advantage most overseas applicants never take.
+    Getting the number wrong turns that advantage into a discrepancy on a
+    document an officer can check against ICAS's own records.
+    """
+    detail = ed.detail or ""
+    eca = entry.get("eca")
+    if not isinstance(eca, dict):
+        if re.search(r"\b(ICAS|WES|IQAS|ICES|educational credential assessment)\b",
+                     detail, re.I):
+            r.findings.append(Finding(
+                "education.eca_invented", "block",
+                f"claims a credential assessment for {ed.evidence_id}, which has "
+                "none on record", ed.evidence_id))
+        return
+
+    recorded = str(eca.get("file_no", "")).strip()
+    for found in re.findall(r"\b\d{6,}(?:\s*[A-Z]{2,4})?\b", detail):
+        if recorded and found.strip() not in recorded:
+            r.findings.append(Finding(
+                "education.eca_file_number", "block",
+                f"cites assessment file {found.strip()!r}; the profile records "
+                f"{recorded!r}", ed.evidence_id))
+
+    equivalency = str(eca.get("canadian_equivalency", "")).strip()
+    if equivalency and re.search(r"\bequivalent to\b", detail, re.I):
+        if not _same_thing(detail, equivalency, threshold=0.5):
+            r.findings.append(Finding(
+                "education.eca_equivalency", "warn",
+                f"the equivalency line does not state {equivalency!r}",
+                ed.evidence_id))
+
+
+# docs/08 §4, and the standing rule in TRACK_B_GUIDANCE: never claim a ticket he
+# does not hold. These are the terms an agricultural, warehouse or trades
+# employer reads as a specific qualification — machinery he would be put on, or
+# a certificate with an issuing body behind it. Claiming one he lacks is not
+# padding, it is a statement an employer can act on and be wrong about.
+#
+# Deliberately a closed list rather than a general "is this grounded" score.
+# Generic descriptors ("physical stamina", "punctuality") score identically to
+# invented machinery under any similarity measure, and blocking those would burn
+# retries on language that harms nobody.
+CREDENTIAL_CLAIMS = re.compile(
+    r"\b(fall[- ]arrest|forklift|pallet jack|order picker truck|scissor lift|boom lift|"
+    r"skid[- ]steer|backhoe|excavator|bobcat|telehandler|crane|rigging|"
+    r"chainsaw|welding|MIG|TIG|arc weld|"
+    r"tractor|combine harvester|sprayer|"
+    r"WHMIS|TDG|HACCP|first aid|CPR|confined space|fall protection ticket|"
+    r"working at heights ticket|scaffold(?:ing)? ticket|H2S|"
+    r"pesticide|herbicide|fumigation|"
+    r"food handler|food safety certificate|"
+    r"class [1-5] licence|class [1-5] license|air brake|"
+    r"red seal|journeyman|apprenticeship|trade certificate)\b", re.I)
+
+
+def _supported_text(profile: Profile) -> str:
+    """
+    Everything the profile actually says, normalised for phrase matching.
+
+    Hyphens collapse to spaces so "fall-arrest" and "fall arrest" are the same
+    claim — the check is about the qualification, not the typography.
+    """
+    parts: list[str] = []
+    for _group, items in (profile.raw.get("skills") or {}).items():
+        if isinstance(items, dict):
+            if items.get("verify"):
+                continue
+            items = items.get("items", [])
+        parts += [str(i) for i in items or []]
+    parts += [ev.text for ev in profile.evidence.values() if ev.usable]
+    parts += [r.title_as_held for r in profile.roles if not r.excluded]
+    parts += [r.canadian_title for r in profile.roles if not r.excluded]
+    return re.sub(r"[\s\-–—]+", " ", " ".join(parts)).lower()
+
+
+def _grounding_corpus(profile: Profile) -> set[str]:
+    """Every word the profile supports, for the warn-level check."""
+    return _core_tokens(_supported_text(profile))
+
+
+# docs/08 §4 and TRACK_B_GUIDANCE: *stating willingness to obtain* a ticket is
+# honest and expected — it is the recommended bridge sentence. Only claiming to
+# hold one is the problem, so the rule needs to tell the two apart rather than
+# banning the vocabulary outright.
+WILLINGNESS = re.compile(
+    r"\b(willing|prepared|happy|ready) to\b"
+    r"|\bwould (complete|obtain|take|get|do)\b"
+    r"|\b(can|could) (obtain|complete|get|take)\b"
+    r"|\bbefore (starting|I start|my start)\b"
+    r"|\bif required\b|\bas required\b"
+    r"|\bdo(?:es)? not (?:yet )?hold\b", re.I)
+
+# An affirmative claim to hold the thing. Checked in a tighter window and
+# checked FIRST, because willingness language elsewhere in the paragraph must
+# not launder it: "I have not worked on a farm, but I hold a forklift ticket"
+# contains a negation and a held claim, and only the second one matters.
+# The lookbehind is what keeps "do not hold" out.
+HELD_CLAIM = re.compile(
+    r"(?<!not )\b(holds?|holding|possess(?:es)?)\b"
+    r"|\b(?:am|is|are|was|were) (?:certified|licen[cs]ed|ticketed|qualified|accredited)\b"
+    r"|\bcertified in\b"
+    r"|\bhave (?:a|an|my|valid|current)\b", re.I)
+
+HELD_WINDOW = 80
+WILLINGNESS_WINDOW = 160
+
+
+def _check_skill_claims(cv: GeneratedCV, letter: CoverLetter, profile: Profile,
+                        r: AuditResult) -> None:
+    recorded = _supported_text(profile)
+    supported = _core_tokens(recorded)
+
+    # The letter is scanned too: "I hold a forklift ticket" in paragraph 2 is
+    # the same misrepresentation as a skills bullet, and the bridge paragraph
+    # is exactly where the temptation lives.
+    for where, text in (("cv", _cv_text(cv)), ("letter", _letter_text(letter))):
+        for match in CREDENTIAL_CLAIMS.finditer(text):
+            term = match.group(0)
+            # The whole phrase must be on record, not merely its words. "food"
+            # and "first" both appear in this profile in innocent contexts, and
+            # a token-level test would let "food handler certificate" and
+            # "first aid" through on the strength of them.
+            if re.sub(r"[\s\-–—]+", " ", term).lower() in recorded:
+                continue
+            near = text[max(0, match.start() - HELD_WINDOW):
+                        match.end() + HELD_WINDOW]
+            wide = text[max(0, match.start() - WILLINGNESS_WINDOW):
+                        match.end() + WILLINGNESS_WINDOW]
+            if not HELD_CLAIM.search(near) and WILLINGNESS.search(wide):
+                continue                # offering to obtain it — honest, expected
+            r.findings.append(Finding(
+                "skills.unheld_credential", "block",
+                f"claims {term!r}, which appears nowhere in the profile, and not "
+                "as something he would obtain. An employer reads this as a "
+                "ticket he already holds (docs/08 §4)", where))
+
+    # Everything else gets a warning, not a block: a line that reads oddly is
+    # worth a human glance, but forcing a retry over "physical stamina" spends
+    # a generation on nothing.
+    for group, items in cv.skills.items():
+        for item in items:
+            tokens = _core_tokens(item)
+            if tokens and len(tokens & supported) / len(tokens) < 0.5:
+                r.findings.append(Finding(
+                    "skills.thinly_grounded", "warn",
+                    f"{item!r} has little support in the profile", f"skills[{group}]"))
+
+
+def _check_languages(cv: GeneratedCV, profile: Profile, r: AuditResult) -> None:
+    """
+    Five languages are on record. A sixth is an invention, and a language claim
+    is one an employer or an officer can test in about a minute.
+    """
+    known = {str(l["language"]).lower(): l
+             for l in profile.raw.get("languages", []) or []}
+
+    for entry in cv.languages:
+        name = re.split(r"[(\[\-–—:,]", entry)[0].strip()
+        if not name:
+            continue
+        record = known.get(name.lower())
+        if record is None:
+            r.findings.append(Finding(
+                "languages.unknown", "block",
+                f"claims {name!r}; the profile records {sorted(known)}",
+                "cv.languages"))
+            continue
+        claims_native = re.search(r"\b(native|mother tongue|first language)\b",
+                                  entry, re.I)
+        if claims_native and str(record.get("speak", "")).lower() != "native":
+            r.findings.append(Finding(
+                "languages.overstated", "block",
+                f"claims {name!r} as a native language; the profile records "
+                f"speak={record.get('speak')!r}", "cv.languages"))
+
+
+# docs/08 §1.4 — metric where measurements appear, "but mirror the employer":
+# lifting capacities get quoted in lb as often as kg, and matching the posting's
+# own unit reads better than correcting it. So an imperial unit is only odd when
+# the posting never used one.
+IMPERIAL = re.compile(
+    r"\b\d+\s?(lbs?|pounds?|ft|feet|foot|inch(?:es)?|miles?|°?F|fahrenheit)\b", re.I)
+
+
+def _check_units(cv: GeneratedCV, letter: CoverLetter, posting_text: str,
+                 r: AuditResult) -> None:
+    if not posting_text:
+        return
+    posting_uses_imperial = bool(IMPERIAL.search(posting_text))
+    if posting_uses_imperial:
+        return
+    for match in IMPERIAL.finditer(_text_of(cv, letter)):
+        r.findings.append(Finding(
+            "units.imperial", "warn",
+            f"{match.group(0)!r} — Canada is metric and this posting used metric "
+            "units (docs/08 §1.4)", "cv/letter"))
 
 
 def _check_employer_context(cv: GeneratedCV, r: AuditResult) -> None:

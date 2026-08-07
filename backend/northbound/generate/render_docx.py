@@ -27,7 +27,7 @@ from pathlib import Path
 
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_TAB_ALIGNMENT
-from docx.shared import Pt, RGBColor
+from docx.shared import Emu, Pt, RGBColor
 
 from ..profile import Profile
 from .schemas import CoverLetter, ExperienceEntry, GeneratedCV
@@ -39,7 +39,24 @@ BODY_PT = 10.5
 NAME_PT = 18
 SECTION_PT = 11.5
 
-RIGHT_TAB_CM = 17.0   # A4 usable width with 2cm margins
+
+def _right_tab(doc: Document):
+    """
+    Where the date column right-aligns: the exact usable text width.
+
+    Measured from the section rather than written as a constant. A hardcoded
+    centimetre value has to agree with the page size AND both margins, and when
+    it silently disagrees the failure is invisible in the text layer — the date
+    still appears, just in the wrong place, so every text-based check passes
+    while the document a human sees has no aligned date column at all. That is
+    what happened here: the constant was wrong by a factor of ten and described
+    an A4 page this renderer never produced.
+
+    Letter, not A4, is correct for Canada — python-docx's default page size
+    already matches the destination.
+    """
+    s = doc.sections[0]
+    return Emu(int(s.page_width) - int(s.left_margin) - int(s.right_margin))
 
 
 def _configure(doc: Document) -> None:
@@ -109,7 +126,7 @@ def _entry(doc, e: ExperienceEntry, *, compact: bool = False) -> None:
     tab stop is deliberate.
     """
     p = _para(doc, space_before=7 if not compact else 4, space_after=0)
-    p.paragraph_format.tab_stops.add_tab_stop(Pt(RIGHT_TAB_CM * 28.35 / 10), WD_TAB_ALIGNMENT.RIGHT)
+    p.paragraph_format.tab_stops.add_tab_stop(_right_tab(doc), WD_TAB_ALIGNMENT.RIGHT)
     title = p.add_run(e.display_title)
     title.bold = True
     title.font.size = Pt(BODY_PT + 0.5)
@@ -197,7 +214,7 @@ def render_cv(cv: GeneratedCV, profile: Profile, out_path: Path | str) -> Path:
     for ed in cv.education:
         p = _para(doc, space_before=4, space_after=0)
         p.paragraph_format.tab_stops.add_tab_stop(
-            Pt(RIGHT_TAB_CM * 28.35 / 10), WD_TAB_ALIGNMENT.RIGHT)
+            _right_tab(doc), WD_TAB_ALIGNMENT.RIGHT)
         run = p.add_run(ed.credential)
         run.bold = True
         run.font.size = Pt(BODY_PT + 0.5)

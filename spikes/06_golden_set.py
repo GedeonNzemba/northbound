@@ -44,17 +44,29 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-# Imported lazily-ish: the network deps are only needed to actually run a
-# harvest, and failing at module scope would make the pure selection logic
-# below untestable off a runner. The check moves into main().
+# Dependencies are checked one at a time, not as a block. The listing walk needs
+# only requests + bs4; Playwright is for the per-posting reveal. Grouping them
+# meant a missing browser also disabled the HTML parsing, which made the listing
+# filter — the part most worth testing off a runner — untestable. main() reports
+# whatever is actually absent.
+_MISSING: list[str] = []
 try:
     import requests
+except ImportError:  # pragma: no cover
+    requests = None  # type: ignore[assignment]
+    _MISSING.append("requests")
+try:
     from bs4 import BeautifulSoup
+except ImportError:  # pragma: no cover
+    BeautifulSoup = None  # type: ignore[assignment]
+    _MISSING.append("beautifulsoup4 lxml")
+try:
     from playwright.sync_api import sync_playwright
-    _DEPS_ERROR = ""
-except ImportError as _exc:  # pragma: no cover — exercised only off a runner
-    requests = BeautifulSoup = sync_playwright = None  # type: ignore[assignment]
-    _DEPS_ERROR = f"{_exc}.  pip install requests beautifulsoup4 lxml playwright"
+except ImportError:  # pragma: no cover
+    sync_playwright = None  # type: ignore[assignment]
+    _MISSING.append("playwright")
+
+_DEPS_ERROR = ("pip install " + " ".join(_MISSING)) if _MISSING else ""
 
 REPO = Path(__file__).resolve().parents[1]
 OUT_DIR = REPO / "postings" / "golden"
@@ -88,7 +100,18 @@ TECH_NOC = {"21234", "21233", "21232", "21230", "22222"}
 # Listing
 # --------------------------------------------------------------------------- #
 
-def collect(session: requests.Session, url_tpl: str, pages: int) -> list[str]:
+def collect(session: requests.Session, url_tpl: str, pages: int,
+            title_filter: re.Pattern | None = None) -> list[str]:
+    """
+    Walk the listing pages, optionally filtering on the title in the result card.
+
+    The filter matters more than it looks. Developer roles are roughly 0.4% of
+    the international queue, so finding five by loading each posting and
+    checking afterwards means fetching hundreds of pages — every one a full
+    browser navigation plus two disclosure clicks. The title is right there in
+    the listing anchor, so the filter belongs here: one cheap HTML fetch per 25
+    postings instead of 25 browser loads.
+    """
     ids: list[str] = []
     for p in range(1, pages + 1):
         r = session.get(url_tpl.format(page=p), timeout=45)
@@ -96,13 +119,30 @@ def collect(session: requests.Session, url_tpl: str, pages: int) -> list[str]:
         if r.status_code != 200:
             break
         soup = BeautifulSoup(r.text, "lxml")
-        found = [m.group(1) for a in soup.find_all("a", href=True)
-                 if (m := POSTING_HREF.search(a["href"]))]
-        fresh = [i for i in dict.fromkeys(found) if i not in ids]
-        print(f"  +{len(fresh)}")
-        if not fresh:
-            break
+
+        found: list[str] = []
+        seen_on_page: set[str] = set()
+        for a in soup.find_all("a", href=True):
+            m = POSTING_HREF.search(a["href"])
+            if not m or m.group(1) in seen_on_page:
+                continue
+            seen_on_page.add(m.group(1))
+            if title_filter is not None:
+                # The card carries the title plus employer and location; the
+                # filter is matched against the whole card text.
+                card = a.get_text(" ", strip=True)
+                parent = a.find_parent(["article", "li", "div"])
+                if parent is not None:
+                    card = parent.get_text(" ", strip=True)[:300]
+                if not title_filter.search(card):
+                    continue
+            found.append(m.group(1))
+
+        fresh = [i for i in found if i not in ids]
+        print(f"  +{len(fresh)}" + ("  (title-filtered)" if title_filter else ""))
         ids.extend(fresh)
+        if not seen_on_page:
+            break                       # a page with no postings at all: the end
         time.sleep(random.uniform(2.0, 4.0))
     return ids
 
@@ -329,8 +369,9 @@ def main() -> int:
 
     print("== LMIA-approved queue (all occupations — D6) ==")
     lmia_ids = collect(s, LMIA, pages=3)
-    print(f"\n== International-candidates queue (developer roles only — D6) ==")
-    intl_ids = collect(s, INTL, pages=args.intl_pages)
+    print("\n== International-candidates queue (developer roles only — D6) ==")
+    intl_ids = collect(s, INTL, pages=args.intl_pages, title_filter=TECH_TITLE)
+    print(f"  {len(intl_ids)} candidate developer posting(s) after title filtering")
 
     kept: list[dict] = []
     skipped: list[dict] = []
