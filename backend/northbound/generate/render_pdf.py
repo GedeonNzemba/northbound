@@ -25,6 +25,7 @@ in the send path may depend on the PDF existing.
 
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 import tempfile
@@ -32,6 +33,28 @@ from pathlib import Path
 
 CONVERTER_NAMES = ("soffice", "libreoffice")
 TIMEOUT_S = 120
+
+
+def _known_install_paths() -> list[Path]:
+    """
+    Where LibreOffice lives when it is not on PATH.
+
+    It usually is not. The Windows installer does not add its `program`
+    directory to PATH, and the macOS app bundle never does — so a `which`
+    lookup reports "no converter" on a machine where LibreOffice is installed
+    and working, and the batch silently produces no PDFs.
+    """
+    candidates: list[Path] = []
+    for var in ("PROGRAMFILES", "PROGRAMFILES(X86)", "LOCALAPPDATA"):
+        if root := os.environ.get(var):
+            candidates.append(Path(root) / "LibreOffice" / "program" / "soffice.exe")
+    candidates += [
+        Path("/Applications/LibreOffice.app/Contents/MacOS/soffice"),
+        Path.home() / "Applications/LibreOffice.app/Contents/MacOS/soffice",
+        Path("/usr/lib/libreoffice/program/soffice"),
+        Path("/snap/bin/libreoffice"),
+    ]
+    return candidates
 
 
 class PdfUnavailable(RuntimeError):
@@ -42,6 +65,9 @@ def converter_path() -> str | None:
     for name in CONVERTER_NAMES:
         if found := shutil.which(name):
             return found
+    for path in _known_install_paths():
+        if path.is_file():
+            return str(path)
     return None
 
 
@@ -109,9 +135,15 @@ def render_pdf(docx_path: Path | str, out_dir: Path | str | None = None) -> Path
     out_dir.mkdir(parents=True, exist_ok=True)
 
     with tempfile.TemporaryDirectory(prefix="northbound-lo-") as profile:
+        # `-env:UserInstallation` takes a file URI, not a path. On Windows a
+        # naive f"file://{profile}" yields "file://C:\Users\..." — backslashes
+        # and a drive letter where the authority should be, which is not a
+        # valid URI. `as_uri()` produces "file:///C:/Users/..." on every
+        # platform.
+        profile_uri = Path(profile).resolve().as_uri()
         result = subprocess.run(
             [binary, "--headless", "--norestore",
-             f"-env:UserInstallation=file://{profile}",
+             f"-env:UserInstallation={profile_uri}",
              "--convert-to", "pdf", "--outdir", str(out_dir), str(docx_path)],
             capture_output=True, text=True, timeout=TIMEOUT_S, check=False,
         )

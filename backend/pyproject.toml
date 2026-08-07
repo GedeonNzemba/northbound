@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "northbound"
 version = "0.1.0"
@@ -15,6 +19,13 @@ dependencies = [
 
 [project.scripts]
 northbound = "northbound.cli:main"
+
+# Without this, setuptools sees both `northbound/` and `tests/` at the top level
+# and refuses to guess. Install editable (`pip install -e .`): the profile and
+# config are located relative to this file's position in the repo, so a copied
+# install would not find them.
+[tool.setuptools.packages.find]
+include = ["northbound*"]
 
 [project.optional-dependencies]
 # pdfplumber gives per-word page coordinates — the only way to test that the

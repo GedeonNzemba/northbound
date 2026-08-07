@@ -13,23 +13,35 @@ This produces the real inputs: 15 from the LMIA-approved queue (all occupations
     northbound generate --posting postings/golden/49816590.json
 
 **Frozen on purpose.** Job Bank postings expire; a golden set that re-harvests
-is a moving target and no two evaluation runs are comparable. These files are
-committed once and then treated as immutable. Re-run this spike to build a
-*new* set under a new directory, never to refresh an existing one.
+is a moving target and no two evaluation runs are comparable. A queue that has
+reached its target is finished and this refuses to touch it. A queue that came
+back SHORT is different — topping it up adds inputs and invalidates none, so
+`--only` fills it to the target and the manifest merges rather than replacing.
 
-The extraction is deliberately multi-path and self-reporting. I do not know
-Job Bank's DOM, and guessing selectors then discovering they were wrong costs a
-whole CI cycle. Every field tries JSON-LD first (a government job site very
-likely publishes schema.org JobPosting), then labelled-field heuristics, then a
-text fallback — and records which path fired, so the next version can drop the
-paths that never win.
+The extraction is multi-path and self-reporting, because I did not know Job
+Bank's DOM and guessing selectors costs a whole CI cycle to disprove. The first
+run settled it (n=16, every field, 100% agreement):
 
-Mechanics reused from spike 4, already confirmed against the live site:
+    title      <h1>
+    employer   [property=hiringOrganization]
+    location   labelled "Location:"
+    noc        regex on the body text
+    body       .job-posting-details
+
+**JSON-LD never won a single field.** Job Bank does not publish schema.org
+JobPosting, which was the guess the multi-path design existed to test. The
+JSON-LD path is kept anyway — it costs nothing, it is the cheapest correct
+source if they ever add it, and the report tally will say so the moment it
+starts winning.
+
+Mechanics reused from spike 4, confirmed again here:
   • `#applynowbutton` ("Show how to apply") is click 1 of 2
   • the email lives behind the SECOND disclosure, "Additional ways to apply"
   • no bot signals, no CAPTCHA, HTTP 200 to GitHub runners
+  • 69% of the harvested set is email-capable (spike 4 measured 75%, n=40)
 
     python spikes/06_golden_set.py --lmia 15 --intl 5
+    python spikes/06_golden_set.py --only international --intl 5   # top up
 """
 
 from __future__ import annotations
@@ -341,13 +353,28 @@ def is_dev_role(rec: dict) -> bool:
 POSTING_FIELDS = ("posting_id", "title", "employer", "body",
                   "url", "location", "noc", "queue", "screening")
 
+QUEUES = {"lmia": "lmia_approved", "international": "international_candidates"}
+
+
+def _load_manifest(out_dir: Path) -> dict:
+    path = out_dir / "MANIFEST.json"
+    if not path.exists():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8"))
+
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--lmia", type=int, default=15)
     ap.add_argument("--intl", type=int, default=5)
-    ap.add_argument("--intl-pages", type=int, default=12,
-                    help="developer roles are ~0.4%% of this queue; page deep")
+    ap.add_argument("--intl-pages", type=int, default=45,
+                    help="developer roles are ~0.44%% of this queue, so 12 pages "
+                         "(300 postings) yields about one. 45 pages is what five "
+                         "actually needs; listing pages are one cheap HTML fetch "
+                         "each, no browser and no reveal clicks")
+    ap.add_argument("--only", choices=sorted(QUEUES),
+                    help="harvest one queue only — how you top up a queue that "
+                         "came back short without disturbing the other")
     ap.add_argument("--out", default=str(OUT_DIR))
     args = ap.parse_args()
 
@@ -356,22 +383,55 @@ def main() -> int:
         return 1
 
     out_dir = Path(args.out)
-    if out_dir.exists() and any(out_dir.glob("*.json")):
-        print(f"REFUSING: {out_dir} already holds a golden set.\n"
-              "A frozen set is only meaningful if it never moves. Harvest a new "
-              "one into a new directory with --out instead.", file=sys.stderr)
-        return 2
     out_dir.mkdir(parents=True, exist_ok=True)
     REPORT.parent.mkdir(parents=True, exist_ok=True)
+
+    # The frozen-set rule, stated precisely: a queue that has reached its target
+    # is finished and must not be re-harvested, because that would replace
+    # inputs earlier evaluation runs were measured against and Job Bank postings
+    # expire. A queue that came back SHORT is a different case — topping it up
+    # adds inputs and invalidates none, so it is allowed, up to the target.
+    existing = _load_manifest(out_dir)
+    have: dict[str, int] = {}
+    for e in existing.get("entries", []):
+        have[e["queue"]] = have.get(e["queue"], 0) + 1
+
+    targets = {QUEUES["lmia"]: args.lmia, QUEUES["international"]: args.intl}
+    wanted = {QUEUES[args.only]} if args.only else set(QUEUES.values())
+
+    remaining: dict[str, int] = {}
+    for q in sorted(wanted):
+        short_by = targets[q] - have.get(q, 0)
+        if short_by <= 0:
+            print(f"  {q}: already at {have.get(q, 0)}/{targets[q]} — leaving it alone")
+        else:
+            remaining[q] = short_by
+            if have.get(q):
+                print(f"  {q}: {have[q]}/{targets[q]} — topping up by {short_by}")
+
+    if not remaining:
+        print(f"REFUSING: every requested queue in {out_dir} is already at its "
+              "target. Re-harvesting would replace inputs that earlier runs were "
+              "measured against. Raise --lmia/--intl to extend a queue, or use "
+              "--out to build a new set elsewhere.", file=sys.stderr)
+        return 2
+
+    seen_ids = {p.stem for p in out_dir.glob("*.json") if p.name != "MANIFEST.json"}
 
     s = requests.Session()
     s.headers.update({"User-Agent": UA, "Accept-Language": "en-CA,en;q=0.9"})
 
-    print("== LMIA-approved queue (all occupations — D6) ==")
-    lmia_ids = collect(s, LMIA, pages=3)
-    print("\n== International-candidates queue (developer roles only — D6) ==")
-    intl_ids = collect(s, INTL, pages=args.intl_pages, title_filter=TECH_TITLE)
-    print(f"  {len(intl_ids)} candidate developer posting(s) after title filtering")
+    lmia_ids: list[str] = []
+    intl_ids: list[str] = []
+    if QUEUES["lmia"] in remaining:
+        print("== LMIA-approved queue (all occupations — D6) ==")
+        lmia_ids = [i for i in collect(s, LMIA, pages=3) if i not in seen_ids]
+    if QUEUES["international"] in remaining:
+        print("\n== International-candidates queue (developer roles only — D6) ==")
+        intl_ids = [i for i in collect(s, INTL, pages=args.intl_pages,
+                                       title_filter=TECH_TITLE)
+                    if i not in seen_ids]
+        print(f"  {len(intl_ids)} candidate developer posting(s) after title filtering")
 
     kept: list[dict] = []
     skipped: list[dict] = []
@@ -411,25 +471,29 @@ def main() -> int:
                 time.sleep(random.uniform(2.0, 4.0))
             return got
 
-        n_lmia = sweep(lmia_ids, "lmia_approved", args.lmia, dev_only=False)
-        n_intl = sweep(intl_ids, "international_candidates", args.intl, dev_only=True)
+        n_lmia = sweep(lmia_ids, "lmia_approved",
+                       remaining.get(QUEUES["lmia"], 0), dev_only=False)
+        n_intl = sweep(intl_ids, "international_candidates",
+                       remaining.get(QUEUES["international"], 0), dev_only=True)
 
     # ---- write: posting files stay pure, provenance goes in the manifest -- #
-    manifest = {
-        "captured_at": datetime.now(timezone.utc).isoformat(),
-        "frozen": True,
-        "note": ("Immutable. Job Bank postings expire; re-harvesting would make "
-                 "two evaluation runs incomparable. Build a NEW set instead."),
-        "counts": {"lmia_approved": n_lmia, "international_candidates": n_intl},
-        "entries": [],
-    }
+    #
+    # The manifest MERGES. A top-up run writes only its own queue's postings,
+    # but a manifest rebuilt from `kept` alone would drop the record of every
+    # entry harvested earlier — the files would still be there, provably
+    # unattributed. `captured_at` therefore lives per entry, because a topped-up
+    # set genuinely has two capture times.
+    now = datetime.now(timezone.utc).isoformat()
+    entries = list(existing.get("entries", []))
+
     for rec in kept:
         posting = {k: rec[k] for k in POSTING_FIELDS if k in rec}
         blob = json.dumps(posting, indent=2, ensure_ascii=False, sort_keys=True)
         (out_dir / f"{rec['posting_id']}.json").write_text(blob + "\n", encoding="utf-8")
-        manifest["entries"].append({
+        entries.append({
             "posting_id": rec["posting_id"],
             "queue": rec["queue"],
+            "captured_at": now,
             "title": rec["title"],
             "employer": rec["employer"],
             "noc": rec.get("noc", ""),
@@ -440,6 +504,23 @@ def main() -> int:
             "revealed_additional": rec["_revealed_additional"],
             "extraction_paths": rec["_extraction_paths"],
         })
+
+    counts: dict[str, int] = {}
+    for e in entries:
+        counts[e["queue"]] = counts.get(e["queue"], 0) + 1
+
+    manifest = {
+        "first_captured_at": existing.get("first_captured_at",
+                                          existing.get("captured_at", now)),
+        "last_captured_at": now,
+        "frozen": True,
+        "note": ("Frozen. Job Bank postings expire, so re-harvesting a queue "
+                 "would make two evaluation runs incomparable. A queue that is "
+                 "short can be filled with --only; a queue that already has "
+                 "entries is refused."),
+        "counts": counts,
+        "entries": entries,
+    }
     (out_dir / "MANIFEST.json").write_text(
         json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 

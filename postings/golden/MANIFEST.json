@@ -1,0 +1,396 @@
+{
+  "first_captured_at": "2026-08-07T19:20:59.292020+00:00",
+  "last_captured_at": "2026-08-07T19:30:44.210638+00:00",
+  "frozen": true,
+  "note": "Frozen. Job Bank postings expire, so re-harvesting a queue would make two evaluation runs incomparable. A queue that is short can be filled with --only; a queue that already has entries is refused.",
+  "counts": {
+    "lmia_approved": 15,
+    "international_candidates": 5
+  },
+  "entries": [
+    {
+      "posting_id": "50014019",
+      "queue": "lmia_approved",
+      "title": "child caregiver - private home",
+      "employer": "Denise - Private Household",
+      "noc": "44100",
+      "sha256": "23544764e980797bbddb1fc7794335b22da751ae7d11e8d948432408624a45aa",
+      "body_chars": 9198,
+      "screening_questions": 9,
+      "email_capable": true,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "49964481",
+      "queue": "lmia_approved",
+      "title": "physiotherapist",
+      "employer": "Alberta Health Services",
+      "noc": "31202",
+      "sha256": "858ecaea3dac5357d666f665c13e48d1ccc6308fcfc4cb8b7566d913928da53a",
+      "body_chars": 4554,
+      "screening_questions": 1,
+      "email_capable": false,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "49868805",
+      "queue": "lmia_approved",
+      "title": "dairy farm worker",
+      "employer": "E.L.B.I. Inc.",
+      "noc": "85100",
+      "sha256": "fae1cf962050e25da4448c805ae6e159b7cec90b0d29cdfa589cc5d0015d886c",
+      "body_chars": 5552,
+      "screening_questions": 3,
+      "email_capable": true,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "49864338",
+      "queue": "lmia_approved",
+      "title": "dairy farm worker",
+      "employer": "Martins Holsteins",
+      "noc": "85100",
+      "sha256": "a6b30e4d566003b70dc2be766e5597a07c7eb3df77fb5312417ad3a0187c9f07",
+      "body_chars": 3933,
+      "screening_questions": 1,
+      "email_capable": true,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "49824082",
+      "queue": "lmia_approved",
+      "title": "farm worker, vegetables",
+      "employer": "Jc Fresh Farms Ltd.",
+      "noc": "85101",
+      "sha256": "074736064ab761dbe2e7f32697154658153d493b2c80f7b45461bbcba8b4ac23",
+      "body_chars": 6009,
+      "screening_questions": 3,
+      "email_capable": false,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "49824081",
+      "queue": "lmia_approved",
+      "title": "farm worker, vegetables",
+      "employer": "Glass Grow Farms LP",
+      "noc": "85101",
+      "sha256": "956ef343ac2454ca4344397bf61551243f06fca09ba8888d296d2be7c0a4ae71",
+      "body_chars": 6002,
+      "screening_questions": 3,
+      "email_capable": false,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "49819455",
+      "queue": "lmia_approved",
+      "title": "family physician",
+      "employer": "Medicentres",
+      "noc": "31102",
+      "sha256": "2b5f1c829e0905a9e47907c377996261a956b6fc03f7d177650d651a02202ac7",
+      "body_chars": 5848,
+      "screening_questions": 3,
+      "email_capable": true,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "49816590",
+      "queue": "lmia_approved",
+      "title": "general labourer - farm",
+      "employer": "Ridge Farms",
+      "noc": "85101",
+      "sha256": "fdcf8fcf4fb774d33381405d04ed180c45795527d057d04bc7d906bc573da012",
+      "body_chars": 5568,
+      "screening_questions": 3,
+      "email_capable": true,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "49775759",
+      "queue": "lmia_approved",
+      "title": "family physician",
+      "employer": "Queensland Medical Clinic",
+      "noc": "31102",
+      "sha256": "5f185a523b8bc80c5dedf3a6c2c9b8549f9debe451d91e9b619f84aaad8764c9",
+      "body_chars": 4700,
+      "screening_questions": 1,
+      "email_capable": true,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "49754455",
+      "queue": "lmia_approved",
+      "title": "farm supervisor",
+      "employer": "Canwest Farms Ltd.",
+      "noc": "82030",
+      "sha256": "8d8a9b2d6f573dc5035778ba324bd6a6f275ce5baf53c47071ac566d94f1776e",
+      "body_chars": 4591,
+      "screening_questions": 1,
+      "email_capable": false,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "49750962",
+      "queue": "lmia_approved",
+      "title": "greenhouse worker",
+      "employer": "Sipkens Nurseries Ltd.",
+      "noc": "85103",
+      "sha256": "c7d831d082e29241fa9179c65963a7445a953643af042be8a6ba090e1a3743eb",
+      "body_chars": 4346,
+      "screening_questions": 3,
+      "email_capable": true,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "49743120",
+      "queue": "lmia_approved",
+      "title": "livestock labourer",
+      "employer": "Metz Farms Ltd",
+      "noc": "85100",
+      "sha256": "03938ce17e6b5c9c0e287f6eabb2997afcf8e48ba15f151f0483e1129d3c6e9b",
+      "body_chars": 6824,
+      "screening_questions": 3,
+      "email_capable": true,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "49731954",
+      "queue": "lmia_approved",
+      "title": "butcher - retail or wholesale",
+      "employer": "VENERICA MEATS INC",
+      "noc": "63201",
+      "sha256": "481f20d5df4f790f476b93779d0f4443c16c3d6cee53e813ffd191a8e5c90acd",
+      "body_chars": 4553,
+      "screening_questions": 1,
+      "email_capable": false,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "49729281",
+      "queue": "lmia_approved",
+      "title": "farm supervisor",
+      "employer": "Jeffrey and Denise Goodfellow",
+      "noc": "82030",
+      "sha256": "3ff15a9aa53faa50fd8b14f81aaece928e5eeb7cb74f9e37e01317cfef95c3ad",
+      "body_chars": 4754,
+      "screening_questions": 5,
+      "email_capable": true,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "49723653",
+      "queue": "lmia_approved",
+      "title": "greenhouse labourer",
+      "employer": "Mucci Farms",
+      "noc": "85103",
+      "sha256": "314ba02ddc30e92a05aa1efb5d3a84047ef3c5a9b700a98e231afb4c0134e935",
+      "body_chars": 4729,
+      "screening_questions": 1,
+      "email_capable": true,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "50030451",
+      "queue": "international_candidates",
+      "title": "Web developer",
+      "employer": "HOME BY ASRA",
+      "noc": "21234",
+      "sha256": "268ce7764b8c9cf43f8a3c64bd50400a79446555e57d1b05c67c8505c9f1c791",
+      "body_chars": 6094,
+      "screening_questions": 1,
+      "email_capable": true,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "50012572",
+      "queue": "international_candidates",
+      "captured_at": "2026-08-07T19:30:44.210638+00:00",
+      "title": "Web developer",
+      "employer": "EXPRESS LARS T. INC.",
+      "noc": "21234",
+      "sha256": "0ada5bb5b0bc9073778edca4bb21f1a7357ffaaa12f5c80ae08e39640bd17aee",
+      "body_chars": 2636,
+      "screening_questions": 1,
+      "email_capable": false,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "50012570",
+      "queue": "international_candidates",
+      "captured_at": "2026-08-07T19:30:44.210638+00:00",
+      "title": "Web developer",
+      "employer": "EXPRESS LARS T. INC.",
+      "noc": "21234",
+      "sha256": "253ec6f33a94f8b1b27d6d9429fc179098781960b29f8bdf39a9398d7c37ac78",
+      "body_chars": 2636,
+      "screening_questions": 1,
+      "email_capable": false,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "50006569",
+      "queue": "international_candidates",
+      "captured_at": "2026-08-07T19:30:44.210638+00:00",
+      "title": "Web developer",
+      "employer": "Westview Investment Inc.",
+      "noc": "21234",
+      "sha256": "62bc2b68bd8d2ef01c8dc6c7484b19c418cdc63d6512bd454b9ee7e80e9ff1eb",
+      "body_chars": 3872,
+      "screening_questions": 1,
+      "email_capable": false,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    },
+    {
+      "posting_id": "50006147",
+      "queue": "international_candidates",
+      "captured_at": "2026-08-07T19:30:44.210638+00:00",
+      "title": "Web developer",
+      "employer": "Arora Enterprise Inc",
+      "noc": "21234",
+      "sha256": "b0893e452aeb093c9a4e12a928bc8c43328719a87020a54f2228f2a5165740ad",
+      "body_chars": 5034,
+      "screening_questions": 1,
+      "email_capable": true,
+      "revealed_additional": true,
+      "extraction_paths": {
+        "title": "h1",
+        "employer": "property",
+        "location": "labelled",
+        "noc": "regex",
+        "body": ".job-posting-details"
+      }
+    }
+  ]
+}

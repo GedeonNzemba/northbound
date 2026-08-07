@@ -33,6 +33,7 @@ from .generate.llm import (
     DEFAULT_MODEL, LLMError, RefusalError, UsageTally, default_client,
 )
 from .generate.prompts import TASK_DIRECTIVE, posting_block, system_blocks
+from .generate.screen import screen_posting
 from .profile import ProfileError, load_profile
 
 EXIT_OK, EXIT_ERROR, EXIT_PARKED = 0, 1, 2
@@ -102,6 +103,11 @@ def _cmd_generate(args: argparse.Namespace) -> int:
     profile = load_profile(args.profile)
     posting = _load_posting(args)
     track = args.track or choose_track(posting)
+
+    if not args.no_screen and (excluded := screen_posting(posting, profile)):
+        raise GenerationError(
+            f"excluded by policy — {excluded}\n"
+            "Pass --no-screen to generate anyway.")
 
     print(f"posting : {posting.employer} — {posting.title} [{posting.posting_id}]")
     print(f"track   : {track}"
@@ -184,6 +190,14 @@ def _cmd_batch(args: argparse.Namespace) -> int:
 
         track = args.track or choose_track(posting)
         label = f"{posting.employer[:24]} — {posting.title[:30]}"
+
+        # config/sources.yaml `exclusions_only`. Not a relevance filter — D6's
+        # answer for the LMIA queue is "all of them" — but a posting no document
+        # can convert should not spend a generation.
+        if not args.no_screen and (excluded := screen_posting(posting, profile)):
+            rows.append((posting.posting_id, track, "EXCLUDED", excluded.rule))
+            print(f"[{n:>2}/{len(files)}] {label}  EXCLUDED — {excluded}")
+            continue
 
         if args.dry_run:
             # Build the prompt for real; a failure here is a bug we want now.
@@ -268,6 +282,8 @@ def build_parser() -> argparse.ArgumentParser:
                    help="print the exact prompt and exit without calling the model")
     g.add_argument("--no-pdf", action="store_true",
                    help="skip the PDF companions (DOCX is canonical either way)")
+    g.add_argument("--no-screen", action="store_true",
+                   help="apply even to postings the exclusion policy rules out")
     # Metadata for plain-text postings, and overrides for JSON ones.
     g.add_argument("--employer")
     g.add_argument("--title")
@@ -288,6 +304,8 @@ def build_parser() -> argparse.ArgumentParser:
     b.add_argument("--max-attempts", type=int, default=2)
     b.add_argument("--no-verify", action="store_true")
     b.add_argument("--no-pdf", action="store_true")
+    b.add_argument("--no-screen", action="store_true",
+                   help="apply even to postings the exclusion policy rules out")
     b.add_argument("--dry-run", action="store_true",
                    help="load, choose a track and build every prompt without "
                         "calling the model — the smoke test to run first")
