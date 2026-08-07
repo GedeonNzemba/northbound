@@ -51,8 +51,12 @@ What exists in `backend/northbound/`:
 passed; `finalise()` refuses to render a parked application to the send path.
 One draft, one repair, then parked for human review — never auto-sent.
 
-Try it without spending anything:
-`northbound batch --dir postings/golden --dry-run`
+Try it without spending anything (run from `backend/`):
+`python -m northbound.cli batch --dir ../postings/golden --dry-run`
+
+`python -m northbound.cli` is the form that always works. The `northbound`
+console script only exists inside an activated venv, and on Windows can land
+in a Scripts directory that is not on PATH.
 
 Local setup (Windows/macOS/Linux): **`docs/09-running-it-locally.md`**.
 

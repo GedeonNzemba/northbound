@@ -35,9 +35,15 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 ```
 
-The editable install puts a `northbound` command on your PATH inside the venv,
-which is what the examples below use. `python -m northbound.cli ...` does the
-same thing if you would rather not rely on it.
+**Check the venv is actually active.** Your prompt gains a `(.venv)` prefix:
+
+```
+(.venv) PS C:\Users\nzemb\Documents\northbound\backend>
+```
+
+If that prefix is missing, the environment is not active and nothing below will
+be found. Activation is per terminal window — open a new tab and you activate
+again.
 
 If PowerShell refuses to run the activate script, it's the execution policy,
 not the project:
@@ -45,6 +51,21 @@ not the project:
 ```powershell
 Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 ```
+
+### `northbound` vs `python -m northbound.cli`
+
+The install puts a `northbound` command on PATH *inside the venv*. It is
+shorter, and it is the thing that breaks — it disappears the moment the venv is
+not active, and on Windows it can also land in a Scripts directory that is not
+on PATH at all.
+
+**Every example below uses `python -m northbound.cli`**, which works from
+`backend\` whether or not the venv is active and whether or not the editable
+install succeeded. Use the short `northbound` form once you have it working, if
+you prefer it.
+
+    'northbound' is not recognized  →  the venv is not active, or the install
+                                       did not run. Use python -m, or activate.
 
 ---
 
@@ -66,7 +87,7 @@ and it's optional.
 ## 3. Look at the prompt without spending anything
 
 ```powershell
-northbound batch --dir ..\postings\golden --dry-run
+python -m northbound.cli batch --dir ..\postings\golden --dry-run
 ```
 
 This loads every posting in the golden set, picks a track for each, and builds
@@ -77,7 +98,7 @@ way through a paid run.
 To read the exact prompt for one posting:
 
 ```powershell
-northbound generate --posting ..\postings\golden\<id>.json --dry-run
+python -m northbound.cli generate --posting ..\postings\golden\<id>.json --dry-run
 ```
 
 That prints the full system prompt, the profile block, the posting and the task
@@ -137,13 +158,13 @@ exactly this reason; nothing else is.
 Then one posting first — not the whole set:
 
 ```powershell
-northbound generate --posting ..\postings\golden\<id>.json --out ..\out
+python -m northbound.cli generate --posting ..\postings\golden\<id>.json --out ..\out
 ```
 
 Read what it produced before running the batch. Then:
 
 ```powershell
-northbound batch --dir ..\postings\golden --out ..\out
+python -m northbound.cli batch --dir ..\postings\golden --out ..\out
 ```
 
 ---
