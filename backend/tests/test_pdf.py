@@ -247,3 +247,53 @@ def test_a_normal_track_b_cv_passes_the_length_gate(tmp_path):
                                 cv=full_cv(), letter=letter()))
     paths = finalise(outcome, PROFILE, tmp_path)
     assert page_count(paths["cv_pdf"]) == 1
+
+
+# ---- portability: this runs on Windows and macOS too ---------------------- #
+
+def test_the_profile_path_is_passed_as_a_valid_uri(monkeypatch, tmp_path):
+    """
+    `-env:UserInstallation` takes a file URI. An f-string of "file://" plus a
+    Windows path produces "file://C:\\Users\\..." — backslashes and a drive
+    letter where the authority belongs — which is not a valid URI.
+    """
+    import northbound.generate.render_pdf as rp
+
+    captured = {}
+
+    def fake_run(argv, **kw):
+        captured["argv"] = argv
+        (Path(kw_out(argv)) / "cv.pdf").write_bytes(b"%PDF-1.4\n")
+        return type("R", (), {"returncode": 0, "stdout": "", "stderr": ""})()
+
+    def kw_out(argv):
+        return argv[argv.index("--outdir") + 1]
+
+    monkeypatch.setattr(rp, "converter_path", lambda: "/usr/bin/soffice")
+    monkeypatch.setattr(rp.subprocess, "run", fake_run)
+
+    docx = render_cv(full_cv(), PROFILE, tmp_path / "cv.docx")
+    rp.render_pdf(docx, tmp_path)
+
+    arg = next(a for a in captured["argv"] if a.startswith("-env:UserInstallation="))
+    uri = arg.split("=", 1)[1]
+    assert uri.startswith("file:///"), f"not a valid file URI: {uri!r}"
+    assert "\\" not in uri, f"backslashes in a URI: {uri!r}"
+
+
+def test_libreoffice_is_found_when_it_is_not_on_path(monkeypatch, tmp_path):
+    """
+    The Windows installer does not add LibreOffice to PATH, and the macOS app
+    bundle never does. A `which` lookup alone reports "no converter" on a
+    machine where it is installed and working — and the batch then silently
+    produces no PDFs.
+    """
+    import northbound.generate.render_pdf as rp
+
+    installed = tmp_path / "LibreOffice" / "program" / "soffice.exe"
+    installed.parent.mkdir(parents=True)
+    installed.write_text("")
+
+    monkeypatch.setattr(rp.shutil, "which", lambda name: None)
+    monkeypatch.setattr(rp, "_known_install_paths", lambda: [installed])
+    assert rp.converter_path() == str(installed)
