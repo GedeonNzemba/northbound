@@ -1,7 +1,8 @@
 # Running Northbound on your own machine
 
-Written for Windows (PowerShell), with the macOS/Linux equivalents beside each
-step. Everything below runs from the repo you cloned:
+Written for Windows — both Git Bash and PowerShell — with the macOS/Linux
+equivalents beside each step. **Forward slashes work everywhere**, including
+PowerShell, so the examples use them throughout. Everything below runs from the repo you cloned:
 
 ```
 C:\Users\nzemb\Documents\northbound
@@ -9,16 +10,38 @@ C:\Users\nzemb\Documents\northbound
 
 ---
 
-## 1. Python
+## 0. Which shell are you in?
 
-Needs **3.11 or newer** — the code uses `X | None` type syntax that older
-versions reject at import.
+This matters more than it looks — the two Windows shells need different
+commands, and the wrong ones fail in confusing ways.
 
-```powershell
-py --version          # expect 3.11+; if it's missing, install from python.org
+| Prompt looks like | Shell | Use |
+|---|---|---|
+| `PS C:\Users\nzemb\...>` | PowerShell | the PowerShell column below |
+| `nzemb@LAPTOP MINGW64 ~/...` `$` | **Git Bash** | the Git Bash column below |
+
+Git Bash is Unix-flavoured: **forward slashes**, no `py` launcher, and a
+different activation script. Backslashes are escape characters there, so a
+Windows path pasted into Git Bash silently loses them —
+`cd C:\Users\nzemb\Documents` becomes `cd C:Usersnzemb Documents` and fails
+with a path you never typed.
+
+---
+
+## 1. Python and the virtual environment
+
+### Git Bash
+
+```bash
+cd ~/Documents/northbound/backend
+
+python --version                 # need 3.11+; see "if python is not found" below
+python -m venv .venv
+source .venv/Scripts/activate    # Scripts, not bin — this is still Windows
+pip install -e ".[dev]"
 ```
 
-Create the environment and install:
+### PowerShell
 
 ```powershell
 cd C:\Users\nzemb\Documents\northbound\backend
@@ -27,7 +50,7 @@ py -m venv .venv
 pip install -e ".[dev]"
 ```
 
-macOS/Linux:
+### macOS / Linux
 
 ```bash
 cd ~/northbound/backend
@@ -35,18 +58,39 @@ python3 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 ```
 
-**Check the venv is actually active.** Your prompt gains a `(.venv)` prefix:
+**Check the venv took.** Your prompt gains a `(.venv)` prefix in every shell:
 
 ```
+(.venv) nzemb@LAPTOP MINGW64 ~/Documents/northbound/backend
 (.venv) PS C:\Users\nzemb\Documents\northbound\backend>
 ```
 
-If that prefix is missing, the environment is not active and nothing below will
-be found. Activation is per terminal window — open a new tab and you activate
-again.
+No prefix means it is not active and nothing below will be found. Activation is
+**per terminal window** — a new tab needs it again.
 
-If PowerShell refuses to run the activate script, it's the execution policy,
-not the project:
+### If `python` is not found in Git Bash
+
+The Windows installer does not always put Python on Git Bash's PATH, and `py`
+(the Windows launcher) does not exist there at all. Find it:
+
+```bash
+ls ~/AppData/Local/Programs/Python/
+```
+
+Then use the full path once, to build the venv — after that, `source
+.venv/Scripts/activate` gives you a working `python`:
+
+```bash
+~/AppData/Local/Programs/Python/Python312/python.exe -m venv .venv
+source .venv/Scripts/activate
+python --version
+```
+
+If that directory does not exist, Python is not installed for your user —
+install from python.org and tick **"Add python.exe to PATH"**.
+
+If PowerShell refuses to run `Activate.ps1`, it is the execution policy, not
+the project:
 
 ```powershell
 Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
@@ -56,13 +100,12 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 
 The install puts a `northbound` command on PATH *inside the venv*. It is
 shorter, and it is the thing that breaks — it disappears the moment the venv is
-not active, and on Windows it can also land in a Scripts directory that is not
-on PATH at all.
+not active, and on Windows it can land in a Scripts directory that is not on
+PATH at all.
 
 **Every example below uses `python -m northbound.cli`**, which works from
-`backend\` whether or not the venv is active and whether or not the editable
-install succeeded. Use the short `northbound` form once you have it working, if
-you prefer it.
+`backend/` whether or not the venv is active and whether or not the editable
+install succeeded.
 
     'northbound' is not recognized  →  the venv is not active, or the install
                                        did not run. Use python -m, or activate.
@@ -71,7 +114,7 @@ you prefer it.
 
 ## 2. Prove it works before trusting it
 
-```powershell
+```bash
 python -m pytest -q
 ```
 
@@ -86,8 +129,8 @@ and it's optional.
 
 ## 3. Look at the prompt without spending anything
 
-```powershell
-python -m northbound.cli batch --dir ..\postings\golden --dry-run
+```bash
+python -m northbound.cli batch --dir ../postings/golden --dry-run
 ```
 
 This loads every posting in the golden set, picks a track for each, and builds
@@ -97,8 +140,8 @@ way through a paid run.
 
 To read the exact prompt for one posting:
 
-```powershell
-python -m northbound.cli generate --posting ..\postings\golden\<id>.json --dry-run
+```bash
+python -m northbound.cli generate --posting ../postings/golden/<id>.json --dry-run
 ```
 
 That prints the full system prompt, the profile block, the posting and the task
@@ -157,14 +200,14 @@ exactly this reason; nothing else is.
 
 Then one posting first — not the whole set:
 
-```powershell
-python -m northbound.cli generate --posting ..\postings\golden\<id>.json --out ..\out
+```bash
+python -m northbound.cli generate --posting ../postings/golden/<id>.json --out ../out
 ```
 
 Read what it produced before running the batch. Then:
 
-```powershell
-python -m northbound.cli batch --dir ..\postings\golden --out ..\out
+```bash
+python -m northbound.cli batch --dir ../postings/golden --out ../out
 ```
 
 ---
