@@ -84,13 +84,22 @@ BANNED_GENERIC = [
 ]
 
 # docs/08 §1.1 — must never appear anywhere.
+#
+# Every pattern here has to be specific enough that ordinary CV vocabulary
+# cannot trip it. "single" was originally in the marital-status list and blocked
+# every Track A CV that mentioned single-page applications — a false positive
+# that costs a generation and hands the model a retry note it cannot act on.
+# "marital status" as a label already catches the real case, so the bare word is
+# gone; "married"/"divorced"/"widowed" have no other CV use and stay.
 PROHIBITED_PERSONAL = {
     "date of birth": r"\b(date of birth|d\.?o\.?b\.?)\b",
     "age": r"\b(?:I am |aged )\d{2} years old\b",
-    "marital status": r"\b(marital status|married|single|divorced)\b",
+    "marital status": r"\bmarital status\b|\b(married|divorced|widowed)\b",
     "nationality": r"\b(nationality|citizenship)\s*[:=]",
     "gender": r"\b(gender|sex)\s*[:=]",
-    "SIN": r"\b(social insurance number|\bSIN\b)",
+    # Case-sensitive for the acronym: the whole blob is searched with re.I, and
+    # a lowercase "sin" is an ordinary English word.
+    "SIN": r"\bsocial insurance number\b|(?-i:\bSIN\b)",
     "photo": r"\b(photograph attached|photo attached)\b",
     "religion": r"\breligion\s*[:=]",
     "references-on-cv": r"\breferences (are )?available (up)?on request\b",

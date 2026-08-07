@@ -162,6 +162,92 @@ def full_cv(**over) -> GeneratedCV:
     return GeneratedCV(**base)
 
 
+def track_a_cv(**over) -> GeneratedCV:
+    """
+    The developer CV — the other half of the system, and the half that had no
+    fixture until a Track-A-only bug went unnoticed ("single-page applications"
+    blocking as marital status). Ordinary front-end vocabulary belongs here for
+    exactly that reason.
+    """
+    base = dict(
+        track="direct",
+        target_noc="21234",
+        headline="Front End Developer",
+        summary=("Front-end developer working remotely for a Netherlands company, "
+                 "with delivery for clients in the US, Canada, the UK and the "
+                 "Netherlands, including BMO."),
+        summary_evidence_ids=["exp.databalk.h1", "exp.kurtosys.h3"],
+        skills={
+            "Frontend": ["JavaScript (ES6+)", "TypeScript", "React.js",
+                         "single-page applications", "responsive design"],
+            "CMS": ["WordPress", "custom theme and plugin front-end work"],
+            "Tooling": ["Git", "VS Code", "Jira"],
+        },
+        experience=[
+            ExperienceEntry(
+                role_id="exp.databalk",
+                display_title="Front-End Developer (NOC 21234)",
+                employer="DataBalk",
+                employer_context="Netherlands software company, remote",
+                location="Netherlands (Remote)",
+                dates=PROFILE.role("exp.databalk").display_dates,
+                employment_type="Full-time",
+                bullets=[Bullet(
+                    text="Develops and maintains responsive front-end interfaces "
+                         "for DataBalk platforms.",
+                    evidence_id="exp.databalk.h1")],
+            ),
+            ExperienceEntry(
+                role_id="exp.kurtosys",
+                display_title="Front-End Developer (NOC 21234)",
+                employer="Kurtosys Systems",
+                employer_context="FinTech / asset-management technology",
+                location="Cape Town, South Africa",
+                dates=PROFILE.role("exp.kurtosys").display_dates,
+                employment_type="Full-time",
+                bullets=[
+                    Bullet(text="Built and maintained responsive financial websites "
+                                "for international clients.",
+                           evidence_id="exp.kurtosys.h1"),
+                    Bullet(text="Worked directly with clients across the US, Canada, "
+                                "the UK and the Netherlands.",
+                           evidence_id="exp.kurtosys.h3"),
+                ],
+            ),
+        ],
+        education=[EducationEntry(
+            evidence_id="edu.matric", credential="National Senior Certificate",
+            institution="Noorder Paarl High School", year="2016",
+            detail="Assessed by ICAS as equivalent to Canadian Secondary School "
+                   "Graduation. File 24080341 IMM.")],
+        languages=["English", "French"],
+        portfolio_ids=["pf.bmo", "pf.cti"],
+    )
+    base.update(over)
+    return GeneratedCV(**base)
+
+
+def track_a_letter(**over) -> CoverLetter:
+    base = dict(
+        greeting="Dear Hiring Manager,",
+        opening=("I am applying for the front end developer role at Northwind "
+                 "Digital in Toronto, advertised on Job Bank."),
+        evidence=("I work remotely for DataBalk in the Netherlands, and at "
+                  "Kurtosys Systems I built financial websites for clients "
+                  "across the US, Canada and the UK, including BMO."),
+        evidence_ids=["exp.databalk.h1", "exp.kurtosys.h3"],
+        bridge=("Working across those time zones from Cape Town is the same "
+                "arrangement Northwind would be hiring into, and the BMO work "
+                "was for a Canadian bank."),
+        bridge_evidence_ids=["exp.kurtosys.h3"],
+        authorisation=("I am in Cape Town, South Africa and would need a work "
+                       "permit supported by an LMIA. I hold an ICAS assessment "
+                       "for Canada."),
+    )
+    base.update(over)
+    return CoverLetter(**base)
+
+
 def app(cv_=None, letter_=None) -> Application:
     return Application(
         posting_id="49816590", posting_title="general labourer - farm",
@@ -174,4 +260,13 @@ def docset(cv_=None, letter_=None) -> DocumentSet:
     return DocumentSet(cv=cv_ or cv(), letter=letter_ or letter())
 
 
-__all__ = ["PROFILE", "POSTING_BODY", "letter", "cv", "full_cv", "app", "docset"]
+def track_a_app(cv_=None, letter_=None) -> Application:
+    return Application(
+        posting_id="49900001", posting_title="front end developer",
+        employer="Northwind Digital", track="direct",
+        cv=cv_ or track_a_cv(), letter=letter_ or track_a_letter(),
+    )
+
+
+__all__ = ["PROFILE", "POSTING_BODY", "letter", "cv", "full_cv", "app", "docset",
+           "track_a_cv", "track_a_letter", "track_a_app"]

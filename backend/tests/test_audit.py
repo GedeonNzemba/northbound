@@ -9,7 +9,10 @@ reaches a real employer, so each one gets a case that proves it blocks.
 from __future__ import annotations
 
 import pytest
-from fixtures import PROFILE, app as _make_app, cv as _cv, letter as _letter
+from fixtures import (
+    PROFILE, app as _make_app, cv as _cv, letter as _letter,
+    track_a_app, track_a_cv, track_a_letter,
+)
 
 from northbound.generate.audit import audit
 from northbound.generate.schemas import Bullet
@@ -315,6 +318,75 @@ def test_claiming_a_non_native_language_as_native_blocks():
     """He speaks Afrikaans well. That is not the same claim."""
     res = audit(_app(cv=_cv(languages=["Afrikaans (native)"])), PROFILE)
     assert res.blocked and "languages.overstated" in _rules(res)
+
+
+# --------------------------------------------------------------------------- #
+# Track A — the developer CV, which had no coverage at all until a
+# Track-A-only false positive went unnoticed
+# --------------------------------------------------------------------------- #
+
+def test_a_clean_track_a_application_passes():
+    res = audit(track_a_app(), PROFILE)
+    assert not res.blocked, res.report()
+
+
+@pytest.mark.parametrize("term", [
+    "single-page applications", "single page app architecture",
+    "single sign-on integration",
+])
+def test_ordinary_front_end_vocabulary_is_not_marital_status(term):
+    """
+    A shipped false positive. `\\bsingle\\b` was in the marital-status pattern,
+    so every Track A CV mentioning single-page applications was blocked — and
+    the retry note said "contains prohibited personal information: marital
+    status", which the model cannot act on. The label 'marital status' already
+    catches the real case.
+    """
+    res = audit(track_a_app(cv_=track_a_cv(skills={"Frontend": [term]})), PROFILE)
+    assert "prohibited.personal" not in _rules(res), term
+
+
+def test_an_actual_marital_status_line_still_blocks():
+    res = audit(track_a_app(cv_=track_a_cv(
+        summary="Marital status: single. Front-end developer.")), PROFILE)
+    assert res.blocked and "prohibited.personal" in _rules(res)
+
+
+def test_married_still_blocks():
+    res = audit(track_a_app(cv_=track_a_cv(
+        summary="Married front-end developer based in Cape Town.")), PROFILE)
+    assert res.blocked and "prohibited.personal" in _rules(res)
+
+
+def test_lowercase_sin_is_not_a_social_insurance_number():
+    """The blob is searched case-insensitively; 'sin' is an ordinary word."""
+    res = audit(track_a_app(cv_=track_a_cv(
+        summary="Built trigonometric chart helpers using sin and cos curves.")),
+        PROFILE)
+    assert "prohibited.personal" not in _rules(res)
+
+
+def test_an_actual_sin_still_blocks():
+    res = audit(track_a_app(cv_=track_a_cv(
+        summary="SIN available on request. Front-end developer.")), PROFILE)
+    assert res.blocked and "prohibited.personal" in _rules(res)
+
+
+def test_track_a_portfolio_ids_must_exist():
+    res = audit(track_a_app(cv_=track_a_cv(portfolio_ids=["pf.nope"])), PROFILE)
+    assert res.blocked and "evidence.unknown" in _rules(res)
+
+
+def test_track_a_does_not_trigger_the_track_b_software_rule():
+    """Software in the primary section is the whole point of Track A."""
+    res = audit(track_a_app(), PROFILE)
+    assert "track_b.software_above_fold" not in _rules(res)
+
+
+def test_work_permit_on_a_track_a_cv_still_blocks():
+    res = audit(track_a_app(cv_=track_a_cv(
+        summary="Front-end developer seeking visa sponsorship in Canada.")), PROFILE)
+    assert res.blocked and "work_permit.on_cv" in _rules(res)
 
 
 def test_referees_never_render():
