@@ -1,0 +1,30 @@
+{
+  "spike": "06_golden_set",
+  "run_at": "2026-08-07T19:20:59.292020+00:00",
+  "kept": 16,
+  "skipped": 0,
+  "counts": {
+    "lmia_approved": 15,
+    "international_candidates": 1
+  },
+  "extraction_path_tally": {
+    "title": {
+      "h1": 16
+    },
+    "employer": {
+      "property": 16
+    },
+    "location": {
+      "labelled": 16
+    },
+    "noc": {
+      "regex": 16
+    },
+    "body": {
+      ".job-posting-details": 16
+    }
+  },
+  "email_capable_pct": 69,
+  "with_screening_questions": 16,
+  "skipped_detail": []
+}
