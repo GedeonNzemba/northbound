@@ -50,7 +50,10 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    # The golden-set harvest walks listings and loads ~20 posting pages with a
+    # browser, at a deliberately polite 2-4s between requests. 25 minutes was
+    # tight enough that one slow sweep lost the whole run and wrote nothing.
+    timeout-minutes: 45
 
     steps:
       - uses: actions/checkout@v4
