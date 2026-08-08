@@ -1,0 +1,9 @@
+PARKED  VENERICA MEATS INC — butcher - retail or wholesale  [track transferable, 2 attempt(s)]
+  reason: 5 blocking audit finding(s) after 2 attempt(s) — held for human review
+  BLOCKED
+    BLOCK work_permit.missing [letter.authorisation]: letter paragraph 4 must state the work-permit position plainly
+    BLOCK specificity.thin [letter.opening]: letter.opening has 0 concrete particular(s); needs >= 2. A paragraph that would read the same on another application is the definition of generic (docs/07 F-D)
+    BLOCK specificity.thin [letter.evidence]: letter.evidence has 0 concrete particular(s); needs >= 2. A paragraph that would read the same on another application is the definition of generic (docs/07 F-D)
+    BLOCK specificity.thin [letter.bridge]: letter.bridge has 0 concrete particular(s); needs >= 2. A paragraph that would read the same on another application is the definition of generic (docs/07 F-D)
+    BLOCK screening.unanswered [letter.screening_answers]: posting asks 1 screening question(s) and the letter answers none — ~30% of LMIA postings ask, and most applicants ignore them
+  usage: 2 call(s)  prompt 27,525 (22,108 cached = 80%)  output 3,539  ≈ $0.13 (caching saved $0.10)

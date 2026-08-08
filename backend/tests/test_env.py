@@ -91,7 +91,11 @@ def test_other_variables_in_the_file_are_loaded_too(tmp_path, monkeypatch):
     assert os.environ.get("OTHER") == "value"
 
 
-def test_no_env_anywhere_is_not_an_error(tmp_path):
+def test_no_env_anywhere_is_not_an_error(tmp_path, monkeypatch):
+    # candidate_paths always appends the real repo root; replace it so the test
+    # is fully isolated from any .env that exists on the developer's machine.
+    monkeypatch.setattr("northbound.env.candidate_paths",
+                        lambda start=None: [tmp_path / ".env"])
     assert load_dotenv(tmp_path) is None
     assert api_key(tmp_path) == (None, "")
 

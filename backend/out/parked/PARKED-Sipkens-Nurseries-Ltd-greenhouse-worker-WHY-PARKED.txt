@@ -1,0 +1,21 @@
+PARKED  Sipkens Nurseries Ltd. — greenhouse worker  [track transferable, 2 attempt(s)]
+  reason: 4 claim(s) not supported by cited evidence after 2 attempt(s) — held for human review
+  PASS — no findings
+  entailment: 4 unsupported claim(s)
+  OVERSTATED [gen.cumpsty.h2] cv.experience[gen.cumpsty]
+          claim : Carried out chasing and breaking of walls, trenching and excavation for cable and conduit runs, and general site preparation — bending and kneeling work with hand tools for full site days.
+          source: Carried out chasing and breaking of walls, trenching and excavation for cable and conduit runs, and general site preparation.
+          span  : 'bending and kneeling work with hand tools for full site days' — The source does not state hand tools, postures, or full-day duration.
+  UNSUPPORTED [exp.salesian.it.h1] cv.experience[exp.salesian.it]
+          claim : Provided on-site support for a 150-user network and set up workstations, switches, access points and printers.
+          source: Provided on-site Level 2 support for a 150-user network built on Microsoft services.
+          span  : 'set up workstations, switches, access points and printers' — The source only states Level 2 on-site support and says nothing about installing or configuring hardware.
+  UNSUPPORTED [gen.cumpsty.h3] cv.summary
+          claim : Manual and seasonal worker with roughly eighteen months on active construction sites in Paarl, plus vacation work packing orders in a wholesale warehouse, painting roofs at height in a harness, and kitchen shifts in a high-volume quick-service restaurant. Used to standing all day, repetitive work at speed, and checking my own count before it goes out. No greenhouse or nursery work yet — the posting says the employer will train, and that is the work I want.
+          source: Worked on active construction sites over roughly eighteen months, returning across multiple projects.
+          span  : 'in Paarl, plus vacation work packing orders in a wholesale warehouse, painting roofs at height in a harness, and kitchen shifts in a high-volume quick-service restaurant' — The source only states eighteen months on construction sites and contains no mention of the location or the warehouse, roof-painting, and restaurant work.
+  UNSUPPORTED [gen.cumpsty.h1] letter.evidence
+          claim : The work you describe — standing for long stretches, bending and kneeling, repetitive tasks at speed, hand-eye co-ordination — is the work I have done. At Cumpsty Electrical in Paarl I spent roughly eighteen months on residential estate construction sites, including Val de Vie Estate, chasing and breaking walls and digging trenches for cable and conduit, and I was brought back across several projects. At Polarama, a wholesaler, I packed customer orders and did a second count on every order against the supervisor's count, which is the same attention to detail a tray of seedlings needs. In a McDonald's kitchen I worked shift patterns on a production line, moving between stations as the volume demanded, held to strict hygiene and consistency standards on every shift.
+          source: Assisted qualified electricians on residential estate construction sites, including Val de Vie Estate, under direct supervision.
+          span  : 'I spent roughly eighteen months on residential estate construction sites ... chasing and breaking walls and digging trenches for cable and conduit, and I was brought back across several projects' — The source only states assisting electricians under supervision; it gives no duration, specific tasks, repeat engagements, or the Polarama and McDonald's work.
+  usage: 35 call(s)  prompt 63,717 (22,108 cached = 35%)  output 11,176  ≈ $0.50 (caching saved $0.10)

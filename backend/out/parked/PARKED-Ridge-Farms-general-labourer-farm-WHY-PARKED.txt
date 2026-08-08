@@ -1,0 +1,13 @@
+PARKED  Ridge Farms — general labourer - farm  [track transferable, 2 attempt(s)]
+  reason: 2 claim(s) not supported by cited evidence after 2 attempt(s) — held for human review
+  PASS — no findings
+  entailment: 2 unsupported claim(s)
+  UNSUPPORTED [gen.packer.h1] cv.summary
+          claim : Manual worker with hands-on experience in order packing and counting, high-volume food production, and construction site labour. Used to full standing shifts, repetitive work under time pressure, hand tools, trenching, and working at height in a fall-arrest harness. English spoken, read and written to an excellent standard. Available for early morning starts and 40 to 60 hour weeks.
+          source: Packed customer orders in a high-volume wholesale environment.
+          span  : 'high-volume food production, and construction site labour... hand tools, trenching, and working at height in a fall-arrest harness' — The source only states packing customer orders in a wholesale environment, not food production, construction labour, tools, trenching, harness work, English proficiency, or availability.
+  UNSUPPORTED [gen.packer.h1] letter.evidence
+          claim : At Polarama, a wholesaler, I packed customer orders in a high-volume environment and performed a second count on every order as a verification check against the supervisor's count, so accuracy held up when the pace was fast; I was moved up to a higher duty during that placement. In the kitchen at McDonald's I prepared food to standardised procedures under time pressure and was held to strict hygiene, food-handling and consistency standards on every shift, moving between stations as volume demanded. At Cumpsty Electrical in Paarl I spent roughly eighteen months on active residential estate construction sites, including Val de Vie Estate — chasing and breaking walls, trenching and excavating for cable and conduit runs, and preparing sites — and I was brought back across multiple projects.
+          source: Packed customer orders in a high-volume wholesale environment.
+          span  : "performed a second count on every order as a verification check against the supervisor's count" — The source only states packing orders in a high-volume wholesale environment; the verification counting, promotion, McDonald's kitchen work, and eighteen months of construction site work are absent.
+  usage: 39 call(s)  prompt 73,359 (22,108 cached = 30%)  output 15,289  ≈ $0.65 (caching saved $0.10)

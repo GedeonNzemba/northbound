@@ -1,0 +1,5 @@
+PARKED  Mucci Farms — greenhouse labourer  [track transferable, 2 attempt(s)]
+  reason: 1 blocking audit finding(s) after 2 attempt(s) — held for human review
+  BLOCKED
+    BLOCK skills.unheld_credential [letter]: claims 'WHMIS', which appears nowhere in the profile, and not as something he would obtain. An employer reads this as a ticket he already holds (docs/08 §4)
+  usage: 2 call(s)  prompt 27,757 (11,054 cached = 40%)  output 7,011  ≈ $0.28 (caching saved $0.04)

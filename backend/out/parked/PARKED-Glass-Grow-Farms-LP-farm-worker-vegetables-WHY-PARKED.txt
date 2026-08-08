@@ -1,0 +1,11 @@
+PARKED  Glass Grow Farms LP — farm worker, vegetables  [track transferable, 2 attempt(s)]
+  reason: 7 blocking audit finding(s) after 2 attempt(s) — held for human review
+  BLOCKED
+    BLOCK skills.unheld_credential [cv]: claims 'WHMIS', which appears nowhere in the profile, and not as something he would obtain. An employer reads this as a ticket he already holds (docs/08 §4)
+    BLOCK skills.unheld_credential [cv]: claims 'first aid', which appears nowhere in the profile, and not as something he would obtain. An employer reads this as a ticket he already holds (docs/08 §4)
+    BLOCK skills.unheld_credential [letter]: claims 'WHMIS', which appears nowhere in the profile, and not as something he would obtain. An employer reads this as a ticket he already holds (docs/08 §4)
+    BLOCK skills.unheld_credential [letter]: claims 'first aid', which appears nowhere in the profile, and not as something he would obtain. An employer reads this as a ticket he already holds (docs/08 §4)
+    BLOCK d1.coursework_as_certification [cv/letter]: 'Python' is IT Academy coursework (D1) but appears near certification language
+    BLOCK d1.coursework_as_certification [cv/letter]: 'HTML5' is IT Academy coursework (D1) but appears near certification language
+    BLOCK language.us_spelling: US spelling 'enrolled' — Canadian English requires 'enrolled'
+  usage: 2 call(s)  prompt 28,911 (22,108 cached = 76%)  output 11,108  ≈ $0.32 (caching saved $0.10)
