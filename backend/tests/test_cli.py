@@ -216,3 +216,110 @@ def test_batch_on_an_empty_directory_says_so(tmp_path, capsys):
     code = cli.main(["batch", "--dir", str(tmp_path / "empty"), "--dry-run"])
     assert code == cli.EXIT_ERROR
     assert "no posting files" in capsys.readouterr().err
+
+
+# --------------------------------------------------------------------------- #
+# Failures that are about the account, not the posting
+# --------------------------------------------------------------------------- #
+
+class _OutOfCredit(Exception):
+    """
+    The real 400 the account returned, shape and all.
+
+    Kept verbatim from a live run: the SDK's `body` carries the structured
+    error, and `str()` is the whole JSON blob — which is exactly why the batch
+    printed seventeen unreadable lines instead of one actionable one.
+    """
+
+    status_code = 400
+    body = {
+        "type": "error",
+        "error": {
+            "type": "invalid_request_error",
+            "message": "Your credit balance is too low to access the Anthropic "
+                       "API. Please go to Plans & Billing to upgrade or purchase "
+                       "credits.",
+        },
+    }
+
+    def __str__(self) -> str:
+        return f"Error code: 400 - {self.body}"
+
+
+class _AlwaysFails:
+    def __init__(self, exc):
+        self.exc = exc
+        self.calls = 0
+
+    def parse(self, **kw):
+        self.calls += 1
+        raise self.exc
+
+
+def _batch_dir(tmp_path, n: int):
+    d = tmp_path / "postings"
+    d.mkdir()
+    for i in range(n):
+        posting = dict(POSTING, posting_id=f"4981659{i}", employer=f"Farm {i}")
+        (d / f"{posting['posting_id']}.json").write_text(json.dumps(posting),
+                                                         encoding="utf-8")
+    return d
+
+
+def _patch_failing_client(monkeypatch, exc):
+    class _C:
+        messages = _AlwaysFails(exc)
+
+    client = _C()
+    monkeypatch.setattr(cli, "default_client", lambda *a, **k: client)
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")
+    return client
+
+
+def test_a_batch_stops_on_the_first_out_of_credit_error(monkeypatch, tmp_path, capsys):
+    """
+    The regression from the second live run: seventeen postings, seventeen
+    identical 400s, seventeen ERROR rows. Every posting in a batch uses the same
+    account, so the second call could never have gone any differently.
+    """
+    client = _patch_failing_client(monkeypatch, _OutOfCredit())
+    code = cli.main(["batch", "--dir", str(_batch_dir(tmp_path, 6)),
+                     "--out", str(tmp_path / "out"), "--no-screen"])
+
+    assert code == cli.EXIT_ERROR
+    assert client.messages.calls == 1, (
+        f"tried {client.messages.calls} times; the first answer was final")
+
+    out = capsys.readouterr().out
+    assert "STOPPED" in out
+    assert "out of API credit" in out
+    assert "5 posting(s) were not attempted" in out
+    assert out.count("NOT-RUN") == 0, (
+        "one line per skipped posting is the same noise in a different place")
+    assert "nothing was charged" in out
+
+
+def test_the_batch_summary_does_not_print_the_raw_json_body(monkeypatch, tmp_path, capsys):
+    """One line a person can act on, not the response body."""
+    _patch_failing_client(monkeypatch, _OutOfCredit())
+    cli.main(["batch", "--dir", str(_batch_dir(tmp_path, 3)),
+              "--out", str(tmp_path / "out"), "--no-screen"])
+
+    out = capsys.readouterr().out
+    assert "'type': 'error'" not in out, "the raw JSON body leaked into the output"
+    assert "credit balance is too low" in out
+
+
+def test_an_ordinary_failure_still_lets_the_batch_continue(monkeypatch, tmp_path, capsys):
+    """
+    Fail-fast must stay narrow. A fault in one posting says nothing about the
+    next one, and stopping the run on it would be a regression in the other
+    direction.
+    """
+    client = _patch_failing_client(monkeypatch, RuntimeError("overloaded_error"))
+    code = cli.main(["batch", "--dir", str(_batch_dir(tmp_path, 4)),
+                     "--out", str(tmp_path / "out"), "--no-screen"])
+
+    assert code == cli.EXIT_ERROR
+    assert client.messages.calls == 4, "every posting must still be attempted"
+    assert "STOPPED" not in capsys.readouterr().out

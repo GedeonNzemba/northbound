@@ -21,6 +21,7 @@ Two facts about claude-opus-5 shape the defaults here:
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from typing import Any, Protocol, TypeVar
 
@@ -148,6 +149,86 @@ class UsageTally:
         return line
 
 
+# --------------------------------------------------------------------------- #
+# Which failures are worth continuing past, and which are not
+# --------------------------------------------------------------------------- #
+
+# Conditions that cannot change during a run. Every posting in a batch uses the
+# same key, the same model and the same account, so once one of these comes back
+# the rest will fail identically — and a batch that keeps going turns one clear
+# problem into fifty lines of noise with a summary nobody can read.
+#
+# A run out of credit did exactly that: seventeen identical 400s, each printing
+# the whole JSON body, and a table that said ERROR seventeen times.
+#
+# Classified structurally rather than by SDK exception class, because this
+# module deliberately does not import `anthropic` — the engine and its tests run
+# without it installed.
+_FATAL_SIGNS: tuple[tuple[int | None, str, str], ...] = (
+    (None, "credit balance is too low",
+     "the account is out of API credit. Top it up at "
+     "https://console.anthropic.com/settings/billing — the requests that failed "
+     "were rejected before any tokens were used, so nothing was charged for them"),
+    (401, "",
+     "the API key was rejected. Check ANTHROPIC_API_KEY in .env — a stale or "
+     "revoked key fails identically on every request"),
+    (403, "",
+     "the API key is not permitted to do this. Check which workspace it belongs "
+     "to and what it is scoped to"),
+    (404, "model",
+     "the model id was not found. Check --model and --verify-model against the "
+     "ids this account can actually reach"),
+)
+
+
+class FatalAPIError(RuntimeError):
+    """
+    A failure that will repeat identically on every remaining item.
+
+    Carries the original exception so a caller wanting the raw detail still has
+    it, and a `remedy`, which is the point — an error someone can act on beats
+    an error they have to interpret.
+    """
+
+    def __init__(self, remedy: str, original: BaseException) -> None:
+        super().__init__(remedy)
+        self.remedy = remedy
+        self.original = original
+
+
+def api_message(exc: BaseException) -> str:
+    """
+    The API's own `message` where there is one, rather than the JSON blob.
+
+    An SDK error stringifies to the entire response body. Printed once that is
+    informative; printed once per posting it buries the run.
+    """
+    body = getattr(exc, "body", None)
+    if isinstance(body, dict):
+        err = body.get("error")
+        if isinstance(err, dict) and err.get("message"):
+            return str(err["message"])
+    text = str(exc)
+    if m := re.search(r"['\"]message['\"]:\s*(['\"])(.+?)\1", text):
+        return m.group(2)
+    return text
+
+
+def fatal_reason(exc: BaseException) -> str | None:
+    """The remedy, if this failure will repeat for every remaining item; else None."""
+    status = getattr(exc, "status_code", None)
+    message = api_message(exc).lower()
+    for want_status, needle, remedy in _FATAL_SIGNS:
+        if want_status is not None and status != want_status:
+            continue
+        if needle and needle not in message:
+            continue
+        if want_status is None and not needle:
+            continue                    # a rule matching everything is a bug
+        return remedy
+    return None
+
+
 class Client(Protocol):
     """Structural type for what this package needs from `anthropic.Anthropic`."""
 
@@ -219,6 +300,7 @@ def structured_call(
 
 
 __all__ = ["structured_call", "default_client", "Client", "UsageTally",
-           "LLMError", "RefusalError", "DEFAULT_MODEL",
+           "LLMError", "RefusalError", "FatalAPIError", "fatal_reason",
+           "api_message", "DEFAULT_MODEL",
            "DEFAULT_VERIFY_MODEL", "PRICE_PER_MTOK",
            "GENERATION_MAX_TOKENS", "VERIFY_MAX_TOKENS"]

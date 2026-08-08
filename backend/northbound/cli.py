@@ -31,7 +31,7 @@ from .generate.generator import (
 from .evaluate.parked_report import digest, find_parked_dir, read_parked
 from .generate.llm import (
     DEFAULT_MODEL, DEFAULT_VERIFY_MODEL, LLMError, RefusalError, UsageTally,
-    default_client,
+    api_message, default_client, fatal_reason,
 )
 from .generate.prompts import TASK_DIRECTIVE, posting_block, system_blocks
 from .generate.screen import screen_posting
@@ -194,6 +194,8 @@ def _cmd_batch(args: argparse.Namespace) -> int:
     rows: list[tuple[str, str, str, str]] = []
     totals = UsageTally()
     failures = 0
+    fatal = ""
+    not_run = 0
 
     print(f"{len(files)} posting(s) from {directory}\n")
     for n, f in enumerate(files, 1):
@@ -234,9 +236,21 @@ def _cmd_batch(args: argparse.Namespace) -> int:
                 verify_model=args.verify_model,
                 max_attempts=args.max_attempts, verify_entailment=not args.no_verify)
         except Exception as exc:  # noqa: BLE001 — one posting must not kill the run
-            rows.append((posting.posting_id, track, "ERROR", f"{type(exc).__name__}: {exc}"[:60]))
             failures += 1
-            print(f"[{n:>2}/{len(files)}] {label}  ERROR — {type(exc).__name__}: {exc}")
+            brief = api_message(exc)
+
+            # Some failures are about the account, not the posting: no credit, a
+            # rejected key, an unreachable model. Those repeat identically on
+            # every remaining item, and continuing spends nothing but does turn
+            # one actionable problem into fifty lines that hide it.
+            if remedy := fatal_reason(exc):
+                rows.append((posting.posting_id, track, "ERROR", brief[:60]))
+                print(f"[{n:>2}/{len(files)}] {label}  ERROR — {brief}")
+                fatal, not_run = remedy, len(files) - n
+                break
+
+            rows.append((posting.posting_id, track, "ERROR", brief[:60]))
+            print(f"[{n:>2}/{len(files)}] {label}  ERROR — {type(exc).__name__}: {brief}")
             continue
 
         for field in ("calls", "input_tokens", "output_tokens",
@@ -273,6 +287,12 @@ def _cmd_batch(args: argparse.Namespace) -> int:
     print("\n  " + "   ".join(f"{k} {v}" for k, v in sorted(counts.items())))
     if not args.dry_run:
         print("  " + totals.report().replace("\n", "\n  "))
+
+    if fatal:
+        print(f"\n  STOPPED — {fatal}.")
+        print(f"  {not_run} posting(s) were not attempted. Nothing else in this "
+              f"run would have succeeded; re-run the same command once it is "
+              f"fixed and the batch starts again from the top.")
 
     if failures:
         return EXIT_ERROR
@@ -389,6 +409,15 @@ def main(argv: list[str] | None = None) -> int:
               "The Anthropic SDK is needed for real generation: pip install anthropic",
               file=sys.stderr)
         return EXIT_ERROR
+    except Exception as exc:  # noqa: BLE001 — only to say something useful first
+        # An account-level failure — no credit, a rejected key, an unreachable
+        # model — reaches here from `generate` as a raw SDK error whose str() is
+        # the whole JSON response body. Say what to do about it instead. Must be
+        # the LAST handler: every clause above it is an Exception subclass.
+        if remedy := fatal_reason(exc):
+            print(f"error: {remedy}.", file=sys.stderr)
+            return EXIT_ERROR
+        raise
 
 
 if __name__ == "__main__":
