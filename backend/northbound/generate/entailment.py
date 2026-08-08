@@ -32,7 +32,8 @@ from pydantic import BaseModel, Field
 
 from ..profile import Profile
 from .llm import (
-    DEFAULT_MODEL, VERIFY_MAX_TOKENS, Client, UsageTally, structured_call,
+    DEFAULT_VERIFY_MODEL, VERIFY_MAX_TOKENS, Client, UsageTally,
+    structured_call,
 )
 from .schemas import Application, CoverLetter, GeneratedCV
 
@@ -131,7 +132,7 @@ def collect_claims(app: Application) -> list[Claim]:
 
 
 def verify_claim(client: Client, claim: Claim, source_text: str, *,
-                 model: str = DEFAULT_MODEL,
+                 model: str = DEFAULT_VERIFY_MODEL,
                  tally: UsageTally | None = None) -> EntailmentResult:
     """
     One isolated call. The verifier gets the source and the claim — nothing else.
@@ -161,7 +162,7 @@ def verify_claim(client: Client, claim: Claim, source_text: str, *,
 
 
 def verify_application(client: Client, app: Application, profile: Profile, *,
-                       model: str = DEFAULT_MODEL,
+                       model: str = DEFAULT_VERIFY_MODEL,
                        tally: UsageTally | None = None) -> list[EntailmentResult]:
     """
     Verify every claim. Returns all results; the caller decides what blocks.

@@ -40,7 +40,8 @@ from .audit import AuditResult, audit, screening_questions
 from .entailment import EntailmentResult, failures as entailment_failures
 from .entailment import verify_application
 from .llm import (
-    DEFAULT_MODEL, GENERATION_MAX_TOKENS, Client, UsageTally, structured_call,
+    DEFAULT_MODEL, DEFAULT_VERIFY_MODEL, GENERATION_MAX_TOKENS, Client,
+    UsageTally, structured_call,
 )
 from .prompts import TASK_DIRECTIVE, posting_block, retry_block, system_blocks
 from .schemas import Application, DocumentSet, Track
@@ -209,6 +210,7 @@ def generate_application(
     *,
     track: Track | None = None,
     model: str = DEFAULT_MODEL,
+    verify_model: str = DEFAULT_VERIFY_MODEL,
     max_tokens: int = GENERATION_MAX_TOKENS,
     max_attempts: int = 2,
     verify_entailment: bool = True,
@@ -262,7 +264,8 @@ def generate_application(
             continue
 
         if verify_entailment:
-            last_ent = verify_application(client, app, profile, model=model, tally=tally)
+            last_ent = verify_application(client, app, profile,
+                                          model=verify_model, tally=tally)
             bad = entailment_failures(last_ent)
             if bad:
                 reason = f"{len(bad)} claim(s) not supported by cited evidence"
