@@ -28,6 +28,13 @@ from pydantic import BaseModel
 
 DEFAULT_MODEL = "claude-opus-5"
 
+# The verifier answers one narrow question — "does this source support this
+# sentence?" — several hundred times a batch, and it is ~20 of every 21 calls.
+# Generation is where document quality is decided and should stay on the best
+# model available; verification is a different job and Haiku does it at a
+# fifth of the price. Split so the expensive model is spent where it earns.
+DEFAULT_VERIFY_MODEL = "claude-haiku-4-5"
+
 # Sized for adaptive thinking, not for the JSON. See the module docstring.
 GENERATION_MAX_TOKENS = 16000
 VERIFY_MAX_TOKENS = 4000
@@ -63,6 +70,14 @@ PRICE_PER_MTOK = {
     "output": 25.00,
     "cache_read": 0.50,
     "cache_write": 6.25,
+}
+
+# claude-haiku-4-5, for the verifier tally.
+VERIFY_PRICE_PER_MTOK = {
+    "input": 1.00,
+    "output": 5.00,
+    "cache_read": 0.10,
+    "cache_write": 1.25,
 }
 
 
@@ -205,4 +220,5 @@ def structured_call(
 
 __all__ = ["structured_call", "default_client", "Client", "UsageTally",
            "LLMError", "RefusalError", "DEFAULT_MODEL",
+           "DEFAULT_VERIFY_MODEL", "PRICE_PER_MTOK",
            "GENERATION_MAX_TOKENS", "VERIFY_MAX_TOKENS"]

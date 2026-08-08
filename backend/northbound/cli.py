@@ -28,8 +28,10 @@ from .generate.generator import (
     GenerationError, Posting, choose_track, finalise, generate_application,
     render_parked,
 )
+from .evaluate.parked_report import digest, read_parked
 from .generate.llm import (
-    DEFAULT_MODEL, LLMError, RefusalError, UsageTally, default_client,
+    DEFAULT_MODEL, DEFAULT_VERIFY_MODEL, LLMError, RefusalError, UsageTally,
+    default_client,
 )
 from .generate.prompts import TASK_DIRECTIVE, posting_block, system_blocks
 from .generate.screen import screen_posting
@@ -146,8 +148,8 @@ def _cmd_generate(args: argparse.Namespace) -> int:
     client = _client()
     outcome = generate_application(
         client, posting, profile,
-        track=track, model=args.model, max_attempts=args.max_attempts,
-        verify_entailment=not args.no_verify,
+        track=track, model=args.model, verify_model=args.verify_model,
+        max_attempts=args.max_attempts, verify_entailment=not args.no_verify,
     )
 
     print()
@@ -229,6 +231,7 @@ def _cmd_batch(args: argparse.Namespace) -> int:
         try:
             outcome = generate_application(
                 client, posting, profile, track=track, model=args.model,
+                verify_model=args.verify_model,
                 max_attempts=args.max_attempts, verify_entailment=not args.no_verify)
         except Exception as exc:  # noqa: BLE001 — one posting must not kill the run
             rows.append((posting.posting_id, track, "ERROR", f"{type(exc).__name__}: {exc}"[:60]))
@@ -276,6 +279,23 @@ def _cmd_batch(args: argparse.Namespace) -> int:
     return EXIT_PARKED if counts.get("PARKED") else EXIT_OK
 
 
+def _cmd_report(args: argparse.Namespace) -> int:
+    """
+    Read a batch's failures back as one frequency table.
+
+    A run that parks everything is a bug report, but only if you can read it.
+    Twenty WHY-PARKED files scattered across a directory are data nobody looks
+    at; a count of which rule fired, how often, with examples, is the thing that
+    says where to aim.
+    """
+    parked = read_parked(args.dir)
+    if not parked:
+        print(f"no WHY-PARKED.txt files in {args.dir}", file=sys.stderr)
+        return EXIT_ERROR
+    print(digest(parked, examples=args.examples))
+    return EXIT_OK
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="northbound", description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -288,7 +308,12 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--profile", default=None, help="override the master profile path")
     g.add_argument("--track", choices=["direct", "transferable"], default=None,
                    help="force a track; default is chosen from the posting's NOC/title")
-    g.add_argument("--model", default=DEFAULT_MODEL)
+    g.add_argument("--model", default=DEFAULT_MODEL,
+                   help="the model that writes the documents")
+    g.add_argument("--verify-model", default=DEFAULT_VERIFY_MODEL,
+                   help="the model that checks each claim against its "
+                        "source — ~20 of every 21 calls, so this is the "
+                        "one that drives cost")
     g.add_argument("--max-attempts", type=int, default=2,
                    help="drafts before parking (default 2: one draft, one repair)")
     g.add_argument("--no-verify", action="store_true",
@@ -317,6 +342,7 @@ def build_parser() -> argparse.ArgumentParser:
     b.add_argument("--profile", default=None)
     b.add_argument("--track", choices=["direct", "transferable"], default=None)
     b.add_argument("--model", default=DEFAULT_MODEL)
+    b.add_argument("--verify-model", default=DEFAULT_VERIFY_MODEL)
     b.add_argument("--max-attempts", type=int, default=2)
     b.add_argument("--no-verify", action="store_true")
     b.add_argument("--no-pdf", action="store_true")
@@ -326,6 +352,14 @@ def build_parser() -> argparse.ArgumentParser:
                    help="load, choose a track and build every prompt without "
                         "calling the model — the smoke test to run first")
     b.set_defaults(func=_cmd_batch)
+
+    r = sub.add_parser("report",
+                       help="summarise why a batch parked (reads out/parked)")
+    r.add_argument("--dir", default="out/parked",
+                   help="directory of WHY-PARKED.txt files")
+    r.add_argument("--examples", type=int, default=2,
+                   help="real examples to show per rule")
+    r.set_defaults(func=_cmd_report)
     return p
 
 
