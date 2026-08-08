@@ -28,7 +28,7 @@ from .generate.generator import (
     GenerationError, Posting, choose_track, finalise, generate_application,
     render_parked,
 )
-from .evaluate.parked_report import digest, read_parked
+from .evaluate.parked_report import digest, find_parked_dir, read_parked
 from .generate.llm import (
     DEFAULT_MODEL, DEFAULT_VERIFY_MODEL, LLMError, RefusalError, UsageTally,
     default_client,
@@ -288,11 +288,15 @@ def _cmd_report(args: argparse.Namespace) -> int:
     at; a count of which rule fired, how often, with examples, is the thing that
     says where to aim.
     """
-    parked = read_parked(args.dir)
-    if not parked:
-        print(f"no WHY-PARKED.txt files in {args.dir}", file=sys.stderr)
+    directory = find_parked_dir(args.dir)
+    if directory is None:
+        from .evaluate.parked_report import SEARCH_ORDER
+        looked = "\n".join(f"  {Path(p).resolve()}" for p in SEARCH_ORDER)
+        print(f"no WHY-PARKED.txt files found. Looked in:\n{looked}\n\n"
+              f"Pass --dir if your output went somewhere else.", file=sys.stderr)
         return EXIT_ERROR
-    print(digest(parked, examples=args.examples))
+    print(f"reading {directory.resolve()}\n")
+    print(digest(read_parked(directory), examples=args.examples))
     return EXIT_OK
 
 
@@ -355,8 +359,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     r = sub.add_parser("report",
                        help="summarise why a batch parked (reads out/parked)")
-    r.add_argument("--dir", default="out/parked",
-                   help="directory of WHY-PARKED.txt files")
+    r.add_argument("--dir", default=None,
+                   help="where the reports are; found automatically "
+                        "in the usual places if omitted")
     r.add_argument("--examples", type=int, default=2,
                    help="real examples to show per rule")
     r.set_defaults(func=_cmd_report)

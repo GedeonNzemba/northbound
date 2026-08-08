@@ -71,9 +71,28 @@ def parse_report(text: str, path: Path) -> ParkedFile:
     return out
 
 
+# Where the reports plausibly are, depending on where the batch was run from and
+# what --out was given. Guessing here is cheap; making someone find out by
+# running the wrong path twice is not.
+SEARCH_ORDER = (
+    "out/parked", "../out/parked", "backend/out/parked",
+    "out", "../out",
+)
+
+
+def find_parked_dir(hint: Path | str | None = None) -> Path | None:
+    """The first directory that actually contains WHY-PARKED files."""
+    candidates = [Path(hint)] if hint else []
+    candidates += [Path(p) for p in SEARCH_ORDER]
+    for c in candidates:
+        if c.is_dir() and any(c.glob("*WHY-PARKED.txt")):
+            return c
+    return None
+
+
 def read_parked(directory: Path | str) -> list[ParkedFile]:
     directory = Path(directory)
-    files = sorted(directory.glob("*WHY-PARKED.txt"))
+    files = sorted(directory.rglob("*WHY-PARKED.txt"))
     return [parse_report(f.read_text(encoding="utf-8", errors="replace"), f)
             for f in files]
 
@@ -122,4 +141,5 @@ def digest(parked: list[ParkedFile], *, examples: int = 2) -> str:
     return "\n".join(lines)
 
 
-__all__ = ["read_parked", "parse_report", "digest", "ParkedFile", "Finding"]
+__all__ = ["read_parked", "find_parked_dir", "parse_report", "digest",
+           "ParkedFile", "Finding"]
