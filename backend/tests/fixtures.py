@@ -75,7 +75,7 @@ def cv(**over) -> GeneratedCV:
             employment_type=None,
             bullets=[Bullet(
                 text="Assisted qualified electricians on residential estate construction sites.",
-                evidence_id="gen.cumpsty.h1")],
+                evidence_ids=["gen.cumpsty.h1"])],
         )],
         education=[EducationEntry(
             evidence_id="edu.matric", credential="National Senior Certificate",
@@ -115,10 +115,10 @@ def full_cv(**over) -> GeneratedCV:
                 bullets=[
                     Bullet(text="Assisted qualified electricians on residential estate "
                                 "construction sites, including Val de Vie Estate.",
-                           evidence_id="gen.cumpsty.h1"),
+                           evidence_ids=["gen.cumpsty.h1"]),
                     Bullet(text="Carried out wall chasing, trenching and excavation for "
                                 "cable and conduit runs.",
-                           evidence_id="gen.cumpsty.h2"),
+                           evidence_ids=["gen.cumpsty.h2"]),
                 ],
             ),
             ExperienceEntry(
@@ -131,7 +131,7 @@ def full_cv(**over) -> GeneratedCV:
                 employment_type=None,
                 bullets=[Bullet(
                     text="Prepared food to standardised procedures under time pressure.",
-                    evidence_id="gen.mcdonalds.h1")],
+                    evidence_ids=["gen.mcdonalds.h1"])],
             ),
         ],
         additional_experience=[ExperienceEntry(
@@ -144,7 +144,7 @@ def full_cv(**over) -> GeneratedCV:
             employment_type="Full-time",
             bullets=[Bullet(
                 text="Built and maintained financial websites for international clients.",
-                evidence_id="exp.kurtosys.h1")],
+                evidence_ids=["exp.kurtosys.h1"])],
         )],
         education=[EducationEntry(
             evidence_id="edu.matric",
@@ -195,7 +195,7 @@ def track_a_cv(**over) -> GeneratedCV:
                 bullets=[Bullet(
                     text="Develops and maintains responsive front-end interfaces "
                          "for DataBalk platforms.",
-                    evidence_id="exp.databalk.h1")],
+                    evidence_ids=["exp.databalk.h1"])],
             ),
             ExperienceEntry(
                 role_id="exp.kurtosys",
@@ -208,10 +208,10 @@ def track_a_cv(**over) -> GeneratedCV:
                 bullets=[
                     Bullet(text="Built and maintained responsive financial websites "
                                 "for international clients.",
-                           evidence_id="exp.kurtosys.h1"),
+                           evidence_ids=["exp.kurtosys.h1"]),
                     Bullet(text="Worked directly with clients across the US, Canada, "
                                 "the UK and the Netherlands.",
-                           evidence_id="exp.kurtosys.h3"),
+                           evidence_ids=["exp.kurtosys.h3"]),
                 ],
             ),
         ],

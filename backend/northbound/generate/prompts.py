@@ -35,10 +35,18 @@ reorder it, re-word it, re-frame it and re-title it for the posting. You may not
 add a fact that is not there — not a skill, not a number, not a certification, not \
 a duty, not a date.
 
-Every bullet you emit carries the `id` of the profile entry it came from. A bullet \
-whose `id` does not support its text will be rejected by an automated entailment \
-check that sees only the source entry and your sentence, with no other context. \
-Write bullets that would survive that check.
+Every bullet you emit carries the `id`s of the profile entries it came from. \
+Cite ALL of them — if a sentence merges two records, name both. An automated \
+entailment check will read your sentence next to exactly the entries you cited, \
+with no other context, and reject it if they do not support it between them. \
+Write sentences that would survive that check.
+
+The commonest way to fail it is adding texture that no entry contains. \
+"Trenching and excavation" is in the profile; "bending, kneeling and swinging \
+hand tools for full days" is not — posture, tools and duration are three new \
+assertions. If you want the physical detail in the document, cite an entry that \
+states it, or leave it out. A weaker true sentence always beats a vivid one you \
+cannot source.
 
 This is not stylistic caution. These documents support an application to a \
 government programme that was reformed in 2025 because of misrepresentation. A \
@@ -71,8 +79,12 @@ full protection" is better than "operated within comprehensive safety frameworks
 
 # Canadian conventions — non-negotiable
 
-- Canadian English: colour, behaviour, centre, organisation, licence (noun), \
-programme, labour, neighbour, travelled, recognise.
+- Canadian English, which is neither British nor American. It keeps the British \
+-our and -re endings and the doubled consonant — colour, behaviour, labour, \
+neighbour, centre, travelled, cancelled — and the -ce noun: licence, defence. \
+But it takes the AMERICAN -ize and -yze endings: organize, recognize, analyze, \
+specialize. And it writes "program", never "programme". Gedeon writes South \
+African English, which is British on the -ise endings; do not carry that over.
 - Employment dates exactly as given in the profile. Never invent a month or a day.
 - Never state: photo, date of birth, age, marital status, nationality, gender, ID \
 or passport number, street address, postal code, salary, or referees.
@@ -149,8 +161,9 @@ actual doubt, and adds what a bullet list cannot carry.
 
 Hard constraints the schema does not express:
 
-- `role_id` must be an id from the PROFILE. `evidence_id` on every bullet must be \
-an id from the PROFILE. Invented ids are rejected outright.
+- `role_id` must be an id from the PROFILE. Every id in `evidence_ids` must be an \
+id from the PROFILE. Invented ids are rejected outright. A bullet may cite one id \
+or several; cite every entry its sentence actually draws on.
 - `dates` must be copied CHARACTER FOR CHARACTER from the profile's \
 `dates(exact, use verbatim)` line. Do not reformat, re-abbreviate or "tidy" them. \
 Never write "Sept" — write "Sep".
@@ -191,9 +204,11 @@ def retry_block(previous_json: str, audit_failures: list[str],
     if entailment_failures:
         L += ["## Claims not supported by the evidence they cite", "",
               "Each of these was checked in isolation: a verifier saw ONLY the "
-              "profile entry and your sentence. Either rewrite the sentence so "
-              "the cited entry fully supports it, or cite a different entry that "
-              "does, or remove it.", ""]
+              "profile entries you cited and your sentence — all of those "
+              "entries together, so the failure is not that one of them was "
+              "incomplete. The sentence asserts something none of them contains. "
+              "Either cut the offending span, or cite the entry that does state "
+              "it, or remove the sentence.", ""]
         L += [f"- {f}" for f in entailment_failures]
         L.append("")
 

@@ -112,10 +112,34 @@ def test_thin_paragraph_blocks_on_specificity():
     assert res.blocked and "specificity.thin" in _rules(res)
 
 
-def test_us_spelling_blocks():
+def test_american_spelling_blocks():
     cv = _cv(skills={"Practical": ["color matching", "hand tools"]})
     res = audit(_app(cv=cv), PROFILE)
-    assert res.blocked and "language.us_spelling" in _rules(res)
+    assert res.blocked and "language.non_canadian_spelling" in _rules(res)
+
+
+def test_british_ise_spelling_blocks():
+    """
+    Canadian English takes the AMERICAN -ize ending. Gedeon writes South African
+    English, which does not, so this is the half of the rule that will fire.
+    """
+    cv = _cv(skills={"Practical": ["stock organisation", "hand tools"]})
+    res = audit(_app(cv=cv), PROFILE)
+    assert res.blocked and "language.non_canadian_spelling" in _rules(res)
+
+
+def test_canadian_ize_spelling_is_not_flagged():
+    """
+    The regression. This table used to demand "organisation", "recognise",
+    "analyse" and "programme" — British forms that are wrong in Canada — and it
+    carried `"enrolled": "enrolled"`, which blocked a correct word and told the
+    writer to replace it with itself. That one fired on a real document.
+    """
+    cv = _cv(skills={"Practical": ["stock organization", "hand tools"]},
+             summary="Recognized for accuracy; analyzed stock counts on a "
+                     "training program. Not enrolled in any studies now.")
+    res = audit(_app(cv=cv), PROFILE)
+    assert "language.non_canadian_spelling" not in _rules(res), res.report()
 
 
 def test_prohibited_personal_information_blocks():
@@ -128,7 +152,7 @@ def test_software_in_primary_experience_blocks_on_track_b():
     """docs/08 §2.4 — software belongs under Additional Experience on Track B."""
     cv = _cv()
     cv.experience[0].bullets.append(
-        Bullet(text="Built React components for the platform.", evidence_id="exp.kurtosys.h1"))
+        Bullet(text="Built React components for the platform.", evidence_ids=["exp.kurtosys.h1"]))
     res = audit(_app(cv=cv), PROFILE)
     assert res.blocked and "track_b.software_above_fold" in _rules(res)
 

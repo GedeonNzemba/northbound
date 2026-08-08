@@ -19,17 +19,43 @@ work history (painting, warehouse, security, retail, electrical assistance) — 
 non-software applications are honest transferable-skills applications, never
 inflated claims.
 
-## ▶ RESUME HERE — state as of 2026-08-07
+## ▶ RESUME HERE — state as of 2026-08-08
 
 **Where things stand:** planning complete, six spikes run against the live site
-via GitHub Actions, the **golden set harvested and frozen**, and **Phase 1's CV
-engine built end to end** — profile loader, prompts, generator, both check
-layers, DOCX + PDF renderers, exclusion screen, CLI. **192 tests passing, none
-of which need an API key or a network.** `main` = working branch.
+via GitHub Actions, the **golden set harvested and frozen**, **Phase 1's CV
+engine built end to end**, and **the first paid run done** — 20 postings, real
+model, $3.44. **233 tests passing, none of which need an API key or a network.**
+`main` = working branch.
 
-What it has NOT done: run against the real model. Everything is verified with a
-fake client, which proves the gate works and says nothing about document
-quality.
+### What the first live run taught us (2026-08-08)
+
+Result: **8 parked, 3 excluded, 9 errored on exhausted credit, 0 ready.**
+Twenty-eight findings across the eight parked applications — and reading the
+documents showed that roughly **twenty of the twenty-eight were the engine's
+fault, not the writing's.** The generated documents were largely good. Four
+rules were blocking sentences that `docs/06` and `docs/08` explicitly require:
+
+| Bug | Findings | What it blocked |
+|---|---:|---|
+| Entailment showed the verifier **one cited source at a time** and asked whether that one covered the whole paragraph | 11 | Any summary or paragraph honestly synthesising several roles. Unfixable by rewriting. |
+| `WILLINGNESS` matched "would take" but **not "will take"**, and had no pattern for a denial or for `hold no X` | 6 | *"I will take that training … including any WHMIS course Mucci Farms requires"*; *"I have not operated … farm machinery such as a tractor"*; *"I hold no farm safety, WHMIS or first aid certificate"* |
+| D1 coursework check fired on any cert word **within 90 characters** | 2 | *"Coursework only (not held certifications): … Python, … HTML5"* — the exact disclaimer D1 demands |
+| `US_SPELLINGS` carried `"enrolled" → "enrolled"`, and demanded `-ise`/`programme`, which are **not Canadian** | 1 | *"I am not enrolled in any studies now."* |
+
+All four are fixed, with the real sentences kept as tests in
+`backend/tests/test_audit_live_regressions.py` (each one fails on the old code).
+Bullets now cite a **list** of evidence ids, because the model kept merging two
+records into one natural line and the single-id schema made that an offence.
+Verdicts are cached across the repair attempt, so a second try no longer pays
+to re-check the lines it was told to leave alone.
+
+The remaining ~8 findings were the system working: real overstatements
+("bending, kneeling and swinging hand tools for full days" against a source
+that says only "trenching and excavation"). Those are addressed in the prompt,
+not the rules.
+
+**Not yet re-run.** The fixes are proven against the recorded failures and the
+test suite; they have not faced the live model again. That needs API credit.
 
 What exists in `backend/northbound/`:
 
@@ -263,7 +289,11 @@ Optional, still open: TEF Canada booking (highest-leverage item in the project �
 
 ## Conventions
 
-- Canadian English in every generated document (*colour, behaviour, centre, licence*).
+- Canadian English in every generated document — British `-our`/`-re`/`-ce` and
+  the doubled consonant (*colour, behaviour, centre, licence, travelled*) but
+  **American `-ize`/`-yze`** (*organize, recognize, analyze*) and **`program`**,
+  never `programme`. It is not British English, and that is the mistake to
+  avoid here — Gedeon's own register is South African. See `docs/08 §1.4`.
 - Model: `claude-opus-5`. Thinking is on by default on this model and `max_tokens`
   caps thinking + output together — leave headroom. Use structured outputs
   (`messages.parse()`), not prose parsing; assistant prefill 400s. Put the

@@ -37,8 +37,8 @@ import yaml
 
 from ..profile import Profile
 from .audit import AuditResult, audit, screening_questions
-from .entailment import EntailmentResult, failures as entailment_failures
-from .entailment import verify_application
+from .entailment import Cache as EntailmentCache, EntailmentResult
+from .entailment import failures as entailment_failures, verify_application
 from .llm import (
     DEFAULT_MODEL, DEFAULT_VERIFY_MODEL, GENERATION_MAX_TOKENS, Client,
     UsageTally, structured_call,
@@ -239,6 +239,11 @@ def generate_application(
     last_app: Application | None = None
     reason = ""
     tally = UsageTally()
+    # Verdicts survive across attempts, keyed on the exact sentence and the
+    # exact ids it cites. The repair turn is told to keep every line that
+    # passed, so most of a second attempt's verification would otherwise be
+    # re-asking questions already answered.
+    verdicts: EntailmentCache = {}
 
     for attempt in range(1, max_attempts + 1):
         docs = _draft(client, posting, profile, track, model=model,
@@ -265,7 +270,8 @@ def generate_application(
 
         if verify_entailment:
             last_ent = verify_application(client, app, profile,
-                                          model=verify_model, tally=tally)
+                                          model=verify_model, tally=tally,
+                                          cache=verdicts)
             bad = entailment_failures(last_ent)
             if bad:
                 reason = f"{len(bad)} claim(s) not supported by cited evidence"

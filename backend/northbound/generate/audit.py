@@ -109,14 +109,52 @@ PROHIBITED_PERSONAL = {
 # docs/08 §1.2 — belongs in the cover letter ONLY.
 WORK_PERMIT_TERMS = r"\b(work permit|LMIA|visa sponsorship|sponsorship|work authorisation|work authorization|open permit|closed permit)\b"
 
-# docs/08 §1.4 — Canadian English.
-US_SPELLINGS = {
+# docs/08 §1.4 — Canadian English, which is neither American nor British.
+#
+# It takes the British -our and -re endings and the doubled consonant, and the
+# AMERICAN -ize/-yze endings: the Government of Canada's own editorial style
+# follows American practice for -ize and -yze, and "program" is the Canadian
+# form, not "programme".
+#
+# This table used to say the reverse. It blocked "organization", "recognize",
+# "analyze" and "program" — every one of them the correct Canadian spelling —
+# and it carried the entry `"enrolled ": "enrolled "`, which flagged a correct
+# word and instructed the writer to replace it with itself. That fired on a
+# real document in the first live batch, on the sentence "I am not enrolled in
+# any studies now."
+#
+# Genuinely contested forms are deliberately absent. "fulfil"/"fulfill" and
+# "catalogue"/"catalog" are both current in Canada, and a BLOCK on a word
+# Canadians write both ways costs a generation and teaches the model nothing.
+NON_CANADIAN_SPELLINGS = {
+    # American -or / -er, where Canada keeps the British form.
     "color": "colour", "behavior": "behaviour", "favorite": "favourite",
-    "center": "centre", "meter": "metre", "organization": "organisation",
-    "organize": "organise", "recognize": "recognise", "analyze": "analyse",
-    "traveled": "travelled", "canceled": "cancelled", "enrolled ": "enrolled ",
-    "labor": "labour", "neighbor": "neighbour", "defense": "defence",
-    "fulfill": "fulfil", "catalog": "catalogue", "program ": "programme ",
+    "honor": "honour", "labor": "labour", "neighbor": "neighbour",
+    "center": "centre", "theater": "theatre", "fiber": "fibre",
+    # American -se, where Canada keeps the -ce noun.
+    "defense": "defence", "offense": "offence",
+    # American single consonant, where Canada doubles before a suffix.
+    "traveled": "travelled", "traveling": "travelling",
+    "canceled": "cancelled", "canceling": "cancelling",
+    "modeling": "modelling", "labeled": "labelled", "fueled": "fuelled",
+    # British -ise / -yse / -gramme, where Canada takes the American form.
+    # Gedeon writes South African English, which is British here, so this half
+    # of the table is the one that will actually fire.
+    "organisation": "organization", "organise": "organize",
+    "organised": "organized", "organising": "organizing",
+    "recognise": "recognize", "recognised": "recognized",
+    "analyse": "analyze", "analysed": "analyzed",
+    "specialise": "specialize", "specialised": "specialized",
+    "prioritise": "prioritize", "standardise": "standardize",
+    "programme": "program", "programmes": "programs",
+}
+
+# Correct in one part of speech and wrong in another, so a block would be a coin
+# toss. Canada uses the -ce noun and the -se verb: a driver's licence, but to
+# license a vendor. Worth a human glance, never worth a retry.
+AMBIGUOUS_SPELLINGS = {
+    "license": "licence — Canada spells the NOUN -ce (a driver's licence) and "
+               "the verb -se (to license a vendor)",
 }
 
 # docs/08 §2.1 — parsers pattern-match on these.
@@ -141,6 +179,15 @@ def audit(app: Application, profile: Profile, *, posting_text: str = "") -> Audi
     r = AuditResult()
     cv, letter = app.cv, app.letter
 
+    # Nothing downstream means anything on an empty document, and running the
+    # rest would bury the real problem under a pile of derived findings. On the
+    # first live batch a letter came back with all four paragraphs blank and was
+    # reported as "0 concrete particulars" three times over, plus a missing
+    # work-permit paragraph and unanswered screening questions — five findings
+    # that all say "the model wrote nothing" in a way no retry could act on.
+    if _check_completeness(cv, letter, r):
+        return r
+
     _check_evidence(cv, letter, profile, r)
     _check_education(cv, profile, r)
     _check_skill_claims(cv, letter, profile, r)
@@ -159,13 +206,55 @@ def audit(app: Application, profile: Profile, *, posting_text: str = "") -> Audi
     return r
 
 
+# ---- did the model actually write anything -------------------------------- #
+
+# Below this, a field is blank or a stub rather than prose. Deliberately low:
+# the job is to separate "wrote nothing" from "wrote badly", and the rules that
+# judge badly-written text are the ones that should get to speak. Every other
+# check in this file assumes there is something to check.
+MIN_PARAGRAPH_CHARS = 25
+
+
+def _check_completeness(cv: GeneratedCV, letter: CoverLetter,
+                        r: AuditResult) -> bool:
+    """
+    Every required field carries text. Returns True if the document is a shell.
+
+    This is a generation failure, not a document failure, and it is reported as
+    one — with the field names — so the repair turn is told the one thing it can
+    act on rather than a set of consequences.
+    """
+    empty = [name for name, text in (
+        ("letter.opening", letter.opening),
+        ("letter.evidence", letter.evidence),
+        ("letter.bridge", letter.bridge),
+        ("letter.authorisation", letter.authorisation),
+        ("cv.summary", cv.summary),
+    ) if len(" ".join((text or "").split())) < MIN_PARAGRAPH_CHARS]
+
+    if not cv.experience:
+        empty.append("cv.experience (no roles at all)")
+
+    if not empty:
+        return False
+
+    r.findings.append(Finding(
+        "output.incomplete", "block",
+        "the model returned a document with empty required fields: "
+        + ", ".join(empty)
+        + ". Write the full text of each — this is not a content rule, the "
+          "fields are literally blank"))
+    return True
+
+
 # ---- truth ---------------------------------------------------------------- #
 
 def _all_cited_ids(cv: GeneratedCV, letter: CoverLetter) -> list[tuple[str, str]]:
     out: list[tuple[str, str]] = []
     out += [(i, "cv.summary") for i in cv.summary_evidence_ids]
     for e in list(cv.experience) + list(cv.additional_experience):
-        out += [(b.evidence_id, f"cv.experience[{e.role_id}]") for b in e.bullets]
+        out += [(i, f"cv.experience[{e.role_id}]")
+                for b in e.bullets for i in b.evidence_ids]
     out += [(e.evidence_id, "cv.education") for e in cv.education]
     out += [(i, "cv.portfolio") for i in cv.portfolio_ids]
     out += [(i, "letter.evidence") for i in letter.evidence_ids]
@@ -214,34 +303,121 @@ def _check_evidence(cv, letter, profile: Profile, r: AuditResult) -> None:
                 "and one must not be guessed", e.role_id))
 
 
+# The D1 rule — IT Academy items are coursework, never held credentials — used
+# to fire whenever a coursework name appeared within 90 characters of any
+# certification word. On the first live batch that blocked this line:
+#
+#   "Coursework only (not held certifications): cloud (AWS, Microsoft Azure),
+#    .NET and C#, Java, Python, SQL Server, HTML5/JavaScript/CSS3 …"
+#
+# which is precisely the compliant rendering docs/06 D1 demands. The word
+# "certifications" was inside the window; that it was inside the word "NOT held
+# certifications" was invisible to a proximity test.
+#
+# Proximity is the wrong instrument. What makes a coursework item a false claim
+# is a grammatical frame that attaches "certified" TO IT — "certified in X",
+# "X certification", "holds X" — so that is what is matched, per item.
+_D1_DISCLAIMER = re.compile(
+    r"\bcoursework\b|\bcourse work\b|\bstudied?\b|\bstudy\b|\bmodules?\b"
+    r"|\bnot (?:a |an )?(?:held )?certifi\w*\b|\bnever (?:a )?certifi\w*\b"
+    r"|\bnot certified\b|\bdistance learning\b|\bremote study\b"
+    r"|\bcurriculum\b|\bsyllabus\b|\bnot (?:a |an )?credential\b", re.I)
+
+
+def _loose(term: str) -> str:
+    """
+    A pattern that matches the term however its dashes and spaces are typeset.
+
+    The profile writes "AWS Certified Developer – Associate" with an en dash; a
+    CV may well write a hyphen, an em dash or nothing at all. Matching the exact
+    bytes means the rule silently stops applying the moment the model picks a
+    different dash — a check that fails open, which is the worst kind.
+    """
+    parts = [re.escape(p) for p in re.split(r"[\s\-–—]+", term) if p]
+    return r"[\s\-–—]+".join(parts) if parts else re.escape(term)
+
+
+def _d1_frame(term: str) -> re.Pattern[str]:
+    """Certification language pointed AT this item, rather than merely near it."""
+    t = _loose(term)
+    return re.compile(
+        rf"(?:certified|accredited|qualified|licen[cs]ed)\s+(?:in\s+|as\s+|with\s+)?{t}"
+        rf"|{t}\s*[-–—:]?\s*(?:certified|certification|certificate|credential|accreditation)\b"
+        rf"|\b(?:holds?|holding|earned|achieved|awarded)\s+"
+        rf"(?:a\s+|an\s+|the\s+|my\s+|his\s+)?{t}",
+        re.I)
+
+
+# The shapes vendor exam codes actually take in this profile: AZ-900, 70-480,
+# 98-361, 1Z0-808, DVA-C01, BH0-010. A code is what a CV would cite, so it has
+# to be a search key in its own right and not only part of a long product name.
+_EXAM_CODE = re.compile(r"\b(?:[A-Z]{2,4}\d?|\d[A-Z]\d|\d{2,3})-[A-Z]?\d{2,3}\b")
+
+
+def _coursework_keys(profile: Profile) -> list[str]:
+    """
+    What to look for, per coursework item.
+
+    The full name where it is distinctive, plus the exam code where there is one
+    — "AZ-900", "70-480", "1Z0-808" are the strings a CV would actually use, and
+    the old `core[:28]` truncation cut "AWS Certified Developer – Associate"
+    into "AWS Certified Developer – As", which matches nothing.
+    """
+    items = profile.raw["certifications"]["coursework_completed"]["items"]
+    by_id = {i.get("id"): i for i in items}
+    keys: list[str] = []
+    for cid in profile.coursework_ids:
+        name = str((by_id.get(cid) or {}).get("name", ""))
+        core = re.split(r"[(\[]", name)[0].strip(" —–-")
+        if not core:
+            continue
+        keys.append(core)
+        keys += _EXAM_CODE.findall(name)
+    return keys
+
+
 def _check_standing_instructions(cv, letter, profile: Profile, r: AuditResult) -> None:
     """docs/06 D1 and the referee removal."""
     blob = _text_of(cv, letter)
 
-    # D1 — IT Academy items are coursework, never held credentials.
-    cert_words = r"(certified|certification|credential|accredited|holds? the)"
-    for cid in profile.coursework_ids:
-        item = next(
-            (i for i in profile.raw["certifications"]["coursework_completed"]["items"]
-             if i.get("id") == cid), None)
-        if not item:
+    for key in _coursework_keys(profile):
+        for m in _d1_frame(key).finditer(blob):
+            sentence = _sentence_around(blob, m.start(), m.end())
+            if _D1_DISCLAIMER.search(sentence):
+                continue                # rendered as study — which is the rule
+            r.findings.append(Finding(
+                "d1.coursework_as_certification", "block",
+                f"{key!r} is IT Academy coursework (D1) and is written here as a "
+                f"held credential: {sentence.strip()[:120]!r}", "cv/letter"))
+            break
+
+    # The structural version of the same mistake: a skills group headed
+    # "Certifications" turns every item under it into a claimed credential, and
+    # no amount of sentence-level grammar would show it.
+    cert_heading = re.compile(r"certificat|credential|accredit|licen[cs]", re.I)
+    coursework_terms = {k.lower() for k in _coursework_keys(profile)}
+    for group, items in cv.skills.items():
+        if not cert_heading.search(group):
             continue
-        name = item.get("name", "")
-        core = re.split(r"[—(]", name)[0].strip()
-        if not core:
-            continue
-        for m in re.finditer(re.escape(core[:28]), blob, re.I):
-            window = blob[max(0, m.start() - 90): m.end() + 90]
-            if re.search(cert_words, window, re.I):
+        for item in items:
+            if item.strip().lower() in coursework_terms:
                 r.findings.append(Finding(
                     "d1.coursework_as_certification", "block",
-                    f"'{core}' is IT Academy coursework (D1) but appears near "
-                    f"certification language", "cv/letter"))
-                break
+                    f"skills group {group!r} lists {item!r}, which is IT Academy "
+                    f"coursework (D1) — a certification heading makes it a claim",
+                    f"skills[{group}]"))
 
     if profile.render_referees:
         r.findings.append(Finding(
             "referees.rendered", "block", "referees must never be rendered", "profile"))
+
+
+def _sentence_around(text: str, start: int, end: int) -> str:
+    """The sentence containing a match. Newlines end a sentence — a CV's lines are."""
+    left = max(text.rfind(c, 0, start) for c in ".!?\n;")
+    right = min((p for p in (text.find(c, end) for c in ".!?\n;") if p != -1),
+                default=len(text))
+    return text[left + 1: right]
 
 
 # ---- prohibited content --------------------------------------------------- #
@@ -367,11 +543,15 @@ def _check_dates(cv: GeneratedCV, r: AuditResult) -> None:
 
 def _check_canadian_english(cv, letter, r: AuditResult) -> None:
     blob = _text_of(cv, letter)
-    for us, ca in US_SPELLINGS.items():
-        if re.search(rf"\b{re.escape(us.strip())}\b", blob, re.I):
+    for wrong, right in NON_CANADIAN_SPELLINGS.items():
+        if re.search(rf"\b{re.escape(wrong)}\b", blob, re.I):
             r.findings.append(Finding(
-                "language.us_spelling", "block",
-                f"US spelling {us.strip()!r} — Canadian English requires {ca.strip()!r}"))
+                "language.non_canadian_spelling", "block",
+                f"{wrong!r} — Canadian English uses {right!r} (docs/08 §1.4)"))
+    for word, note in AMBIGUOUS_SPELLINGS.items():
+        if re.search(rf"\b{re.escape(word)}\b", blob, re.I):
+            r.findings.append(Finding(
+                "language.check_spelling", "warn", f"{word!r}: {note}"))
 
 
 # ---- docs/07 F-D: specificity is the defence ------------------------------ #
@@ -612,30 +792,72 @@ def _grounding_corpus(profile: Profile) -> set[str]:
 
 
 # docs/08 §4 and TRACK_B_GUIDANCE: *stating willingness to obtain* a ticket is
-# honest and expected — it is the recommended bridge sentence. Only claiming to
-# hold one is the problem, so the rule needs to tell the two apart rather than
-# banning the vocabulary outright.
-WILLINGNESS = re.compile(
-    r"\b(willing|prepared|happy|ready) to\b"
-    r"|\bwould (complete|obtain|take|get|do)\b"
-    r"|\b(can|could) (obtain|complete|get|take)\b"
-    r"|\bbefore (starting|I start|my start)\b"
-    r"|\bif required\b|\bas required\b"
-    r"|\bdo(?:es)? not (?:yet )?hold\b", re.I)
+# honest and expected — it is the recommended bridge sentence, and so is saying
+# plainly that he does not have one. Only claiming to hold a ticket is the
+# problem, so the rule has to tell three things apart, not two.
+#
+# The first live batch got this wrong three different ways and blocked three
+# correct documents:
+#
+#   "I will take that training exactly as given, including any WHMIS or
+#    workplace safety course Mucci Farms requires"        — "will", not "would"
+#   "I have not operated or maintained farm machinery such as a tractor"
+#                                                          — an outright denial
+#   "I hold no farm safety, WHMIS or first aid certificate"
+#                                          — a hold verb whose negation follows
+#
+# Each of those is the sentence docs/08 §4 asks for. All three now pass.
 
-# An affirmative claim to hold the thing. Checked in a tighter window and
-# checked FIRST, because willingness language elsewhere in the paragraph must
-# not launder it: "I have not worked on a farm, but I hold a forklift ticket"
-# contains a negation and a held claim, and only the second one matters.
-# The lookbehind is what keeps "do not hold" out.
+WILLINGNESS = re.compile(
+    r"\b(willing|prepared|happy|ready|available|keen) to\b"
+    r"|\b(?:will|would|can|could|intend to|plan to|expect to|am able to)\s+"
+    r"(?:also\s+|gladly\s+|happily\s+)?"
+    r"(?:complete|obtain|take|get|do|attend|sit|earn|arrange|undertake|"
+    r"enrol|enroll|study|learn|train|qualify|acquire)\b"
+    r"|\bbefore (?:starting|I start|my start|the first shift|my first shift)\b"
+    r"|\bif required\b|\bas required\b|\bif you require\b"
+    r"|\bany(?:thing)? [^.]{0,60}?\b(?:requires?|require|you provide|provided)\b"
+    r"|\bwhatever [^.]{0,60}?\b(?:requires?|require|training|course)\b"
+    r"|\bemployer[- ](?:paid|provided|supplied)\b"
+    r"|\bon[- ]the[- ]job training\b", re.I)
+
+# A plain statement that he does NOT have the thing, or has never done it. These
+# read as claims to a keyword matcher and as honesty to a human, and the human
+# is right.
+NOT_HELD = re.compile(
+    r"\b(?:do(?:es)?|did)\s+not\s+(?:yet\s+)?(?:hold|have|possess)\b"
+    r"|\bhold(?:s)?\s+(?:no|none|neither)\b"
+    r"|\bhave\s+(?:no|none|neither)\b"
+    r"|\bnone\s+of\s+(?:which|these|those|them|it)\b"
+    r"|\bnot\s+(?:currently\s+|yet\s+)?(?:certified|licen[cs]ed|ticketed|qualified|accredited)\b"
+    r"|\bno\s+(?:\w+[-\s]){0,4}?(?:certificate|certification|ticket|licence|license|credential)s?\b"
+    r"|\bwithout\s+(?:a|an|any)\s+(?:\w+[-\s]){0,4}?"
+    r"(?:certificate|certification|ticket|licence|license|credential|experience)\b",
+    re.I)
+
+DENIAL = re.compile(
+    r"\b(?:have|has|had|I|he)\s+(?:never|not)\s+(?:\w+\s+){0,3}?"
+    r"(?:worked|used|operated|driven|run|held|done|completed|obtained|been|"
+    r"cut|mixed|hoed|harvested|picked|packed|supervised|maintained|handled|"
+    r"pruned|milked|slaughtered|butchered|welded|framed|installed)\b"
+    r"|\bnever\s+(?:\w+\s+){0,2}?(?:operated|used|held|worked|driven|done|"
+    r"handled|supervised)\b"
+    r"|\bno experience (?:with|in|of|on|as)\b"
+    r"|\b(?:will|would|do) not pretend\b"
+    r"|\bwhat I have not done\b|\bwhat I have never done\b", re.I)
+
+# An affirmative claim to hold the thing. Checked in a tighter window, because
+# willingness language elsewhere in the paragraph must not launder it: "I have
+# not worked on a farm, but I hold a forklift ticket" contains a denial and a
+# held claim, and only the second one matters.
 HELD_CLAIM = re.compile(
-    r"(?<!not )\b(holds?|holding|possess(?:es)?)\b"
+    r"\b(holds?|holding|possess(?:es)?)\b"
     r"|\b(?:am|is|are|was|were) (?:certified|licen[cs]ed|ticketed|qualified|accredited)\b"
     r"|\bcertified in\b"
     r"|\bhave (?:a|an|my|valid|current)\b", re.I)
 
 HELD_WINDOW = 80
-WILLINGNESS_WINDOW = 160
+WILLINGNESS_WINDOW = 200
 
 
 def _check_skill_claims(cv: GeneratedCV, letter: CoverLetter, profile: Profile,
@@ -659,13 +881,21 @@ def _check_skill_claims(cv: GeneratedCV, letter: CoverLetter, profile: Profile,
                         match.end() + HELD_WINDOW]
             wide = text[max(0, match.start() - WILLINGNESS_WINDOW):
                         match.end() + WILLINGNESS_WINDOW]
-            if not HELD_CLAIM.search(near) and WILLINGNESS.search(wide):
-                continue                # offering to obtain it — honest, expected
+
+            # Asserted = a hold verb close by that is not itself negated. The
+            # negation test runs on the same narrow window, so "I hold no WHMIS
+            # certificate" cancels its own hold verb while "I have not worked on
+            # a farm, but I hold a forklift ticket" does not.
+            asserted = HELD_CLAIM.search(near) and not NOT_HELD.search(near)
+            honest = (NOT_HELD.search(wide) or DENIAL.search(wide)
+                      or WILLINGNESS.search(wide))
+            if not asserted and honest:
+                continue                # disclaimed, denied, or offered — fine
             r.findings.append(Finding(
                 "skills.unheld_credential", "block",
                 f"claims {term!r}, which appears nowhere in the profile, and not "
-                "as something he would obtain. An employer reads this as a "
-                "ticket he already holds (docs/08 §4)", where))
+                "as something he would obtain or has said he lacks. An employer "
+                "reads this as a ticket he already holds (docs/08 §4)", where))
 
     # Everything else gets a warning, not a block: a line that reads oddly is
     # worth a human glance, but forcing a retry over "physical stamina" spends

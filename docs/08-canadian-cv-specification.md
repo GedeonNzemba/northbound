@@ -86,9 +86,26 @@ linkedin.com/in/nzemba  |  gedeonchrist.com
 
 ### 1.4 Language and mechanics
 
-- **Canadian English throughout:** colour, behaviour, favour, centre, metre,
-  organisation, recognise, licence (noun) / license (verb), programme, travelled,
-  cancelled, enrolled, labour, neighbour.
+- **Canadian English throughout — which is neither British nor American.** It
+  keeps the British endings in two places and takes the American ending in a
+  third, and the third is the easy mistake to make here: Gedeon writes South
+  African English, which is British on exactly that point.
+  - British `-our`, `-re`, `-ce` (noun), and the doubled consonant: *colour,
+    behaviour, favour, labour, neighbour; centre, metre, theatre; licence*
+    (noun) / *license* (verb), *defence*; *travelled, cancelled, modelling,
+    enrolled*.
+  - **American `-ize` / `-yze`:** *organize, organization, recognize, analyze,
+    specialize, prioritize* — not `-ise`. The Government of Canada's own
+    editorial style follows American practice here.
+  - **`program`, never `programme`** — a computer program, a training program
+    and a TV program alike.
+
+  *Corrected 2026-08-08.* This line previously demanded `organisation`,
+  `recognise` and `programme`, and the audit enforced them — so the engine was
+  pushing generated documents toward British spelling that a Canadian reader
+  would notice. Both are fixed: the rule now blocks the `-ise` forms and the
+  prompt asks for `-ize`. See `NON_CANADIAN_SPELLINGS` in
+  `backend/northbound/generate/audit.py`.
 - **Employment dates: `Mon YYYY – Mon YYYY`**, `Present` for current.
   *Conflict noted:* one source claims Canadian résumés use `DD/MM/YYYY`. That
   reflects general Canadian date-writing (itself inconsistent — government

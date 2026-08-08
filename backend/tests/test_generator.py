@@ -73,7 +73,7 @@ class _FakeMessages:
             return _Resp(self.drafts.pop(0))
         if fmt is EntailmentVerdict:
             content = kw["messages"][0]["content"]
-            source, claim = re.match(r"SOURCE:\n(.*)\n\nCLAIM:\n(.*)", content, re.S).groups()
+            source, claim = re.match(r"SOURCES:\n(.*)\n\nCLAIM:\n(.*)", content, re.S).groups()
             return _Resp(self.verdict_for(claim, source))
         raise AssertionError(f"unexpected output_format {fmt!r}")
 
@@ -238,38 +238,41 @@ def test_an_entailment_failure_can_be_repaired():
     assert out.attempts == 2
 
 
-def test_every_bullet_is_verified_in_isolation():
-    """Context isolation — the verifier must see only the source and the claim."""
+def test_every_claim_is_verified_in_isolation():
+    """Context isolation — the verifier must see only the sources and the claim."""
     client = FakeClient([docset()])
     generate_application(client, FARM, PROFILE)
 
     assert client.messages.verify_calls, "no claims were verified at all"
     for call in client.messages.verify_calls:
         content = call["messages"][0]["content"]
-        assert content.startswith("SOURCE:")
+        assert content.startswith("SOURCES:")
         assert "Ridge Farms" not in content, "the posting must not leak into the verifier"
         assert "PROFILE" not in content, "the whole profile must not leak into the verifier"
 
 
-def test_a_multi_cited_paragraph_stops_at_the_first_supporting_source():
+def test_a_multi_cited_paragraph_is_verified_against_all_its_sources_at_once():
     """
-    The letter's evidence paragraph cites two entries. Once one supports it, the
-    second cannot change the outcome — and this loop is the one that costs
-    money, a call per bullet per attempt across a whole batch.
+    The regression that produced 11 of the first live batch's 28 findings.
+
+    The letter's evidence paragraph cites two entries and honestly draws on
+    both. Checked against either one alone it is "unsupported" however truthful
+    it is, and no rewrite can fix that — the only escape is deleting half the
+    paragraph. One call, both sources.
     """
     client = FakeClient([docset()])
     generate_application(client, FARM, PROFILE)
 
-    sources = [re.search(r"SOURCE:\n(.*?)\n\nCLAIM:", c["messages"][0]["content"], re.S).group(1)
-               for c in client.messages.verify_calls]
-    # gen.mcdonalds.h1 is the letter paragraph's second citation; the first
-    # supports it, so the second is never fetched.
-    assert not any("standardised procedures" in s and "McDonald" in s
-                   for s in sources), "verified a citation it no longer needed"
+    contents = [c["messages"][0]["content"] for c in client.messages.verify_calls]
+    both = [c for c in contents
+            if "18 months" in c and "standardised procedures" in c]
+    assert len(both) == 1, (
+        "the evidence paragraph must be checked exactly once, against both of "
+        "the entries it cites")
 
 
-def test_a_paragraph_with_no_supporting_source_tries_every_one():
-    """Short-circuiting must not weaken the failure path."""
+def test_a_multi_cited_paragraph_still_fails_when_nothing_supports_it():
+    """Showing the sources together must not soften the verdict."""
     def all_overstated(claim, source):
         return EntailmentVerdict(verdict="overstated", offending_span="x",
                                  reason="no")
@@ -277,9 +280,51 @@ def test_a_paragraph_with_no_supporting_source_tries_every_one():
     client = FakeClient([docset(), docset()], verdict_for=all_overstated)
     out = generate_application(client, FARM, PROFILE, max_attempts=1)
     assert out.status == "parked"
-    letter_claims = [c for c in client.messages.verify_calls
-                     if "18 months" in c["messages"][0]["content"]]
-    assert len(letter_claims) >= 2, "both citations must be tried before failing"
+    assert any(r.claim.where == "letter.evidence" and not r.ok
+               for r in out.entailment)
+
+
+def test_a_bullet_citing_two_entries_sees_both():
+    """
+    A bullet may merge two records — "supported a 150-user network and set up
+    the workstations" is one natural line drawn from two entries. While a bullet
+    could cite only one id, the model wrote the natural line anyway and the
+    second half was reported as an invention.
+    """
+    ds = docset()
+    ds.cv.experience[0].bullets[0].evidence_ids = ["gen.cumpsty.h1", "gen.cumpsty.h2"]
+    client = FakeClient([ds])
+    generate_application(client, FARM, PROFILE)
+
+    text = ds.cv.experience[0].bullets[0].text
+    sent = [c["messages"][0]["content"] for c in client.messages.verify_calls
+            if text in c["messages"][0]["content"]]
+    assert len(sent) == 1
+    assert "[1]" in sent[0] and "[2]" in sent[0], "both cited sources must be shown"
+
+
+def test_a_retry_does_not_re_verify_the_lines_that_already_passed():
+    """
+    The repair turn is told to keep every line that passed, so most of a second
+    attempt's verification is a re-run of calls whose answer is already known.
+    Verdicts are keyed on the exact sentence and the exact ids it cites, so a
+    changed line is always re-checked and an unchanged one never is.
+    """
+    first = docset()
+    fixed = docset(cv_=cv())
+    fixed.cv.experience[0].bullets[0].text = "Assisted electricians on estate construction sites."
+
+    client = FakeClient([first, fixed],
+                        verdict_for=_overstate("Assisted qualified electricians",
+                                               "qualified electricians"))
+    out = generate_application(client, FARM, PROFILE)
+    assert out.ready, out.report()
+
+    sent = [c["messages"][0]["content"] for c in client.messages.verify_calls]
+    rewritten = sum("Assisted electricians on estate" in c for c in sent)
+    unchanged = sum("standardised procedures" in c and "18 months" in c for c in sent)
+    assert rewritten == 1, "the rewritten bullet must be verified"
+    assert unchanged == 1, "an unchanged paragraph must not be paid for twice"
 
 
 def test_skipping_entailment_makes_no_verifier_calls():

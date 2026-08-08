@@ -218,7 +218,7 @@ def test_an_over_long_track_b_cv_is_refused(tmp_path):
             bullets=[Bullet(text="Carried out wall chasing, trenching and "
                                  "excavation for cable and conduit runs on "
                                  "residential estate construction sites. " * 3,
-                            evidence_id="gen.cumpsty.h2") for _ in range(4)]))
+                            evidence_ids=["gen.cumpsty.h2"]) for _ in range(4)]))
     long_cv.experience = padded
 
     posting = Posting(posting_id="x", title="general labourer - farm",

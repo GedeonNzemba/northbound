@@ -25,6 +25,9 @@ VERDICT = re.compile(r"^\s*(OVERSTATED|UNSUPPORTED)\s+\[([^\]]*)\]\s*(.*)$")
 CLAIM = re.compile(r"^\s*claim\s*:\s*(.*)$")
 SOURCE = re.compile(r"^\s*source\s*:\s*(.*)$")
 SPAN = re.compile(r"^\s*span\s*:\s*(.*)$")
+# A multi-cited claim prints its sources as an indented, numbered block under a
+# bare `source:` line, so the sources are on the lines that FOLLOW the label.
+SOURCE_ITEM = re.compile(r"^\s*\[\d+\]\s*(.*)$")
 HEAD = re.compile(r"^\s*PARKED\s+(.*?)\s+\[track\s+(\w+)")
 
 
@@ -59,14 +62,23 @@ def parse_report(text: str, path: Path) -> ParkedFile:
         elif m := VERDICT.match(line):
             f = Finding("entailment", m.group(1).lower(), m.group(2) or "",
                         m.group(3))
-            # The claim/source/span lines follow immediately.
-            for follow in lines[i + 1:i + 4]:
+            # claim/source/span follow, with the sources themselves on their own
+            # indented lines when the claim cites more than one entry. Read
+            # until the next verdict or blank-ish line rather than a fixed three.
+            sources: list[str] = []
+            for follow in lines[i + 1:i + 20]:
+                if VERDICT.match(follow) or BLOCK.match(follow):
+                    break
                 if c := CLAIM.match(follow):
                     f.claim = c.group(1)
-                elif s := SOURCE.match(follow):
-                    f.source = s.group(1)
                 elif sp := SPAN.match(follow):
                     f.span = sp.group(1)
+                elif s := SOURCE.match(follow):
+                    if s.group(1).strip():
+                        sources.append(s.group(1).strip())
+                elif item := SOURCE_ITEM.match(follow):
+                    sources.append(item.group(1).strip())
+            f.source = " | ".join(sources)
             out.findings.append(f)
     return out
 

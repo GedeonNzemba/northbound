@@ -2,8 +2,11 @@
 Typed output contract for generated documents.
 
 The generator returns these objects — never markdown, never prose to be parsed.
-Every claim-bearing string carries the `evidence_id` it came from, which is what
-makes the audit in `audit.py` possible at all (docs/04 Rule 2).
+Every claim-bearing string carries the profile ids it came from, which is what
+makes the audit in `audit.py` possible at all (docs/04 Rule 2). Those ids are a
+LIST everywhere, including on a single bullet: real sentences draw on more than
+one record, and a citation field that cannot say so turns honest writing into an
+entailment failure.
 """
 
 from __future__ import annotations
@@ -16,10 +19,23 @@ Track = Literal["direct", "transferable"]
 
 
 class Bullet(BaseModel):
-    """One line of a work-experience entry."""
+    """
+    One line of a work-experience entry.
+
+    `evidence_ids` is a list because a good bullet often merges two profile
+    entries — "Provided on-site support for a 150-user network and set up
+    workstations, switches and printers" is one natural line drawn from two
+    records. With a single id the model had to pick one and the entailment pass
+    correctly rejected the other half, so the schema forced a choice between
+    writing badly and citing incompletely. It cites what it drew on.
+    """
 
     text: str = Field(description="The bullet as it will appear. Starts with a verb, past tense for past roles.")
-    evidence_id: str = Field(description="id of the master-profile entry this is drawn from. Must exist.")
+    evidence_ids: list[str] = Field(
+        min_length=1,
+        description="ids of the master-profile entries this is drawn from. All must exist. "
+                    "Cite every entry the sentence uses — one if it draws on one, several if it merges several.",
+    )
 
 
 class ExperienceEntry(BaseModel):
