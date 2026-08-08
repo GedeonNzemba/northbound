@@ -253,9 +253,7 @@ def _cmd_batch(args: argparse.Namespace) -> int:
             print(f"[{n:>2}/{len(files)}] {label}  ERROR — {type(exc).__name__}: {brief}")
             continue
 
-        for field in ("calls", "input_tokens", "output_tokens",
-                      "cache_creation_input_tokens", "cache_read_input_tokens"):
-            setattr(totals, field, getattr(totals, field) + getattr(outcome.usage, field))
+        totals.merge(outcome.usage)
 
         if outcome.ready:
             try:

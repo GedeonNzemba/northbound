@@ -22,7 +22,7 @@ Two facts about claude-opus-5 shape the defaults here:
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Protocol, TypeVar
 
 from pydantic import BaseModel
@@ -58,41 +58,34 @@ class RefusalError(LLMError):
     """
 
 
-# USD per million tokens, claude-opus-5. Cache reads bill at 0.1x input and cache
-# writes at 1.25x, which is why the cached profile prefix is worth the trouble:
-# it is the difference between paying full price for ~5,000 tokens of profile on
-# every posting and paying a tenth of it.
+# USD per million tokens, base input/output. Cache reads bill at 0.1x input and
+# cache writes at 1.25x, which is why the cached profile prefix is worth the
+# trouble: it is the difference between paying full price for ~5,000 tokens of
+# profile on every posting and paying a tenth of it.
 #
-# Prices are per model and do change. They are here to turn "how much did that
-# cost?" into a printed line rather than a question — treat the number as a good
-# estimate, and the invoice as the truth.
+# The multipliers are applied rather than transcribed, because a hand-written
+# cache_read of 0.50 next to an input of 5.00 is a number that can silently
+# stop matching when the input price is edited.
+#
+# Prices do change. They are here to turn "how much did that cost?" into a
+# printed line rather than a question — treat the number as a good estimate,
+# and the invoice as the truth.
 PRICE_PER_MTOK = {
-    "input": 5.00,
-    "output": 25.00,
-    "cache_read": 0.50,
-    "cache_write": 6.25,
+    "claude-opus-5": {"input": 5.00, "output": 25.00},
+    "claude-sonnet-5": {"input": 3.00, "output": 15.00},
+    "claude-haiku-4-5": {"input": 1.00, "output": 5.00},
 }
+CACHE_READ_MULTIPLIER = 0.1
+CACHE_WRITE_MULTIPLIER = 1.25
 
-# claude-haiku-4-5, for the verifier tally.
-VERIFY_PRICE_PER_MTOK = {
-    "input": 1.00,
-    "output": 5.00,
-    "cache_read": 0.10,
-    "cache_write": 1.25,
-}
+# What an unknown model is priced at, so a new id shows a plausible number
+# instead of $0.00 — which would read as "this was free".
+FALLBACK_PRICE = PRICE_PER_MTOK["claude-opus-5"]
 
 
 @dataclass
-class UsageTally:
-    """
-    Running token totals across a generation.
-
-    Exists for one reason: `cache_read_input_tokens` is the only evidence that
-    the cached profile prefix is actually working. It is large and byte-stable
-    by construction, but "by construction" is an argument, not a measurement —
-    if this stays at zero across a run, something is silently invalidating the
-    prefix and every generation is paying full price for it.
-    """
+class ModelUsage:
+    """Token totals for one model."""
 
     calls: int = 0
     input_tokens: int = 0            # the uncached remainder only
@@ -100,14 +93,8 @@ class UsageTally:
     cache_creation_input_tokens: int = 0
     cache_read_input_tokens: int = 0
 
-    def record(self, resp: Any) -> None:
-        u = getattr(resp, "usage", None)
-        if u is None:
-            return
-        self.calls += 1
-        for field in ("input_tokens", "output_tokens",
-                      "cache_creation_input_tokens", "cache_read_input_tokens"):
-            setattr(self, field, getattr(self, field) + (getattr(u, field, 0) or 0))
+    FIELDS = ("calls", "input_tokens", "output_tokens",
+              "cache_creation_input_tokens", "cache_read_input_tokens")
 
     @property
     def total_prompt_tokens(self) -> int:
@@ -115,20 +102,100 @@ class UsageTally:
         return (self.input_tokens + self.cache_creation_input_tokens
                 + self.cache_read_input_tokens)
 
-    @property
-    def cost_usd(self) -> float:
-        p = PRICE_PER_MTOK
+    def cost_usd(self, model: str) -> float:
+        p = PRICE_PER_MTOK.get(model, FALLBACK_PRICE)
         return (self.input_tokens * p["input"]
                 + self.output_tokens * p["output"]
-                + self.cache_read_input_tokens * p["cache_read"]
-                + self.cache_creation_input_tokens * p["cache_write"]) / 1_000_000
+                + self.cache_read_input_tokens * p["input"] * CACHE_READ_MULTIPLIER
+                + self.cache_creation_input_tokens * p["input"] * CACHE_WRITE_MULTIPLIER
+                ) / 1_000_000
+
+    def cost_without_caching_usd(self, model: str) -> float:
+        p = PRICE_PER_MTOK.get(model, FALLBACK_PRICE)
+        return (self.total_prompt_tokens * p["input"]
+                + self.output_tokens * p["output"]) / 1_000_000
+
+
+@dataclass
+class UsageTally:
+    """
+    Running token totals across a generation, kept per model.
+
+    Per model because this engine deliberately runs two: the document is written
+    by the best model available and the verifier — ~20 of every 21 calls — runs
+    on Haiku at a fifth of the price. A single bucket priced at the generator's
+    rate reports a batch as five times more expensive than it was, and the
+    number it prints is the one the cost decisions get made on.
+
+    The other reason this exists: `cache_read_input_tokens` is the only evidence
+    that the cached profile prefix is actually working. It is large and
+    byte-stable by construction, but "by construction" is an argument, not a
+    measurement — if it stays at zero across a run, something is silently
+    invalidating the prefix and every generation is paying full price for it.
+    """
+
+    by_model: dict[str, ModelUsage] = field(default_factory=dict)
+
+    # ---- recording -------------------------------------------------------- #
+
+    def record(self, resp: Any, model: str = "") -> None:
+        u = getattr(resp, "usage", None)
+        if u is None:
+            return
+        # The response says which model actually served the request, which is
+        # the one that gets billed. The requested id is the fallback.
+        served = getattr(resp, "model", None) or model or "unknown"
+        m = self.by_model.setdefault(served, ModelUsage())
+        m.calls += 1
+        for f in ModelUsage.FIELDS[1:]:
+            setattr(m, f, getattr(m, f) + (getattr(u, f, 0) or 0))
+
+    def merge(self, other: UsageTally) -> None:
+        """Fold another tally in, keeping the per-model split intact."""
+        for model, usage in other.by_model.items():
+            mine = self.by_model.setdefault(model, ModelUsage())
+            for f in ModelUsage.FIELDS:
+                setattr(mine, f, getattr(mine, f) + getattr(usage, f))
+
+    # ---- aggregates ------------------------------------------------------- #
+
+    def _sum(self, attr: str) -> int:
+        return sum(getattr(m, attr) for m in self.by_model.values())
+
+    @property
+    def calls(self) -> int:
+        return self._sum("calls")
+
+    @property
+    def input_tokens(self) -> int:
+        return self._sum("input_tokens")
+
+    @property
+    def output_tokens(self) -> int:
+        return self._sum("output_tokens")
+
+    @property
+    def cache_creation_input_tokens(self) -> int:
+        return self._sum("cache_creation_input_tokens")
+
+    @property
+    def cache_read_input_tokens(self) -> int:
+        return self._sum("cache_read_input_tokens")
+
+    @property
+    def total_prompt_tokens(self) -> int:
+        return self._sum("total_prompt_tokens")
+
+    @property
+    def cost_usd(self) -> float:
+        return sum(u.cost_usd(model) for model, u in self.by_model.items())
 
     @property
     def cost_without_caching_usd(self) -> float:
-        """What the same tokens would have cost billed at full input price."""
-        p = PRICE_PER_MTOK
-        return (self.total_prompt_tokens * p["input"]
-                + self.output_tokens * p["output"]) / 1_000_000
+        return sum(u.cost_without_caching_usd(model)
+                   for model, u in self.by_model.items())
+
+    # ---- reporting -------------------------------------------------------- #
 
     def report(self) -> str:
         if not self.calls:
@@ -136,17 +203,30 @@ class UsageTally:
         cached = self.cache_read_input_tokens
         pct = (100 * cached / self.total_prompt_tokens) if self.total_prompt_tokens else 0
         saved = self.cost_without_caching_usd - self.cost_usd
-        line = (f"usage: {self.calls} call(s)  "
-                f"prompt {self.total_prompt_tokens:,} "
-                f"({cached:,} cached = {pct:.0f}%)  "
-                f"output {self.output_tokens:,}  "
-                f"≈ ${self.cost_usd:,.2f}")
-        if saved > 0.005:
-            line += f" (caching saved ${saved:,.2f})"
+        lines = [f"usage: {self.calls} call(s)  "
+                 f"prompt {self.total_prompt_tokens:,} "
+                 f"({cached:,} cached = {pct:.0f}%)  "
+                 f"output {self.output_tokens:,}  "
+                 f"≈ ${self.cost_usd:,.2f}"
+                 + (f" (caching saved ${saved:,.2f})" if saved > 0.005 else "")]
+
+        # The split is the point when two models are in play: it is the only
+        # way to see that the expensive model is being spent where it earns.
+        # It is also shown for a single model the price table does not know,
+        # because the alternative is a confident number with no basis.
+        unpriced = [m for m in self.by_model if m not in PRICE_PER_MTOK]
+        if len(self.by_model) > 1 or unpriced:
+            for model, u in sorted(self.by_model.items(),
+                                   key=lambda kv: -kv[1].cost_usd(kv[0])):
+                lines.append(f"  {model:<20} {u.calls:>4} call(s)  "
+                             f"≈ ${u.cost_usd(model):,.2f}"
+                             + ("" if model in PRICE_PER_MTOK
+                                else "   (price unknown — estimated at opus rates)"))
+
         if self.calls > 1 and cached == 0:
-            line += "\n  WARNING: zero cache reads across multiple calls — the "
-            line += "profile prefix is being invalidated somewhere"
-        return line
+            lines.append("  WARNING: zero cache reads across multiple calls — the "
+                         "profile prefix is being invalidated somewhere")
+        return "\n".join(lines)
 
 
 # --------------------------------------------------------------------------- #
@@ -281,7 +361,7 @@ def structured_call(
 
     resp = client.messages.parse(**kwargs)
     if tally is not None:
-        tally.record(resp)
+        tally.record(resp, model)
 
     stop = getattr(resp, "stop_reason", "unknown")
     if stop == "refusal":
@@ -301,6 +381,7 @@ def structured_call(
 
 __all__ = ["structured_call", "default_client", "Client", "UsageTally",
            "LLMError", "RefusalError", "FatalAPIError", "fatal_reason",
-           "api_message", "DEFAULT_MODEL",
+           "api_message", "ModelUsage", "DEFAULT_MODEL",
            "DEFAULT_VERIFY_MODEL", "PRICE_PER_MTOK",
-           "GENERATION_MAX_TOKENS", "VERIFY_MAX_TOKENS"]
+           "GENERATION_MAX_TOKENS", "VERIFY_MAX_TOKENS",
+           "CACHE_READ_MULTIPLIER", "CACHE_WRITE_MULTIPLIER"]
