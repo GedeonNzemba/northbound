@@ -497,3 +497,57 @@ def test_render_parked_writes_the_documents_and_says_why(tmp_path):
     assert paths["cv"].name.startswith("PARKED-")
     why = paths["report"].read_text()
     assert "PARKED" in why and "gen.does.not.exist" in why
+
+
+# --------------------------------------------------------------------------- #
+# Cost levers
+# --------------------------------------------------------------------------- #
+
+def test_a_shared_verdict_cache_spans_postings():
+    """
+    The batch-scale lever. A CV bullet is often the same sentence citing the
+    same evidence across a dozen farm postings, and a verdict is keyed on
+    exactly that — so a batch should pay for each distinct sentence once, not
+    once per application.
+    """
+    shared: dict = {}
+    client = FakeClient([docset(), docset()])
+
+    generate_application(client, FARM, PROFILE, verdicts=shared)
+    after_first = len(client.messages.verify_calls)
+    assert after_first > 0
+
+    generate_application(client, FARM, PROFILE, verdicts=shared)
+    assert len(client.messages.verify_calls) == after_first, (
+        "an identical second application must re-verify nothing")
+
+
+def test_without_a_shared_cache_each_application_verifies_independently():
+    """The isolation default has to stay the default."""
+    client = FakeClient([docset(), docset()])
+    generate_application(client, FARM, PROFILE)
+    after_first = len(client.messages.verify_calls)
+    generate_application(client, FARM, PROFILE)
+    assert len(client.messages.verify_calls) == after_first * 2
+
+
+def test_effort_reaches_the_generation_call_and_not_the_verifier():
+    """
+    Effort is the cost lever: output tokens are ~83% of a generation's bill and
+    thinking counts against them. The verifier keeps its own "low" — it is a
+    narrow judgement and a sweep of the generator must not disturb it.
+    """
+    client = FakeClient([docset()])
+    generate_application(client, FARM, PROFILE, effort="low")
+
+    draft = client.messages.draft_calls[0]
+    assert draft["output_config"] == {"effort": "low"}
+    for call in client.messages.verify_calls:
+        assert call["output_config"] == {"effort": "low"}
+
+
+def test_effort_is_unset_by_default():
+    """Unset must mean the model's default, not a value this engine invented."""
+    client = FakeClient([docset()])
+    generate_application(client, FARM, PROFILE)
+    assert "output_config" not in client.messages.draft_calls[0]

@@ -185,7 +185,7 @@ class GenerationOutcome:
 
 def _draft(client: Client, posting: Posting, profile: Profile, track: Track, *,
            model: str, max_tokens: int, repair: str | None,
-           tally: UsageTally) -> DocumentSet:
+           tally: UsageTally, effort: str | None = None) -> DocumentSet:
     """One generation call. `repair` is the failure feedback on a retry."""
     user = "\n\n".join(filter(None, [
         posting_block(posting.body, posting.employer, posting.title, posting.questions),
@@ -200,6 +200,7 @@ def _draft(client: Client, posting: Posting, profile: Profile, track: Track, *,
         messages=[{"role": "user", "content": user}],
         output_format=DocumentSet,
         tally=tally,
+        effort=effort,
     )
 
 
@@ -215,6 +216,8 @@ def generate_application(
     max_attempts: int = 2,
     verify_entailment: bool = True,
     sources_path: Path | str | None = None,
+    effort: str | None = None,
+    verdicts: EntailmentCache | None = None,
 ) -> GenerationOutcome:
     """
     Produce a checked application, or park it.
@@ -227,6 +230,20 @@ def generate_application(
     prompts and formatting, and never appropriate for a document that will be
     sent. The outcome records that it was skipped by carrying an empty
     `entailment` list, so a caller cannot mistake "skipped" for "verified".
+
+    `effort` is the cost lever that matters. 83% of a generation's bill is
+    output tokens, and thinking counts against them — so the depth of thinking,
+    not the size of the prompt, is what a run costs. Left unset it takes the
+    model's default. Nothing about the checks changes at any setting: a cheaper
+    draft that overstates something is caught and parked exactly as an
+    expensive one would be, which is what makes this safe to sweep.
+
+    `verdicts` lets a caller share the entailment cache across postings. CV
+    bullets are near-identical from one posting to the next — the same role,
+    the same evidence, often the same sentence — and a verdict is keyed on the
+    exact text and the exact ids it cites, so a shared cache re-asks nothing
+    and pays for each distinct sentence once per batch rather than once per
+    application. Pass None to keep each application isolated.
     """
     if max_attempts < 1:
         raise GenerationError("max_attempts must be at least 1")
@@ -242,12 +259,15 @@ def generate_application(
     # Verdicts survive across attempts, keyed on the exact sentence and the
     # exact ids it cites. The repair turn is told to keep every line that
     # passed, so most of a second attempt's verification would otherwise be
-    # re-asking questions already answered.
-    verdicts: EntailmentCache = {}
+    # re-asking questions already answered. A caller may pass one in to
+    # share it across postings too.
+    if verdicts is None:
+        verdicts = {}
 
     for attempt in range(1, max_attempts + 1):
         docs = _draft(client, posting, profile, track, model=model,
-                      max_tokens=max_tokens, repair=repair, tally=tally)
+                      max_tokens=max_tokens, repair=repair, tally=tally,
+                      effort=effort)
         app = Application(
             posting_id=posting.posting_id,
             posting_title=posting.title,

@@ -24,6 +24,7 @@ import json
 import sys
 from pathlib import Path
 
+from .generate.entailment import Cache as EntailmentCache
 from .generate.generator import (
     GenerationError, Posting, choose_track, finalise, generate_application,
     render_parked,
@@ -150,6 +151,7 @@ def _cmd_generate(args: argparse.Namespace) -> int:
         client, posting, profile,
         track=track, model=args.model, verify_model=args.verify_model,
         max_attempts=args.max_attempts, verify_entailment=not args.no_verify,
+        effort=args.effort,
     )
 
     print()
@@ -196,6 +198,11 @@ def _cmd_batch(args: argparse.Namespace) -> int:
     failures = 0
     fatal = ""
     not_run = 0
+    # One verdict cache for the whole batch. A CV bullet is often the
+    # same sentence citing the same evidence across a dozen postings —
+    # the verdict is keyed on exactly that, so the batch pays for each
+    # distinct sentence once instead of once per application.
+    verdicts: EntailmentCache = {}
 
     print(f"{len(files)} posting(s) from {directory}\n")
     for n, f in enumerate(files, 1):
@@ -233,8 +240,9 @@ def _cmd_batch(args: argparse.Namespace) -> int:
         try:
             outcome = generate_application(
                 client, posting, profile, track=track, model=args.model,
-                verify_model=args.verify_model,
-                max_attempts=args.max_attempts, verify_entailment=not args.no_verify)
+                verify_model=args.verify_model, effort=args.effort,
+                max_attempts=args.max_attempts, verify_entailment=not args.no_verify,
+                verdicts=verdicts)
         except Exception as exc:  # noqa: BLE001 — one posting must not kill the run
             failures += 1
             brief = api_message(exc)
@@ -336,6 +344,9 @@ def build_parser() -> argparse.ArgumentParser:
                    help="the model that checks each claim against its "
                         "source — ~20 of every 21 calls, so this is the "
                         "one that drives cost")
+    g.add_argument("--effort", default=None,
+                   choices=["low", "medium", "high", "xhigh", "max"],
+                   help="thinking depth: low|medium|high|xhigh|max. Output tokens are ~83%% of a generation's cost and thinking counts against them, so this is the cost lever. Unset takes the model default. No check is weakened at any setting")
     g.add_argument("--max-attempts", type=int, default=2,
                    help="drafts before parking (default 2: one draft, one repair)")
     g.add_argument("--no-verify", action="store_true",
@@ -365,6 +376,9 @@ def build_parser() -> argparse.ArgumentParser:
     b.add_argument("--track", choices=["direct", "transferable"], default=None)
     b.add_argument("--model", default=DEFAULT_MODEL)
     b.add_argument("--verify-model", default=DEFAULT_VERIFY_MODEL)
+    b.add_argument("--effort", default=None,
+                   choices=["low", "medium", "high", "xhigh", "max"],
+                   help="thinking depth: low|medium|high|xhigh|max. Output tokens are ~83%% of a generation's cost and thinking counts against them, so this is the cost lever. Unset takes the model default. No check is weakened at any setting")
     b.add_argument("--max-attempts", type=int, default=2)
     b.add_argument("--no-verify", action="store_true")
     b.add_argument("--no-pdf", action="store_true")
